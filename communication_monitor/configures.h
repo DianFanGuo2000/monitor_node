@@ -5,14 +5,14 @@
 #define BUFFER_SIZE 2048
 
 #define MAX_WAITING_TIME_IN_ONE_ROUND 8 // s
-#define TEST_BEIGIN_TIME 1721804631 // s
+#define TEST_BEIGIN_TIME "Tue Jul 23 18:31:15 2024" // s
 
 #define PAKCAGES_NUM_ONE_TIME 20 // 20 pakcages one time
 
 #define SENDING_TIME_SPEC 200000000 //ns
 
 #define _ERROR -1
-#define _SUCCESS 0
+#define _SUCCESS 1
 
 #define MAX_MSG_LEN 512
 #define MAX_CAN_ID_STR_LEN 32

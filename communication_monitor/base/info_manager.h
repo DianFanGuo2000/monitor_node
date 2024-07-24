@@ -1,14 +1,19 @@
-#ifndef TEST_RESULT_MANAGER_H  
-#define TEST_RESULT_MANAGER_H  
+#ifndef INFO_MANAGER_MANAGER_H  
+#define INFO_MANAGER_MANAGER_H  
+
 
 #include "../configures.h"
+
+
 #include <time.h> // For time functions 
 
 
 #include <stdio.h>  
 #include <stdlib.h>  
 #include <string.h>  
-#include <cjson/cJSON.h> /*需要安装cJSON */
+#include <cjson/cJSON.h> /*锟斤拷要锟斤拷装cJSON */
+
+
 
 
 
@@ -60,12 +65,22 @@ int communication_info_cnt;
 struct interface_info *interface_info_array;
 int interface_cnt;
 
+
+time_t test_begin_time; 
+
+
+time_t get_test_begin_time();
+
 int update_interface_cnt(const char *filename);
 void start_and_load_info(const char *filename);
 void dump_info_and_close(const char *filename);
 
 void write_interface_info_array_to_json(const char *filename,struct interface_info *array, size_t size);
 void read_interface_info_array_from_json(const char *filename, struct interface_info *array, size_t size);
+
+int string_to_time_t(const char* time_buffer, time_t* parsed_time);
+int time_t_to_string(time_t time_val, char* buffer, size_t buffer_size);
+
 
 
 int get_interface_cnt();

@@ -2,6 +2,40 @@
 
 #include "info_manager.h"
 
+ 
+
+// 将字符串转换为 time_t  
+int string_to_time_t(const char* time_buffer, time_t* parsed_time) {  
+    struct tm tm_parsed;  
+    if (strptime(time_buffer, "%c", &tm_parsed) != NULL) {  
+        *parsed_time = mktime(&tm_parsed);  
+        if (*parsed_time != (time_t)-1) {  
+            return _SUCCESS; // 成功  
+        } else {  
+            return _ERROR; // mktime 失败  
+        }  
+    } else {  
+        return _ERROR; // strptime 失败  
+    }  
+ 
+}  
+  
+// 将 time_t 转换为字符串  
+int time_t_to_string(time_t time_val, char* buffer, size_t buffer_size) {  
+    struct tm* tm_info = localtime(&time_val);  
+    if (tm_info == NULL) {  
+        return _ERROR; // localtime 失败  
+    }  
+      
+    if (strftime(buffer, buffer_size, "%c", tm_info) == 0) {  
+        return _ERROR; // strftime 失败（通常是由于缓冲区太小）  
+    }  
+      
+    return _SUCCESS; // 成功  
+}  
+
+
+
 
 int is_this_interface_in_current_node(const char* interface_name)
 {
@@ -38,14 +72,15 @@ void write_communication_info_array_to_json(const char* filename)
 }
 
 
+
 // Function to convert communication_info_array to JSON string  
 char* parse_communication_info_array_to_json() {  
     cJSON *json_array = cJSON_CreateArray();  
     for (int i = 0; i < communication_info_cnt; i++) {  
         cJSON *json_obj = cJSON_CreateObject();  
         cJSON_AddStringToObject(json_obj, "interface_name", communication_info_array[i].interface_name);  
-        char time_buffer[26]; // Assuming enough space for ctime(3) format  
-        strftime(time_buffer, sizeof(time_buffer), "%c", localtime(&communication_info_array[i].updated_time));  
+        char time_buffer[80]; // Assuming enough space for ctime(3) format  
+        time_t_to_string(communication_info_array[i].updated_time,time_buffer,sizeof(time_buffer));
         cJSON_AddStringToObject(json_obj, "updated_time", time_buffer);  
         cJSON_AddStringToObject(json_obj, "error_ratio_value", communication_info_array[i].error_ratio_value);  
         cJSON_AddItemToArray(json_array, json_obj);  
@@ -98,7 +133,9 @@ int update_communication_info_array_from_json(char* communication_info_array_jso
         for (int j = 0; j < communication_info_cnt; j++) {
             if (strcmp(communication_info_array[j].interface_name, cJSON_GetObjectItem(communication_info_item, "interface_name")->valuestring) == 0) {
                 free(communication_info_array[j].error_ratio_value);
-                communication_info_array[j].updated_time = (time_t)cJSON_GetObjectItem(communication_info_item, "updated_time")->valueint;
+				time_t updated_t;
+				string_to_time_t(cJSON_GetObjectItem(communication_info_item, "updated_time")->valuestring, &updated_t);
+                communication_info_array[j].updated_time = updated_t;
                 communication_info_array[j].error_ratio_value = strdup(cJSON_GetObjectItem(communication_info_item, "error_ratio_value")->valuestring);
                 found = 1;
                 break;
@@ -112,7 +149,9 @@ int update_communication_info_array_from_json(char* communication_info_array_jso
                 continue; // 或者处理错误
             }
             communication_info_array[communication_info_cnt - 1].interface_name = strdup(cJSON_GetObjectItem(communication_info_item, "interface_name")->valuestring);
-            communication_info_array[communication_info_cnt - 1].updated_time = (time_t)cJSON_GetObjectItem(communication_info_item, "updated_time")->valueint;
+            time_t updated_t;
+			string_to_time_t(cJSON_GetObjectItem(communication_info_item, "updated_time")->valuestring, &updated_t);
+            communication_info_array[communication_info_cnt - 1].updated_time = updated_t;
             communication_info_array[communication_info_cnt - 1].error_ratio_value = strdup(cJSON_GetObjectItem(communication_info_item, "error_ratio_value")->valuestring);
         }
     }
@@ -429,12 +468,23 @@ void free_communication_info_array()
 }
 
 
-
+time_t get_test_begin_time()
+{
+	return test_begin_time;
+}
 
 
 void start_and_load_info(const char *filename)
 {
 	int size = update_interface_cnt(filename);
+	int ret = string_to_time_t(TEST_BEIGIN_TIME, &test_begin_time);
+	
+	if (ret!=_SUCCESS) {
+		test_begin_time = 0;
+		printf("cannot parse the test begin time!\n");
+	}
+
+	
 	malloc_interface_info_array(size);
 	read_interface_info_array_from_json(filename,interface_info_array,interface_cnt);
 
@@ -445,6 +495,8 @@ void start_and_load_info(const char *filename)
 		communication_info_array[i].updated_time = time(NULL);
 		communication_info_array[i].error_ratio_value = "0";
 	}
+
+	
 	
 }
 

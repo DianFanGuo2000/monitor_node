@@ -109,28 +109,27 @@ void listen_upon_interface_group() {
 
 
 
-#if 0
+#if 1
 int main(int argc, char *argv[]) {
-    if (argc != 6 && argc != 4) {  
-        fprintf(stderr, "Usage: %s <config_file> <mode> <test_begin_time> [ <center_interface_name> <res_file_name> (when listen mode)]\n", argv[0]);  
+    if (argc != 5 && argc != 3) {  
+        fprintf(stderr, "Usage: %s <config_file> <mode> [ <center_interface_name> <res_file_name> (when listen mode)]\n", argv[0]);  
         fprintf(stderr, "Mode should be 'test' or 'listen'.\n");  
         return 1; // 表示程序因为错误的参数而退出  
     }  
-	
   
     const char* config_file = argv[1];  
     const char* mode = argv[2];
-	const char* test_begin_time = argv[3];
 
-  
+	
+
     if (strcmp(mode, "test") == 0) {  
         start_and_load_info(config_file); 
 		// 下面开始循环测试各个配置好的物理通信接口
 		test_upon_interface_group();
     } else if (strcmp(mode, "listen") == 0) {
         start_and_load_info(config_file);
-		set_center_interface_name(argv[4]);
-		set_res_file_name(argv[5]);
+		set_center_interface_name(argv[3]);
+		set_res_file_name(argv[4]);
 		listen_upon_interface_group();
 		// 陪试不需要同步测试结果
     } else {  
@@ -146,12 +145,32 @@ int main(int argc, char *argv[]) {
 
 
 
-#if 1
+#if 0
 int main(int argc, char *argv[]) {  
-   	printf("%d\n",string_to_time_t("Wed Jul 24 16:00:00 2024"));
-	printf("%d\n",time(NULL));
-    return 0; // 表示程序正常退出  
+    time_t parsed_time = time(NULL);  // 获取当前时间  
+    char time_str[80];  
+  
+    // 将 time_t 转换为字符串  
+    if (time_t_to_string(parsed_time, time_str, sizeof(time_str)) == _SUCCESS) {  
+        printf("Converted time to string: %s\n", time_str);  
+  
+        // 使用一个已知有效的时间字符串来测试 string_to_time_t  
+        const char* test_time_buffer = "Tue Mar  3 10:03:58 2020"; // 示例时间字符串  
+  
+        // 将字符串转换回 time_t  
+        if (string_to_time_t(test_time_buffer, &parsed_time) == _SUCCESS) {  
+            printf("Parsed time (time_t) from string: %ld\n", (long)parsed_time);  
+			printf("parsed_time: %d\n",parsed_time);
+        } else {  
+            printf("Failed to parse time from string\n");  
+        }  
+    } else {  
+        printf("Failed to convert time to string\n");  
+    }  
+  
+    return 0;  
 }
+
 
 #endif
 

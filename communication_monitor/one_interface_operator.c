@@ -57,8 +57,9 @@ void deal_with_mnt(const char* listened_interface, const char* msg) {
     if(strcmp(msg, "hello, are you here?") == 0)
     {
     	time_t current_time = time(NULL);  
-        int current_round = (current_time - TEST_BEIGIN_TIME) / MAX_WAITING_TIME_IN_ONE_ROUND; 
-		if (current_round > round) {  
+        int current_round = (current_time - get_test_begin_time()) / MAX_WAITING_TIME_IN_ONE_ROUND;
+		if (current_round > round) { 
+			printf("current_round is %d\n",current_round);
             pthread_mutex_lock(&cnt_mutex);
 			
 			//在这个地方把上一轮统计结果传出去，要不直接就保存下来
@@ -107,13 +108,15 @@ void *thread_function(void *args) {
 	send_message(ta->test_interface, ta->message);
     return NULL;  
 }  
-  
+
+
+
 void test_upon_one_interface_in_one_time(const char *test_interface,const char *message,int packages_num)
 {  
-
 	time_t current_time = time(NULL);  
-	//printf("%d\n",current_time);
-	int current_round = (current_time - TEST_BEIGIN_TIME) / MAX_WAITING_TIME_IN_ONE_ROUND; 
+	int current_round = (current_time - get_test_begin_time()) / MAX_WAITING_TIME_IN_ONE_ROUND; 
+	//printf("current_time: %d\n",current_time);
+	//printf("test_begin_time: %d\n",get_test_begin_time());
 	if (current_round > round) { 
 		printf("current round is %d\n",current_round);
 		pthread_t threads[packages_num];  
