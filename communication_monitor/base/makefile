@@ -1,0 +1,27 @@
+# 定义编译器  
+CC=gcc  
+  
+# 定义编译选项  
+CFLAGS=-I.  
+  
+# 定义链接选项（这里留空）  
+LDFLAGS=  
+  
+# 定义目标文件  
+OBJECTS=eth_recv_send.o rs485_recv_send.o can_recv_send.o  
+  
+# 默认目标  
+all: $(OBJECTS)  
+  
+# 编译C源文件生成目标文件  
+%.o: %.c  
+	$(CC) $(CFLAGS) -c -o $@ $<  
+  
+# 清理编译生成的文件  
+clean:  
+	rm -f $(OBJECTS)  
+  
+# 依赖关系（可选，但明确列出是个好习惯）  
+eth_recv_send.o: eth_recv_send.c eth_recv_send.h base_configures.h  
+rs485_recv_send.o: rs485_recv_send.c rs485_recv_send.h base_configures.h  
+can_recv_send.o: can_recv_send.c can_recv_send.h base_configures.h
