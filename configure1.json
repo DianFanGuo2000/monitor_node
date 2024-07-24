@@ -1,15 +1,15 @@
 [{
 	"located_node": "virtual_machine",
-	"interface_name":       "ens33",
+	"interface_name":       "eth1",
 	"interface_type":       "eth",
-	"linked_node":  "fpu",
-	"linked_interface_name":        "enp3s0",
+	"linked_node":  "gpu",
+	"linked_interface_name":        "eth1",
 	"linked_interface_type":        "eth",
 	"eth_info":     {
-			"mac_addr":     "00:0c:29:8e:5f:92"
+			"mac_addr":     "20:7B:D2:3C:F2:9D"
 	},
 	"linked_eth_info":     {
-		"mac_addr":     "ac:2a:0c:03:d5:a3"
+		"mac_addr":     "00:11:22:33:44:55"
 	},
 	"can_info":     {
 			"can_id":       -1
