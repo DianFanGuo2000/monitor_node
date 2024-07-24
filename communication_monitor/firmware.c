@@ -4,13 +4,13 @@
 
 
 // Implementation of the receive_and_reply function  
-/*这里存在一个时序问题需要解决，即发送方发送完msg后，到发送方正式开始等待回复之前，接收方就已经回复了，导致发送方无法收到回复*/
+/*锟斤拷锟斤拷锟斤拷锟揭伙拷锟绞憋拷锟斤拷锟斤拷锟斤拷锟揭拷锟斤拷锟斤拷锟斤拷锟斤拷锟酵凤拷锟斤拷锟斤拷锟斤拷msg锟襟，碉拷锟斤拷锟酵凤拷锟斤拷式锟斤拷始锟饺达拷锟截革拷之前锟斤拷锟斤拷锟秸凤拷锟斤拷锟窖撅拷锟截革拷锟剿ｏ拷锟斤拷锟铰凤拷锟酵凤拷锟睫凤拷锟秸碉拷锟截革拷*/
 int receive_and_reply(const char *source_interface,        
                       ReplyGenerator generate_reply,
                       long max_waiting_time)    
 {    
 	char *interface_type = get_interface_type(source_interface);
-	time_t begin_time = time(NULL); // Initialize start time  
+	//time_t begin_time = time(NULL); // Initialize start time  
     // Check if the interface type is "eth"  
     
     if (strcmp(interface_type, "eth") == 0) {    
@@ -34,9 +34,9 @@ int receive_and_reply(const char *source_interface,
 
 		
 	  	struct timespec delay;
-		delay.tv_sec = 0;  // 秒      
+		delay.tv_sec = 0;  // 锟斤拷      
 		delay.tv_nsec = 63000000;
-	    nanosleep(&delay, NULL); // 等一会，让对方可以有时间来准备接
+	    nanosleep(&delay, NULL); // 锟斤拷一锟结，锟矫对凤拷锟斤拷锟斤拷锟斤拷时锟斤拷锟斤拷准锟斤拷锟斤拷
   
 		
 	    // Retrieve the MAC addresses of the source and destination interfaces  
@@ -48,18 +48,18 @@ int receive_and_reply(const char *source_interface,
 	    if (send_packet(source_interface, reply, src_mac, dest_mac)<0) {    
 	        // If either MAC address is missing or the packet fails to send, free the reply and return an error  
 	        printf("reply failed!\n");
-	        //free(reply); // 注意，如果是自己分配了内存的char指针，请在函数外free，为了防止free非动态分配的内存区域引起段错误，此处不free
+	        //free(reply); // 注锟解，锟斤拷锟斤拷锟斤拷约锟斤拷锟斤拷锟斤拷锟斤拷诖锟斤拷char指锟诫，锟斤拷锟节猴拷锟斤拷锟斤拷free锟斤拷为锟剿凤拷止free锟角讹拷态锟斤拷锟斤拷锟斤拷诖锟斤拷锟斤拷锟斤拷锟斤拷锟轿达拷锟襟，此达拷锟斤拷free
 	        return _ERROR;    
 	    }    
 		//printf("xass\n");
 
 	    
 	    // Free the memory allocated for the reply string  
-	    //free(reply);    // 注意，如果是自己分配了内存的char指针，请在函数外free，为了防止free非动态分配的内存区域引起段错误，此处不free
+	    //free(reply);    // 注锟解，锟斤拷锟斤拷锟斤拷约锟斤拷锟斤拷锟斤拷锟斤拷诖锟斤拷char指锟诫，锟斤拷锟节猴拷锟斤拷锟斤拷free锟斤拷为锟剿凤拷止free锟角讹拷态锟斤拷锟斤拷锟斤拷诖锟斤拷锟斤拷锟斤拷锟斤拷锟轿达拷锟襟，此达拷锟斤拷free
 	    // Return success  
 	    return _SUCCESS;    
     }    
-
+    return _ERROR;
 }
 
 

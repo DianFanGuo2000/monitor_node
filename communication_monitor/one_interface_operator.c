@@ -1,21 +1,18 @@
-
-
 #include "one_interface_operator.h"
-
 
 char* generate_reply(const char* msg) {  
 	printf("%s\n",msg);
     if(strcmp(msg, "hello, are you here?") == 0)
     {
     	return "yes, i am here!";  
-    }else if(update_communication_info_array_from_json(msg)==_SUCCESS)
+    }
+    else if(update_communication_info_array_from_json(msg)==_SUCCESS)
     {
     	write_communication_info_array_to_json(res_file_name);
-		//printf("sxassa\n");
     	return "ok";
     }
 	printf("msg is wrong!\n");
-	return NULL; // Èç¹ûÒÔÉÏÁ½ÖÖÇé¿ö¶¼²»³ÉÁ¢£¬¾ÍÈÏÎªÊÕµ½µÄÊý¾Ý°üÊÇÎÞÐ§Êý¾Ý°ü
+	return NULL; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý°ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½ï¿½Ý°ï¿½
 }  
 
 void set_res_file_name(char *file_name)
@@ -27,14 +24,14 @@ void set_res_file_name(char *file_name)
   
 void listen_upon_one_interface(char *listened_interface) {  
    	receive_and_reply(listened_interface,  generate_reply, 2);
-   	// ¿ÉÒÔÌí¼ÓÒ»Ð©ÑÓÊ±»òÆäËûÌõ¼þ¼ì²éÀ´¼õÉÙ CPU Ê¹ÓÃÂÊ  
-    // sleep(1); // ÐÝÃßÒ»Ãë£¨ÐèÒª°üº¬ unistd.h£©  
+   	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»Ð©ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ CPU Ê¹ï¿½ï¿½ï¿½ï¿½  
+    // sleep(1); // ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ë£¨ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ unistd.hï¿½ï¿½  
 }  
   
 
 
-int cnt = 0; // È«¾Ö¼ÆÊýÆ÷£¬ÐèÒªÏß³Ì°²È«  
-pthread_mutex_t cnt_mutex = PTHREAD_MUTEX_INITIALIZER; // »¥³âËø±£»¤ cnt  
+int cnt = 0; // È«ï¿½Ö¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ß³Ì°ï¿½È«  
+pthread_mutex_t cnt_mutex = PTHREAD_MUTEX_INITIALIZER; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ cnt  
   
 void *thread_function(void *args) {  
     ThreadArgs *ta = (ThreadArgs *)args;  
@@ -60,8 +57,8 @@ char *test_upon_one_interface_threaded(const char *test_interface,
     ThreadArgs args[packages_num];  
 	cnt = 0;
 	struct timespec delay;
-	delay.tv_sec = 0;  // Ãë      
-	delay.tv_nsec = 200000000;  // 100ºÁÃë = 100,000,000ÄÉÃë  
+	delay.tv_sec = 0;  // ï¿½ï¿½      
+	delay.tv_nsec = 200000000;  // 100ï¿½ï¿½ï¿½ï¿½ = 100,000,000ï¿½ï¿½ï¿½ï¿½  
   
     for (int i = 0; i < packages_num; i++) {  
         args[i].test_interface = test_interface;  
@@ -79,13 +76,13 @@ char *test_upon_one_interface_threaded(const char *test_interface,
   
     char *result = malloc(RESULT_STRING_SIZE);  
     if (result == NULL) {  
-        // ´¦ÀíÄÚ´æ·ÖÅäÊ§°ÜµÄÇé¿ö  
+        // ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Üµï¿½ï¿½ï¿½ï¿½  
         return NULL;  
     }  
     double ratio = 1 - (double)cnt / packages_num;  
     snprintf(result, RESULT_STRING_SIZE, "%.2f", ratio);  
   
-    return result; // µ÷ÓÃÕßÐèÒª¸ºÔðÊÍ·ÅÄÚ´æ  
+    return result; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½ï¿½Ú´ï¿½  
 }  
 
 

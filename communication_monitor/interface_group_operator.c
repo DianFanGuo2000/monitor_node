@@ -9,49 +9,49 @@ void test_upon_interface_group() {
     int status;  
   
     for (i = 0; i < cnt; i++) {  
-        while (1) {  // Ê¹ÓÃÎÞÏÞÑ­»·À´È·±£ÔÚÒì³£ÍË³öÊ±ÖØÐÂ´´½¨×Ó½ø³Ì  
+        while (1) {  // Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½ï¿½ï¿½ï¿½ì³£ï¿½Ë³ï¿½Ê±ï¿½ï¿½ï¿½Â´ï¿½ï¿½ï¿½ï¿½Ó½ï¿½ï¿½ï¿½  
             pid = fork();  
   
             if (pid == 0) {  
-                // ×Ó½ø³Ì  
+                // ï¿½Ó½ï¿½ï¿½ï¿½  
                 char *res;
 				res = test_upon_one_interface_threaded(get_interface_name(i), "hello, are you here?", MAX_WAITING_TIME_IN_ONE_SENDING_TIME,MAX_WAITING_TIME_IN_ALL, PAKCAGES_NUM_ONE_TIME, "yes, i am here!");  
 				update_communication_info_array(get_interface_name(i),time(NULL),res);
 				printf("the interface \"%s\" got an error ratio value with %s\n",get_interface_name(i),res); 
 				free(res);  
-                exit(0); // ×Ó½ø³ÌÍê³ÉºóÍË³ö  
+                exit(0); // ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½Éºï¿½ï¿½Ë³ï¿½  
             } else if (pid < 0) {  
-                // fork Ê§°Ü  
+                // fork Ê§ï¿½ï¿½  
                 perror("fork failed");  
-                sleep(1);  // ¶ÌÔÝµÈ´ýºóÖØÊÔ  
-                continue;  // »Øµ½Ñ­»·¿ªÊ¼£¬ÖØÐÂ³¢ÊÔfork  
+                sleep(1);  // ï¿½ï¿½ï¿½ÝµÈ´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  
+                continue;  // ï¿½Øµï¿½Ñ­ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½Â³ï¿½ï¿½ï¿½fork  
             }  
   
-            // ¸¸½ø³Ì¼ÌÐø£¬»òÕßÔÚÕâÀïµÈ´ý×Ó½ø³Ì  
+            // ï¿½ï¿½ï¿½ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È´ï¿½ï¿½Ó½ï¿½ï¿½ï¿½  
             pid_t wpid = waitpid(pid, &status, 0);  
             if (wpid == -1) {  
                 perror("waitpid failed");  
-                continue;  // Ìø¹ýµ±Ç°Ñ­»·£¬²»ÖØÐÂfork  
+                continue;  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½fork  
             }  
   
             if (WIFEXITED(status)) {  
                 if (WEXITSTATUS(status) != 0) {  
-                    // ×Ó½ø³ÌÒì³£ÍË³ö  
+                    // ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ì³£ï¿½Ë³ï¿½  
                     printf("Child %d exited abnormally with status %d, restarting...\n", pid, WEXITSTATUS(status));  
-                    continue;  // »Øµ½Ñ­»·¿ªÊ¼£¬ÖØÐÂfork  
+                    continue;  // ï¿½Øµï¿½Ñ­ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½fork  
                 }  
             } else if (WIFSIGNALED(status)) {  
-                // ×Ó½ø³Ì±»ÐÅºÅÉ±ËÀ  
+                // ï¿½Ó½ï¿½ï¿½Ì±ï¿½ï¿½Åºï¿½É±ï¿½ï¿½  
                 printf("Child %d killed by signal %d, restarting...\n", pid, WTERMSIG(status));  
-                continue;  // »Øµ½Ñ­»·¿ªÊ¼£¬ÖØÐÂfork  
+                continue;  // ï¿½Øµï¿½Ñ­ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½fork  
             }  
   
-            // Èç¹û×Ó½ø³ÌÕý³£ÍË³ö£¬ÔòÌø³öÑ­»·  
+            // ï¿½ï¿½ï¿½ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½  
             break;  
         }  
     }  
   
-    // ËùÓÐ×Ó½ø³Ì£¨»òËüÃÇµÄÖØÆô³¢ÊÔ£©¶¼ÒÑÍê³É  
+    // ï¿½ï¿½ï¿½ï¿½ï¿½Ó½ï¿½ï¿½Ì£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Çµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  
     while (wait(NULL) > 0);  
 }  
 
@@ -65,45 +65,45 @@ void listen_upon_interface_group() {
     int status;  
   
     for (i = 0; i < cnt; i++) {  
-        while (1) {  // Ê¹ÓÃÎÞÏÞÑ­»·À´È·±£ÔÚÒì³£ÍË³öÊ±ÖØÐÂ´´½¨×Ó½ø³Ì  
+        while (1) {  // Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½ï¿½ï¿½ï¿½ì³£ï¿½Ë³ï¿½Ê±ï¿½ï¿½ï¿½Â´ï¿½ï¿½ï¿½ï¿½Ó½ï¿½ï¿½ï¿½  
             pid = fork();  
   
             if (pid == 0) {  
-                // ×Ó½ø³Ì  
+                // ï¿½Ó½ï¿½ï¿½ï¿½  
                 listen_upon_one_interface(get_interface_name(i));  
-                exit(0); // ×Ó½ø³ÌÍê³ÉºóÍË³ö  
+                exit(0); // ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½Éºï¿½ï¿½Ë³ï¿½  
             } else if (pid < 0) {  
-                // fork Ê§°Ü  
+                // fork Ê§ï¿½ï¿½  
                 perror("fork failed");  
-                sleep(1);  // ¶ÌÔÝµÈ´ýºóÖØÊÔ  
-                continue;  // »Øµ½Ñ­»·¿ªÊ¼£¬ÖØÐÂ³¢ÊÔfork  
+                sleep(1);  // ï¿½ï¿½ï¿½ÝµÈ´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  
+                continue;  // ï¿½Øµï¿½Ñ­ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½Â³ï¿½ï¿½ï¿½fork  
             }  
   
-            // ¸¸½ø³Ì¼ÌÐø£¬»òÕßÔÚÕâÀïµÈ´ý×Ó½ø³Ì  
+            // ï¿½ï¿½ï¿½ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È´ï¿½ï¿½Ó½ï¿½ï¿½ï¿½  
             pid_t wpid = waitpid(pid, &status, 0);  
             if (wpid == -1) {  
                 perror("waitpid failed");  
-                continue;  // Ìø¹ýµ±Ç°Ñ­»·£¬²»ÖØÐÂfork  
+                continue;  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½fork  
             }  
   
             if (WIFEXITED(status)) {  
                 if (WEXITSTATUS(status) != 0) {  
-                    // ×Ó½ø³ÌÒì³£ÍË³ö  
+                    // ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ì³£ï¿½Ë³ï¿½  
                     printf("Child %d exited abnormally with status %d, restarting...\n", pid, WEXITSTATUS(status));  
-                    continue;  // »Øµ½Ñ­»·¿ªÊ¼£¬ÖØÐÂfork  
+                    continue;  // ï¿½Øµï¿½Ñ­ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½fork  
                 }  
             } else if (WIFSIGNALED(status)) {  
-                // ×Ó½ø³Ì±»ÐÅºÅÉ±ËÀ  
+                // ï¿½Ó½ï¿½ï¿½Ì±ï¿½ï¿½Åºï¿½É±ï¿½ï¿½  
                 printf("Child %d killed by signal %d, restarting...\n", pid, WTERMSIG(status));  
-                continue;  // »Øµ½Ñ­»·¿ªÊ¼£¬ÖØÐÂfork  
+                continue;  // ï¿½Øµï¿½Ñ­ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½fork  
             }  
   
-            // Èç¹û×Ó½ø³ÌÕý³£ÍË³ö£¬ÔòÌø³öÑ­»·  
+            // ï¿½ï¿½ï¿½ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½  
             break;  
         }  
     }  
   
-    // ËùÓÐ×Ó½ø³Ì£¨»òËüÃÇµÄÖØÆô³¢ÊÔ£©¶¼ÒÑÍê³É  
+    // ï¿½ï¿½ï¿½ï¿½ï¿½Ó½ï¿½ï¿½Ì£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Çµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  
     while (wait(NULL) > 0);  
 }  
 
@@ -112,7 +112,9 @@ int sync_communication_info(const char* center_interface_name)
 {
 	if(is_this_interface_in_current_node(center_interface_name))
 	{
-	}else
+        return _SUCCESS;
+	}
+    else
 	{
 		// non_center_node reponsible for sending communication info to certer_node
 		char* the_interface_linked_with_center_interface = get_interface_name_by_linked_interface_name(center_interface_name);
@@ -120,7 +122,8 @@ int sync_communication_info(const char* center_interface_name)
 		{
 			printf("sync failed because of missing the the interface linked with center interface!\n");
 			return _ERROR;
-		}else
+		}
+        else
 		{
 			//printf("%s\n",the_interface_linked_with_center_interface);
 			char* communication_info_array_json_str = parse_communication_info_array_to_json();
@@ -132,6 +135,7 @@ int sync_communication_info(const char* center_interface_name)
 				return _ERROR;
 			}
 			free(communication_info_array_json_str);
+            return _ERROR;
 		}	
 	}	
 }
@@ -140,19 +144,19 @@ int sync_communication_info(const char* center_interface_name)
 #if 1
 int main(int argc, char *argv[]) {
     if (argc != 4) {  
-        fprintf(stderr, "Usage: %s <config_file> <mode> [<center_node_name>( when test mode)¡¢<res_file_name>( when listen mode)]\n", argv[0]);  
+        fprintf(stderr, "Usage: %s <config_file> <mode> [<center_node_name>( when test mode)ï¿½ï¿½<res_file_name>( when listen mode)]\n", argv[0]);  
         fprintf(stderr, "Mode should be 'test' or 'listen'.\n");  
-        return 1; // ±íÊ¾³ÌÐòÒòÎª´íÎóµÄ²ÎÊý¶øÍË³ö  
+        return 1; // ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½Ä²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë³ï¿½  
     }  
 	
   
     const char* config_file = argv[1];  
     const char* mode = argv[2];
-	char msg[MAX_MSG_LEN];
+	//char msg[MAX_MSG_LEN];
   
     if (strcmp(mode, "test") == 0) {  
         start_and_load_info(config_file); 
-		// ÏÂÃæ¿ªÊ¼Ñ­»·²âÊÔ¸÷¸öÅäÖÃºÃµÄÎïÀíÍ¨ÐÅ½Ó¿Ú
+		// ï¿½ï¿½ï¿½æ¿ªÊ¼Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½Ô¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÃºÃµï¿½ï¿½ï¿½ï¿½ï¿½Í¨ï¿½Å½Ó¿ï¿½
 		while(1)
 		{
 			test_upon_interface_group();
@@ -164,13 +168,13 @@ int main(int argc, char *argv[]) {
 		while(1){
 			listen_upon_interface_group(); 
 		}
-		// ÅãÊÔ²»ÐèÒªÍ¬²½²âÊÔ½á¹û
+		// ï¿½ï¿½ï¿½Ô²ï¿½ï¿½ï¿½ÒªÍ¬ï¿½ï¿½ï¿½ï¿½ï¿½Ô½ï¿½ï¿½
     } else {  
         fprintf(stderr, "Invalid mode '%s'. Valid modes are 'test' 'listen'.\n", mode);  
-        return 1; // ±íÊ¾³ÌÐòÒòÎªÎÞÐ§µÄÄ£Ê½¶øÍË³ö  
+        return 1; // ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Ð§ï¿½ï¿½Ä£Ê½ï¿½ï¿½ï¿½Ë³ï¿½  
     }
 		
-    return 0; // ±íÊ¾³ÌÐòÕý³£ÍË³ö  
+    return 0; // ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë³ï¿½  
 }
 
 #endif
@@ -181,7 +185,7 @@ int main(int argc, char *argv[]) {
 int main(int argc, char *argv[]) {  
    	start_and_load_info("configure1.json");
 	printAllInfo();
-    return 0; // ±íÊ¾³ÌÐòÕý³£ÍË³ö  
+    return 0; // ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë³ï¿½  
 }
 
 #endif

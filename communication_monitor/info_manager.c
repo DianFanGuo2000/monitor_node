@@ -1,7 +1,4 @@
-
-
 #include "info_manager.h"
-
 
 int is_this_interface_in_current_node(const char* interface_name)
 {
@@ -13,7 +10,7 @@ int is_this_interface_in_current_node(const char* interface_name)
     return 0;
 }
 
-char* get_interface_name_by_linked_interface_name(char* linked_interface_name)
+char* get_interface_name_by_linked_interface_name(const char* linked_interface_name)
 {
 	for (size_t i = 0; i < interface_cnt; i++) {
         if (strcmp(interface_info_array[i].linked_interface_name, linked_interface_name) == 0) {
@@ -71,7 +68,7 @@ int update_communication_info_array(char* interface_name,time_t updated_time,cha
 
   
 // Function to update the communication_info_array from a JSON string  
-int update_communication_info_array_from_json(char* communication_info_array_json_str) {
+int update_communication_info_array_from_json(const char* communication_info_array_json_str) {
     cJSON *json, *communication_info_item;
     json = cJSON_Parse(communication_info_array_json_str);
     if (!json) {
@@ -109,7 +106,7 @@ int update_communication_info_array_from_json(char* communication_info_array_jso
             communication_info_array = realloc(communication_info_array, communication_info_cnt * sizeof(struct communication_info));
             if (!communication_info_array) {
                 printf("Error: Memory allocation failed\n");
-                continue; // »òÕß´¦Àí´íÎó
+                continue; // ï¿½ï¿½ï¿½ß´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             }
             communication_info_array[communication_info_cnt - 1].interface_name = strdup(cJSON_GetObjectItem(communication_info_item, "interface_name")->valuestring);
             communication_info_array[communication_info_cnt - 1].updated_time = (time_t)cJSON_GetObjectItem(communication_info_item, "updated_time")->valueint;
@@ -118,7 +115,7 @@ int update_communication_info_array_from_json(char* communication_info_array_jso
     }
 
     cJSON_Delete(json);
-    // ÇåÀíÍ¨ÐÅÐÅÏ¢Êý×éÖÐÎ´Ê¹ÓÃµÄÌõÄ¿
+    // ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î´Ê¹ï¿½Ãµï¿½ï¿½ï¿½Ä¿
 
 	return  _SUCCESS;
 }
@@ -164,25 +161,25 @@ void write_interface_info_array_to_json(const char *filename, struct interface_i
 
 
 		cJSON *can_info = cJSON_CreateObject();  
-		if (array[i].can_info.can_id != -1) {   // ¼ÙÉè -1 ÊÇÒ»¸öÎÞÐ§Öµ£¬ÓÃÓÚ¼ì²é  
+		if (array[i].can_info.can_id != -1) {   // ï¿½ï¿½ï¿½ï¿½ -1 ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ð§Öµï¿½ï¿½ï¿½ï¿½ï¿½Ú¼ï¿½ï¿½  
 		    cJSON_AddNumberToObject(can_info, "can_id", array[i].can_info.can_id);  
 		}
 		cJSON_AddItemToObject(interface, "can_info", can_info);
 
 		cJSON *linked_can_info = cJSON_CreateObject();  
-		if (array[i].linked_can_info.can_id != -1) {   // ¼ÙÉè -1 ÊÇÒ»¸öÎÞÐ§Öµ£¬ÓÃÓÚ¼ì²é  
+		if (array[i].linked_can_info.can_id != -1) {   // ï¿½ï¿½ï¿½ï¿½ -1 ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ð§Öµï¿½ï¿½ï¿½ï¿½ï¿½Ú¼ï¿½ï¿½  
 		    cJSON_AddNumberToObject(linked_can_info, "can_id", array[i].linked_can_info.can_id);  
 		}
 		cJSON_AddItemToObject(interface, "linked_can_info", linked_can_info);
 	
 		cJSON *rs485_info = cJSON_CreateObject();  
-		if (array[i].rs485_info.baud_rate != -1) { // ¼ÙÉè -1 ÊÇÒ»¸öÎÞÐ§Öµ£¬ÓÃÓÚ¼ì²é  
+		if (array[i].rs485_info.baud_rate != -1) { // ï¿½ï¿½ï¿½ï¿½ -1 ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ð§Öµï¿½ï¿½ï¿½ï¿½ï¿½Ú¼ï¿½ï¿½  
 		    cJSON_AddNumberToObject(rs485_info, "baud_rate", array[i].rs485_info.baud_rate);  
 		}  
 		cJSON_AddItemToObject(interface, "rs485_info", rs485_info); 
 
 		cJSON *linked_rs485_info = cJSON_CreateObject();  
-		if (array[i].linked_rs485_info.baud_rate != -1) { // ¼ÙÉè -1 ÊÇÒ»¸öÎÞÐ§Öµ£¬ÓÃÓÚ¼ì²é  
+		if (array[i].linked_rs485_info.baud_rate != -1) { // ï¿½ï¿½ï¿½ï¿½ -1 ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ð§Öµï¿½ï¿½ï¿½ï¿½ï¿½Ú¼ï¿½ï¿½  
 		    cJSON_AddNumberToObject(linked_rs485_info, "baud_rate", array[i].linked_rs485_info.baud_rate);  
 		}  
 		cJSON_AddItemToObject(interface, "linked_rs485_info", linked_rs485_info); 
@@ -257,7 +254,7 @@ void read_interface_info_array_from_json(const char *filename, struct interface_
 	FILE *file = fopen(filename, "r");  
     if (file == NULL) {  
         printf("open failed\n");  
-        return 1;  
+        return;  
     }  
     int i = 0;  
     while (i < BUFFER_SIZE - 1 && fscanf(file, "%c", &buffer[i]) == 1) {
@@ -441,11 +438,10 @@ void start_and_load_info(const char *filename)
 	malloc_communication_info_array(size);
 	for (int i = 0; i < size; i++) {
 		communication_info_array[i].interface_name = strdup(interface_info_array[i].interface_name);
-		time_t now = time(NULL); 
+		//time_t now = time(NULL); 
 		communication_info_array[i].updated_time = time(NULL);
 		communication_info_array[i].error_ratio_value = "0";
 	}
-	
 }
 
 void dump_info_and_close(const char *filename)
@@ -454,7 +450,6 @@ void dump_info_and_close(const char *filename)
 	free_interface_info_array();
 	free_communication_info_array();
 }
-
 
 
 int get_interface_cnt()
@@ -548,7 +543,7 @@ void print_interface_info_array(const struct interface_info *array, int size) {
     for (int i = 0; i < size; i++) {  
         printf("Interface %d:\n", i + 1);  
         print_interface_info(&array[i]);  
-        printf("\n"); // Ìí¼Ó¿ÕÐÐÒÔ·Ö¸ô²»Í¬µÄ½Ó¿ÚÐÅÏ¢  
+        printf("\n"); // ï¿½ï¿½ï¿½Ó¿ï¿½ï¿½ï¿½ï¿½Ô·Ö¸ï¿½ï¿½ï¿½Í¬ï¿½Ä½Ó¿ï¿½ï¿½ï¿½Ï¢  
     }  
 }
 
@@ -569,7 +564,7 @@ int main() {
         return 1;  
     }  
   
-    // ³õÊ¼»¯µÚÒ»¸ö½Ó¿Ú  
+    // ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ó¿ï¿½  
     interface_info_array[0].located_node = strdup("Node1");  
     interface_info_array[0].interface_name = strdup("Eth0");  
     interface_info_array[0].interface_type = strdup("Ethernet");  
@@ -581,38 +576,38 @@ int main() {
     interface_info_array[0].rs485_info.baud_rate = 9600;  
     interface_info_array[0].status = strdup("Active");  
   
-    // ³õÊ¼»¯µÚ¶þ¸ö½Ó¿Ú  
+    // ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½Ú¶ï¿½ï¿½ï¿½ï¿½Ó¿ï¿½  
     interface_info_array[1].located_node = strdup("Node2");  
     interface_info_array[1].interface_name = strdup("Can0");	
     interface_info_array[1].interface_type = strdup("CAN");  
-    interface_info_array[1].linked_node = strdup("Node4");  // ¼ÙÉèÁ´½Óµ½Node4  
-    interface_info_array[1].linked_interface_name = strdup("Can1");  // ¼ÙÉèÁ´½Óµ½Can1  
-    interface_info_array[1].linked_interface_type = strdup("CAN");  // Á´½Ó½Ó¿ÚÀàÐÍÒ²ÊÇCAN  
-    interface_info_array[1].eth_info.mac_addr = NULL;  // ¶ÔÓÚCAN½Ó¿Ú£¬mac_addr¿ÉÄÜ²»ÊÊÓÃ£¬Òò´ËÉèÖÃÎªNULL  
-    interface_info_array[1].can_info.can_id = 456;  // ¼ÙÉèCAN IDÎª456  
-    interface_info_array[1].rs485_info.baud_rate = 0;  // ¶ÔÓÚCAN½Ó¿Ú£¬baud_rate¿ÉÄÜ²»ÊÊÓÃ£¬Òò´ËÉèÖÃÎª0  
+    interface_info_array[1].linked_node = strdup("Node4");  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Óµï¿½Node4  
+    interface_info_array[1].linked_interface_name = strdup("Can1");  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Óµï¿½Can1  
+    interface_info_array[1].linked_interface_type = strdup("CAN");  // ï¿½ï¿½ï¿½Ó½Ó¿ï¿½ï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½CAN  
+    interface_info_array[1].eth_info.mac_addr = NULL;  // ï¿½ï¿½ï¿½ï¿½CANï¿½Ó¿Ú£ï¿½mac_addrï¿½ï¿½ï¿½Ü²ï¿½ï¿½ï¿½ï¿½Ã£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÎªNULL  
+    interface_info_array[1].can_info.can_id = 456;  // ï¿½ï¿½ï¿½ï¿½CAN IDÎª456  
+    interface_info_array[1].rs485_info.baud_rate = 0;  // ï¿½ï¿½ï¿½ï¿½CANï¿½Ó¿Ú£ï¿½baud_rateï¿½ï¿½ï¿½Ü²ï¿½ï¿½ï¿½ï¿½Ã£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª0  
     interface_info_array[1].status = strdup("Active");  
 	
-  // ³õÊ¼»¯µÚÈý¸ö½Ó¿Ú  
+  // ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¿ï¿½  
     interface_info_array[2].located_node = strdup("Node3");  
     interface_info_array[2].interface_name = strdup("Rs485");  
     interface_info_array[2].interface_type = strdup("RS485");  
-    interface_info_array[2].linked_node = strdup("Node5");  // ¼ÙÉèÁ´½Óµ½Node5  
-    interface_info_array[2].linked_interface_name = strdup("Rs485_2");  // ¼ÙÉèÁ´½Óµ½ÁíÒ»¸öRS485½Ó¿Ú	
-    interface_info_array[2].linked_interface_type = strdup("RS485");	// Á´½Ó½Ó¿ÚÀàÐÍÒ²ÊÇRS485  
-    interface_info_array[2].eth_info.mac_addr = NULL;  // ¶ÔÓÚRS485½Ó¿Ú£¬mac_addr²»ÊÊÓÃ  
-    interface_info_array[2].can_info.can_id = 0;	// ¶ÔÓÚRS485½Ó¿Ú£¬can_id²»ÊÊÓÃ	
-    interface_info_array[2].rs485_info.baud_rate = 115200;  // ÉèÖÃ²¨ÌØÂÊÎª115200  
-    interface_info_array[2].status = strdup("Inactive");	// ¼ÙÉè¸Ã½Ó¿Úµ±Ç°´¦ÓÚ·Ç»î¶¯×´Ì¬
+    interface_info_array[2].linked_node = strdup("Node5");  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Óµï¿½Node5  
+    interface_info_array[2].linked_interface_name = strdup("Rs485_2");  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½Ò»ï¿½ï¿½RS485ï¿½Ó¿ï¿½	
+    interface_info_array[2].linked_interface_type = strdup("RS485");	// ï¿½ï¿½ï¿½Ó½Ó¿ï¿½ï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½RS485  
+    interface_info_array[2].eth_info.mac_addr = NULL;  // ï¿½ï¿½ï¿½ï¿½RS485ï¿½Ó¿Ú£ï¿½mac_addrï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  
+    interface_info_array[2].can_info.can_id = 0;	// ï¿½ï¿½ï¿½ï¿½RS485ï¿½Ó¿Ú£ï¿½can_idï¿½ï¿½ï¿½ï¿½ï¿½ï¿½	
+    interface_info_array[2].rs485_info.baud_rate = 115200;  // ï¿½ï¿½ï¿½Ã²ï¿½ï¿½ï¿½ï¿½ï¿½Îª115200  
+    interface_info_array[2].status = strdup("Inactive");	// ï¿½ï¿½ï¿½ï¿½Ã½Ó¿Úµï¿½Ç°ï¿½ï¿½ï¿½Ú·Ç»î¶¯×´Ì¬
 
 
 	write_interface_info_array_to_json("test.json",interface_info_array,3);
-	// ÔÚÕâÀï¿ÉÒÔÊ¹ÓÃ interface_info_array ½øÐÐ²âÊÔ»ò½øÒ»²½´¦Àí  
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ interface_info_array ï¿½ï¿½ï¿½Ð²ï¿½ï¿½Ô»ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  
 	read_interface_info_array_from_json("test.json",interface_info_array,&interface_cnt);
 	write_interface_info_array_to_json("test.json",interface_info_array,3);
 
   
-    // ÊÍ·ÅÄÚ´æ£¨²»ÒªÍü¼ÇÊÍ·ÅËùÓÐÍ¨¹ý strdup ·ÖÅäµÄÄÚ´æ£©  
+    // ï¿½Í·ï¿½ï¿½Ú´æ£¨ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ strdup ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´æ£©  
     for (int i = 0; i < interface_cnt; i++) {  
         free(interface_info_array[i].located_node);  
         free(interface_info_array[i].interface_name);  

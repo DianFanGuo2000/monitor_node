@@ -8,9 +8,7 @@
 #include <stdio.h>  
 #include <stdlib.h>  
 #include <string.h>  
-#include <cjson/cJSON.h> /*需要安装cJSON */
-
-
+#include <cjson/cJSON.h> 
 
 struct eth_info {  
     char *mac_addr;  
@@ -67,6 +65,7 @@ void dump_info_and_close(const char *filename);
 void write_interface_info_array_to_json(const char *filename,struct interface_info *array, size_t size);
 void read_interface_info_array_from_json(const char *filename, struct interface_info *array, size_t size);
 
+void write_communication_info_array_to_json(const char* filename);
 
 int get_interface_cnt();
 char* get_interface_name(int i);
@@ -86,14 +85,14 @@ void printAllInfo();
 
 int is_this_interface_in_current_node(const char* interface_name);
 
-char* get_interface_name_by_linked_interface_name(char* linked_interface_name);
+char* get_interface_name_by_linked_interface_name(const char* linked_interface_name);
 
 void malloc_communication_info_array(int size);
 void free_communication_info_array();
 
 char* parse_communication_info_array_to_json();
 
-int update_communication_info_array_from_json(char* communication_info_array_json_str);
+int update_communication_info_array_from_json(const char* communication_info_array_json_str);
 
 
 int update_communication_info_array(char* interface_name,time_t updated_time,char* error_ratio_value);
