@@ -1,9 +1,6 @@
 
 #include "eth_recv_send.h"
 
-
-
-
 /**  
  * Function to receive a packet from a specified network interface_name and process it.  
  * Specifically, it listens for SNMP packets and copies the payload into the provided buffer.  
@@ -14,7 +11,7 @@
  * unsigned char msg[100];
  * receive_packet("eth1", msg);  
  */  
-int receive_packet(const char *interface_name, unsigned char *msg,long max_waiting_time)  
+int receive_packet(const char *interface_name, char *msg, long max_waiting_time)  
 {  
 	printf("source_interface: %s\n",interface_name);
     // Create a raw socket for packet capturing  
@@ -106,47 +103,42 @@ int receive_packet(const char *interface_name, unsigned char *msg,long max_waiti
 }
 
 
-
-
-
 unsigned char srcmac[6];
 unsigned char dstmac[6];
 
-
 int stringToMacAddress(const char* macStr, unsigned char* macAddr) {  
     if (macStr == NULL || macAddr == NULL) {  
-        return -1; // 无效的输入参数  
+        return -1; // Invalid input parameters.
     }  
   
     int i = 0;  
-    char hexByte[3]; // 临时存储两个十六进制字符  
+    char hexByte[3]; // Temporarily storing two hexadecimal characters.
   
-    // 遍历字符串，每次处理两个十六进制字符  
+    // Traversing the string, processing two hexadecimal characters at a time.
     for (int j = 0; i < 6 && macStr[j] != '\0'; j += 3) {  
-        // 跳过':'字符（如果存在）  
+        // Skipping the ':' character if it exists.
         if (macStr[j] == ':')  
             j++;  
   
-        // 复制两个十六进制字符到临时数组  
+        // Copying two hexadecimal characters into a temporary array.
         strncpy(hexByte, macStr + j, 2);  
-        hexByte[2] = '\0'; // 确保字符串以null结尾  
+        hexByte[2] = '\0';
   
-        // 将十六进制字符串转换为整数，并存储在macAddr数组中  
+        // Converting the hexadecimal string to an integer and storing it in the macAddr array.
         char* end;  
         long int hexValue = strtol(hexByte, &end, 16);  
         if (hexValue < 0 || hexValue > 0xFF || end != hexByte + 2) {  
-            // 转换失败或超出范围  
             return -1;  
         }  
         macAddr[i++] = (unsigned char)hexValue;  
     }  
   
-    // 如果未处理足够的字节，则返回错误  
+    // Returning an error if not enough bytes have been processed.
     if (i != 6) {  
         return -1;  
     }  
   
-    return 0; // 转换成功  
+    return 0;
 }
 
 

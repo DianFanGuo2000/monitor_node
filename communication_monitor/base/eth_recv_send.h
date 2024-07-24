@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <net/if.h>
@@ -18,7 +19,7 @@
 
 
 
-int receive_packet(const char *interface_name, unsigned char *msg,long max_waiting_time);
+int receive_packet(const char *interface_name, char *msg,long max_waiting_time);
 int send_packet(const char *interface_name, const char *message, const char *ether_shost, const char *ether_dhost);
 
 
