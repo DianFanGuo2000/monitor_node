@@ -3,89 +3,137 @@
 #include "one_interface_operator.h"
 
 
-char* generate_reply(const char* msg) {  
-	printf("%s\n",msg);
-    if(strcmp(msg, "hello, are you here?") == 0)
-    {
-    	return "yes, i am here!";  
-    }else if(update_communication_info_array_from_json(msg)==_SUCCESS)
-    {
-    	write_communication_info_array_to_json(res_file_name);
-		//printf("sxassa\n");
-    	return "ok";
-    }
-	printf("msg is wrong!\n");
-	return NULL; // 如果以上两种情况都不成立，就认为收到的数据包是无效数据包
-}  
+
 
 void set_res_file_name(char *file_name)
 {
 	res_file_name=file_name;
 }
 
+void set_center_interface_name(char *interface_name)
+{
+	center_interface_name=interface_name;
+}
 
-  
-void listen_upon_one_interface(char *listened_interface) {  
-   	receive_and_reply(listened_interface,  generate_reply, 2);
-   	// 可以添加一些延时或其他条件检查来减少 CPU 使用率  
-    // sleep(1); // 休眠一秒（需要包含 unistd.h）  
-}  
-  
+
+
+int sync_communication_info(const char* center_interface_name)
+{
+	if(is_this_interface_in_current_node(center_interface_name))
+	{
+	}else
+	{
+		// non_center_node reponsible for sending communication info to certer_node
+		char* the_interface_linked_with_center_interface = get_interface_name_by_linked_interface_name(center_interface_name);
+		if(!the_interface_linked_with_center_interface)
+		{
+			printf("sync failed because of missing the the interface linked with center interface!\n");
+			return _ERROR;
+		}else
+		{
+			char* communication_info_array_json_str = parse_communication_info_array_to_json();
+			if(_ERROR == send_message(the_interface_linked_with_center_interface,communication_info_array_json_str))
+			{
+				printf("sync failed because of sending failing!\n");
+				free(communication_info_array_json_str);
+				return _ERROR;
+			}
+			free(communication_info_array_json_str);
+		}	
+	}
+	return _SUCCESS;
+}
+
+
 
 
 int cnt = 0; // 全局计数器，需要线程安全  
 pthread_mutex_t cnt_mutex = PTHREAD_MUTEX_INITIALIZER; // 互斥锁保护 cnt  
+int round = 0;  
+
+
+void deal_with_mnt(const char* listened_interface, const char* msg) {  
+	//printf("%s\n",msg);
+    if(strcmp(msg, "hello, are you here?") == 0)
+    {
+    	time_t current_time = time(NULL);  
+        int current_round = (current_time - TEST_BEIGIN_TIME) / MAX_WAITING_TIME_IN_ONE_ROUND; 
+		if (current_round > round) {  
+            pthread_mutex_lock(&cnt_mutex);
+			
+			//在这个地方把上一轮统计结果传出去，要不直接就保存下来
+			char *result = malloc(RESULT_STRING_SIZE);  
+		    if (result == NULL) {  
+		        // 处理内存分配失败的情况  
+		        return NULL;  
+		    }  
+		    double ratio = 1 - (double)cnt / PAKCAGES_NUM_ONE_TIME;  
+		    snprintf(result, RESULT_STRING_SIZE, "%.2f", ratio); 
+			update_communication_info_array(listened_interface,time(NULL),result);
+			printf("the interface \"%s\" got an error ratio value with %s\n",listened_interface,result); 
+			free(result);	
+
+			sync_communication_info(center_interface_name);
+
+
+            cnt = 1; // 重置计数器  
+            round = current_round; 
+            pthread_mutex_unlock(&cnt_mutex);  
+        }else{
+			pthread_mutex_lock(&cnt_mutex); 
+	        cnt++;  
+			pthread_mutex_unlock(&cnt_mutex);   
+		}
+    }else if(update_communication_info_array_from_json(msg)==_SUCCESS)
+    {
+    	write_communication_info_array_to_json(res_file_name);
+    }
+	printf("msg is wrong!\n");
+}  
+
+
+
+
   
+void listen_upon_one_interface_in_one_time(char *listened_interface) {   
+        receive_message(listened_interface, deal_with_mnt, MAX_WAITING_TIME_IN_ONE_ROUND);  
+}  
+  
+
+
+
 void *thread_function(void *args) {  
     ThreadArgs *ta = (ThreadArgs *)args;  
-	//pthread_mutex_lock(&cnt_mutex);
-	int flag = send_until_being_replied(ta->test_interface, ta->message,ta->max_waiting_time_in_one_sending_time,ta->max_waiting_time_in_all, 1, ta->expected_reply_str);
-	//pthread_mutex_unlock(&cnt_mutex);  
-    if (_ERROR != flag) // if a reply is got, the send in this time is regarded as a successful send test  
-    {  
-    	pthread_mutex_lock(&cnt_mutex); 
-        cnt++;  
-		pthread_mutex_unlock(&cnt_mutex);  
-    }  
+	send_message(ta->test_interface, ta->message);
     return NULL;  
 }  
   
-char *test_upon_one_interface_threaded(const char *test_interface,  
-                                      const char *message, 
-                                      long max_waiting_time_in_one_sending_time, 
-                             		  long max_waiting_time_in_all,
-                                      int packages_num,  
-                                      const char *expected_reply_str) {  
-    pthread_t threads[packages_num];  
-    ThreadArgs args[packages_num];  
-	cnt = 0;
-	struct timespec delay;
-	delay.tv_sec = 0;  // 秒      
-	delay.tv_nsec = 200000000;  // 100毫秒 = 100,000,000纳秒  
-  
-    for (int i = 0; i < packages_num; i++) {  
-        args[i].test_interface = test_interface;  
-        args[i].message = message;  
-		args[i].max_waiting_time_in_one_sending_time = max_waiting_time_in_one_sending_time;  
-        args[i].max_waiting_time_in_all = max_waiting_time_in_all;  
-        args[i].expected_reply_str = expected_reply_str;  
-		nanosleep(&delay, NULL);
-        pthread_create(&threads[i], NULL, thread_function, &args[i]);  
-    }  
-  
-    for (int i = 0; i < packages_num; i++) {  
-        pthread_join(threads[i], NULL);  
-    }  
-  
-    char *result = malloc(RESULT_STRING_SIZE);  
-    if (result == NULL) {  
-        // 处理内存分配失败的情况  
-        return NULL;  
-    }  
-    double ratio = 1 - (double)cnt / packages_num;  
-    snprintf(result, RESULT_STRING_SIZE, "%.2f", ratio);  
-  
-    return result; // 调用者需要负责释放内存  
+void test_upon_one_interface_in_one_time(const char *test_interface,const char *message,int packages_num)
+{  
+
+	time_t current_time = time(NULL);  
+	//printf("%d\n",current_time);
+	int current_round = (current_time - TEST_BEIGIN_TIME) / MAX_WAITING_TIME_IN_ONE_ROUND; 
+	if (current_round > round) { 
+		printf("current round is %d\n",current_round);
+		pthread_t threads[packages_num];  
+	    ThreadArgs args[packages_num];  
+		struct timespec delay;
+		delay.tv_sec = 0;  // 秒      
+		delay.tv_nsec = SENDING_TIME_SPEC;  // 100毫秒 = 100,000,000纳秒  
+	  
+	    for (int i = 0; i < packages_num; i++) {  
+	        args[i].test_interface = test_interface;  
+	        args[i].message = message;  
+			nanosleep(&delay, NULL);
+	        pthread_create(&threads[i], NULL, thread_function, &args[i]);  
+	    }  
+	  
+	    for (int i = 0; i < packages_num; i++) {  
+	        pthread_join(threads[i], NULL);  
+	    }  
+		round=current_round;
+	}
 }  
 
 

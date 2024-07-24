@@ -4,31 +4,25 @@
 #include <string.h> // For strcmp  
 #include <time.h> // For time functions  
 
+#include "./base/eth_recv_send.h"
+#include "./base/info_manager.h"
 #include "configures.h"
-#include "base/eth_recv_send.h"
-#include "info_manager.h"
-
-
-
-#define _ERROR -1  
-#define _SAME 1  
-#define _NOT_SAME 2  
-  
 
 
 
 
-typedef char* (*ReplyGenerator)(const char* msg);  
-int receive_and_reply(const char *source_interface,      
-                      ReplyGenerator generate_reply,
-                      long max_waiting_time);
+typedef void (*Dealer)(const char* listened_interface, const char* msg);  
 
-int send_until_being_replied(const char *source_interface,     
-                             const char *message,   
-                             long max_waiting_time_in_one_sending_time, 
-                             long max_waiting_time_in_all,     
-                             int max_send_times,     
-                             const char* expected_reply_str) ;
+typedef struct {  
+    Dealer deal_func;  
+    char msg[MAX_MSG_LEN];
+	char* listened_interface;
+} DealData; 
+
+
+int receive_message(const char *source_interface,Dealer deal,long max_waiting_time);
+
+int send_message(const char *source_interface,const char *message);
 
 
 

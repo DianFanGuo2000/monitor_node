@@ -14,11 +14,8 @@ void test_upon_interface_group() {
   
             if (pid == 0) {  
                 // 子进程  
-                char *res;
-				res = test_upon_one_interface_threaded(get_interface_name(i), "hello, are you here?", MAX_WAITING_TIME_IN_ONE_SENDING_TIME,MAX_WAITING_TIME_IN_ALL, PAKCAGES_NUM_ONE_TIME, "yes, i am here!");  
-				update_communication_info_array(get_interface_name(i),time(NULL),res);
-				printf("the interface \"%s\" got an error ratio value with %s\n",get_interface_name(i),res); 
-				free(res);  
+				while(1)
+					test_upon_one_interface_in_one_time(get_interface_name(i), "hello, are you here?", PAKCAGES_NUM_ONE_TIME);  
                 exit(0); // 子进程完成后退出  
             } else if (pid < 0) {  
                 // fork 失败  
@@ -70,7 +67,8 @@ void listen_upon_interface_group() {
   
             if (pid == 0) {  
                 // 子进程  
-                listen_upon_one_interface(get_interface_name(i));  
+                while(1)
+                	listen_upon_one_interface_in_one_time(get_interface_name(i));  
                 exit(0); // 子进程完成后退出  
             } else if (pid < 0) {  
                 // fork 失败  
@@ -108,39 +106,13 @@ void listen_upon_interface_group() {
 }  
 
 
-int sync_communication_info(const char* center_interface_name)
-{
-	if(is_this_interface_in_current_node(center_interface_name))
-	{
-	}else
-	{
-		// non_center_node reponsible for sending communication info to certer_node
-		char* the_interface_linked_with_center_interface = get_interface_name_by_linked_interface_name(center_interface_name);
-		if(!the_interface_linked_with_center_interface)
-		{
-			printf("sync failed because of missing the the interface linked with center interface!\n");
-			return _ERROR;
-		}else
-		{
-			//printf("%s\n",the_interface_linked_with_center_interface);
-			char* communication_info_array_json_str = parse_communication_info_array_to_json();
-			//printf("%s\n",communication_info_array_json_str);
-			if(_ERROR == send_until_being_replied(the_interface_linked_with_center_interface,communication_info_array_json_str,SYNC_TIME_IN_ONE_TIME,SYNC_TIME_IN_ALL,5,"ok"))
-			{
-				printf("sync failed because of sending failing!\n");
-				free(communication_info_array_json_str);
-				return _ERROR;
-			}
-			free(communication_info_array_json_str);
-		}	
-	}	
-}
 
 
-#if 1
+
+#if 0
 int main(int argc, char *argv[]) {
-    if (argc != 4) {  
-        fprintf(stderr, "Usage: %s <config_file> <mode> [<center_node_name>( when test mode)、<res_file_name>( when listen mode)]\n", argv[0]);  
+    if (argc != 6 && argc != 4) {  
+        fprintf(stderr, "Usage: %s <config_file> <mode> <test_begin_time> [ <center_interface_name> <res_file_name> (when listen mode)]\n", argv[0]);  
         fprintf(stderr, "Mode should be 'test' or 'listen'.\n");  
         return 1; // 表示程序因为错误的参数而退出  
     }  
@@ -148,22 +120,18 @@ int main(int argc, char *argv[]) {
   
     const char* config_file = argv[1];  
     const char* mode = argv[2];
-	char msg[MAX_MSG_LEN];
+	const char* test_begin_time = argv[3];
+
   
     if (strcmp(mode, "test") == 0) {  
         start_and_load_info(config_file); 
 		// 下面开始循环测试各个配置好的物理通信接口
-		while(1)
-		{
-			test_upon_interface_group();
-			sync_communication_info(argv[3]);
-		}
+		test_upon_interface_group();
     } else if (strcmp(mode, "listen") == 0) {
         start_and_load_info(config_file);
-		set_res_file_name(argv[3]);
-		while(1){
-			listen_upon_interface_group(); 
-		}
+		set_center_interface_name(argv[4]);
+		set_res_file_name(argv[5]);
+		listen_upon_interface_group();
 		// 陪试不需要同步测试结果
     } else {  
         fprintf(stderr, "Invalid mode '%s'. Valid modes are 'test' 'listen'.\n", mode);  
@@ -177,10 +145,11 @@ int main(int argc, char *argv[]) {
 
 
 
-#if 0
+
+#if 1
 int main(int argc, char *argv[]) {  
-   	start_and_load_info("configure1.json");
-	printAllInfo();
+   	printf("%d\n",string_to_time_t("Wed Jul 24 16:00:00 2024"));
+	printf("%d\n",time(NULL));
     return 0; // 表示程序正常退出  
 }
 

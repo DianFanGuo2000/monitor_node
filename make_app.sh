@@ -1,19 +1,20 @@
-# йвохё╛╫ЬхКцШн╙ 'communication_monitor' ╣дд©б╪ё╗в╒рБпчуЩакф╢п╢ё╘  
+# О©╫О©╫О©╫хёО©╫О©╫О©╫О©╫О©╫О©╫О©╫н╙ 'communication_monitor' О©╫О©╫д©б╪О©╫О©╫в╒О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫ф╢п╢О©╫О©╫  
 echo "Entering 'communication_monitor' directory..."  
 cd communication_monitor  
 
-# тз╦цд©б╪обж╢пп make цЭаНё╛уБм╗Ёё╩А╠ЮрКт╢╢ЗбК╡╒иЗЁи©иж╢ппнд╪Чё╗╪ыиХ Makefile ря╬╜еДжц╨цё╘  
+# О©╫з╦О©╫д©б╪О©╫О©╫ж╢О©╫О©╫ make О©╫О©╫О©╫Нё╛О©╫О©╫м╗О©╫О©╫О©╫О©╫О©╫О©╫О©╫т╢О©╫О©╫О©╫К╡╒О©╫О©╫О©╫и©О©╫ж╢О©╫О©╫О©╫д╪О©╫О©╫О©╫О©╫О©╫О©╫О©╫ Makefile О©╫я╬О©╫О©╫О©╫О©╫ц╨цёО©╫  
 echo "Executing 'make' command to compile sources..."  
 make all
   
-# ╫╚иЗЁи╣д©иж╢ппнд╪Чё╗╪ыиХн╙ myappё╘╦╢жф╣╫иор╩╪╤д©б╪  
+# О©╫О©╫О©╫О©╫О©╫и╣д©О©╫ж╢О©╫О©╫О©╫д╪О©╫О©╫О©╫О©╫О©╫О©╫О©╫н╙ myappО©╫О©╫О©╫О©╫О©╫ф╣О©╫О©╫О©╫р╩О©╫О©╫д©б╪  
 echo "Copying 'myapp' executable to the parent directory..."  
 cp myapp ../myapp  
   
-# ╫свеё╛тз╦цд©б╪обж╢пп make clean цЭаНё╛ртгЕюМ╠ЮрК╧ЩЁлжпиЗЁи╣днд╪Ч  
+# О©╫О©╫О©╫еёО©╫О©╫з╦О©╫д©б╪О©╫О©╫ж╢О©╫О©╫ make clean О©╫О©╫О©╫Нё╛О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫и╣О©╫О©╫д╪О©╫  
 echo "Executing 'make clean' command to clean up build artifacts..."  
 make clean  
   
-# вН╨Сё╛мкЁЖ╣╠г╟д©б╪ё╛╥╣╩ь╣╫иор╩╪╤д©б╪  
+# О©╫О©╫О©╫О©╫кЁО©╫О©╫О©╫г╟д©б╪О©╫О©╫О©╫О©╫О©╫ь╣О©╫О©╫О©╫р╩О©╫О©╫д©б╪  
 echo "Exiting 'communication_monitor' directory and returning to the parent directory..."  
 cd ..
+

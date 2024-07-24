@@ -1,10 +1,7 @@
-#ifndef INFO_MANAGER_MANAGER_H  
-#define INFO_MANAGER_MANAGER_H  
+#ifndef TEST_RESULT_MANAGER_H  
+#define TEST_RESULT_MANAGER_H  
 
-
-#include "./configures.h"
-
-
+#include "../configures.h"
 #include <time.h> // For time functions 
 
 
@@ -12,8 +9,6 @@
 #include <stdlib.h>  
 #include <string.h>  
 #include <cjson/cJSON.h> /*需要安装cJSON */
-
-
 
 
 
@@ -71,8 +66,6 @@ void dump_info_and_close(const char *filename);
 
 void write_interface_info_array_to_json(const char *filename,struct interface_info *array, size_t size);
 void read_interface_info_array_from_json(const char *filename, struct interface_info *array, size_t size);
-
-time_t string_to_time_t(const char* datetime_str);
 
 
 int get_interface_cnt();

@@ -2,36 +2,6 @@
 
 #include "info_manager.h"
 
-/*
-@usage:
-	int main() {  
-	    const char* datetime_str = "Wed Dec 31 16:00:00 1969";  
-	    time_t time_val = string_to_time_t(datetime_str);  
-	    printf("Time in seconds since the Epoch: %ld\n", (long)time_val);  
-	    return 0;  
-	}
-*/
-time_t string_to_time_t(const char* datetime_str) {  
-    struct tm tm = {0};  
-    // 注意：strptime的格式字符串和输入字符串必须匹配  
-    // 这里假设输入字符串格式固定，并且已经处理了星期部分  
-    strptime(datetime_str + 4, "%b %d %H:%M:%S %Y", &tm);  
-    // 注意：strptime可能不支持直接设置tm_isdst，这里假设它不是夏令时  
-    tm.tm_isdst = -1; // 让mktime自动决定夏令时  
-  
-    // 将tm结构转换为time_t  
-    time_t result = mktime(&tm);  
-  
-    // 检查mktime是否成功  
-    if (result == (time_t)-1) {  
-        // mktime失败处理  
-        perror("mktime failed");  
-        exit(EXIT_FAILURE);  
-    }  
-  
-    return result;  
-}  
-
 
 int is_this_interface_in_current_node(const char* interface_name)
 {

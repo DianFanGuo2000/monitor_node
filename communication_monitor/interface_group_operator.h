@@ -8,8 +8,6 @@ void test_upon_interface_group();
 void listen_upon_interface_group();
 
 
-int sync_communication_info(const char* center_interface_name);
-
 
 
 
