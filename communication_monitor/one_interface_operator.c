@@ -58,6 +58,13 @@ void deal_with_mnt(const char* listened_interface, const char* msg) {
     {
     	time_t current_time = time(NULL);  
         int current_round = (current_time - get_test_begin_time()) / MAX_WAITING_TIME_IN_ONE_ROUND;
+		//printf("current_time: %d\n",current_time);
+		//printf("test_begin_time: %d\n",get_test_begin_time());
+		if(round == 0)
+		{
+			round = current_round;
+			return ;
+		}
 		if (current_round > round) { 
 			printf("current_round is %d\n",current_round);
             pthread_mutex_lock(&cnt_mutex);
@@ -85,11 +92,14 @@ void deal_with_mnt(const char* listened_interface, const char* msg) {
 	        cnt++;  
 			pthread_mutex_unlock(&cnt_mutex);   
 		}
+		return;
     }else if(update_communication_info_array_from_json(msg)==_SUCCESS)
     {
     	write_communication_info_array_to_json(res_file_name);
+		return;
     }
 	printf("msg is wrong!\n");
+	printf("msg: %s\n",msg);
 }  
 
 

@@ -21,4 +21,8 @@ set_system_time() {
 # 示例用法  
 # 注意：你可能需要以root用户或使用sudo来运行这个脚本  
 set_system_time "2024-07-24 01:46:53"
+sudo timedatectl set-timezone Asia/Shanghai
+sudo hwclock --systohc
+  
+
 sudo ./myapp configure1.json test
