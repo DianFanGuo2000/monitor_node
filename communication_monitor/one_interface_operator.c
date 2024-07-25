@@ -21,6 +21,7 @@ int sync_communication_info(const char* center_interface_name)
 {
 	if(is_this_interface_in_current_node(center_interface_name))
 	{
+		write_communication_info_array_to_json(res_file_name);
 	}else
 	{
 		// non_center_node reponsible for sending communication info to certer_node

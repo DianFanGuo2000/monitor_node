@@ -1,9 +1,13 @@
 [{
+		"linked_node":	"fpu",
 		"interface_name":	"ens33",
-		"updated_time":	"Tue Jul 23 18:31:15 2024",
-		"error_ratio_value":	"0"
+		"updated_time":	"Thu Jul 25 16:17:55 2024",
+		"tx":	"20",
+		"rx":	"20"
 	}, {
+		"linked_node":	"virtual_machine",
 		"interface_name":	"enp3s0",
-		"updated_time":	"Wed Dec 31 16:00:00 1969",
-		"error_ratio_value":	"0"
+		"updated_time":	"Thu Jul 25 16:17:47 2024",
+		"tx":	"20",
+		"rx":	"20"
 	}]
