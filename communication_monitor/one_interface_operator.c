@@ -52,7 +52,7 @@ pthread_mutex_t cnt_mutex = PTHREAD_MUTEX_INITIALIZER; // »¥³âËø±£»¤ cnt
 int round = 0;  
 
 
-void deal_with_mnt(const char* listened_interface, const char* msg) {  
+void deal_with_mnt(const char* linked_node,const char* listened_interface, const char* msg) {  
 	//printf("%s\n",msg);
     if(strcmp(msg, "hello, are you here?") == 0)
     {
@@ -77,8 +77,8 @@ void deal_with_mnt(const char* listened_interface, const char* msg) {
 		    }  
 		    double ratio = 1 - (double)cnt / PAKCAGES_NUM_ONE_TIME;  
 		    snprintf(result, RESULT_STRING_SIZE, "%.2f", ratio); 
-			update_communication_info_array(listened_interface,time(NULL),result);
-			printf("the interface \"%s\" got an error ratio value with %s\n",listened_interface,result); 
+			update_communication_info_array(linked_node,listened_interface,time(NULL),PAKCAGES_NUM_ONE_TIME,cnt);
+			printf("the interface \"%s\" got an error ratio value with %s ( tx:%d rx:%d)\n",listened_interface,result,PAKCAGES_NUM_ONE_TIME,cnt); 
 			free(result);	
 
 			sync_communication_info(center_interface_name);
@@ -106,8 +106,8 @@ void deal_with_mnt(const char* listened_interface, const char* msg) {
 
 
   
-void listen_upon_one_interface_in_one_time(char *listened_interface) {   
-        receive_message(listened_interface, deal_with_mnt, MAX_WAITING_TIME_IN_ONE_ROUND);  
+void listen_upon_one_interface_in_one_time(char *linked_node, char *listened_interface) {   
+        receive_message(linked_node,listened_interface, deal_with_mnt, MAX_WAITING_TIME_IN_ONE_ROUND);  
 }  
   
 
@@ -127,6 +127,11 @@ void test_upon_one_interface_in_one_time(const char *test_interface,const char *
 	int current_round = (current_time - get_test_begin_time()) / MAX_WAITING_TIME_IN_ONE_ROUND; 
 	//printf("current_time: %d\n",current_time);
 	//printf("test_begin_time: %d\n",get_test_begin_time());
+	if(round == 0)
+	{
+		round = current_round;
+		return ;
+	}
 	if (current_round > round) { 
 		printf("current round is %d\n",current_round);
 		pthread_t threads[packages_num];  

@@ -11,16 +11,18 @@
 
 
 
-typedef void (*Dealer)(const char* listened_interface, const char* msg);  
+typedef void (*Dealer)(const char* located_node,const char* listened_interface, const char* msg);  
 
 typedef struct {  
     Dealer deal_func;  
     char msg[MAX_MSG_LEN];
+	char* linked_node;
 	char* listened_interface;
 } DealData; 
 
 
-int receive_message(const char *source_interface,Dealer deal,long max_waiting_time);
+int receive_message(const char *linked_node,const char *source_interface,Dealer deal,long max_waiting_time);
+
 
 int send_message(const char *source_interface,const char *message);
 

@@ -68,7 +68,7 @@ void listen_upon_interface_group() {
             if (pid == 0) {  
                 // 子进程  
                 while(1)
-                	listen_upon_one_interface_in_one_time(get_interface_name(i));  
+                	listen_upon_one_interface_in_one_time(get_linked_node(i),get_interface_name(i));  
                 exit(0); // 子进程完成后退出  
             } else if (pid < 0) {  
                 // fork 失败  

@@ -52,9 +52,12 @@ struct interface_info {
 
 
 struct communication_info{
+	char *linked_node;
 	char *interface_name;
 	time_t updated_time;
-	char *error_ratio_value;
+	//char *error_ratio_value;
+	unsigned long tx;
+	unsigned long rx;
 };
 
 
@@ -83,6 +86,8 @@ int time_t_to_string(time_t time_val, char* buffer, size_t buffer_size);
 
 
 
+char *get_linked_node(int i);
+
 int get_interface_cnt();
 char* get_interface_name(int i);
 char* get_linked_interface_name(int i);
@@ -97,7 +102,7 @@ void print_interface_info(const struct interface_info *info);
 void print_interface_info_array(const struct interface_info *array, int size);
 void printAllInfo();
 
-
+char *get_located_node(int i);
 
 int is_this_interface_in_current_node(const char* interface_name);
 
@@ -111,7 +116,8 @@ char* parse_communication_info_array_to_json();
 int update_communication_info_array_from_json(char* communication_info_array_json_str);
 
 
-int update_communication_info_array(char* interface_name,time_t updated_time,char* error_ratio_value);
+int update_communication_info_array(char* linked_node,char* interface_name,time_t updated_time,unsigned long tx,unsigned long rx); //,char* error_ratio_value
+void string_to_unsigned_long(const char* str, unsigned long* result);
 
 		
 

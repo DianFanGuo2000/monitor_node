@@ -24,7 +24,8 @@ int sync_communication_info(const char* center_interface_name);
 
 char* generate_eth_reply(const char* msg);
 
-void listen_upon_one_interface_in_one_time(char *listened_interface);
+void listen_upon_one_interface_in_one_time(char *linked_node, char *listened_interface);
+
 
 
 void test_upon_one_interface_in_one_time(const char *test_interface,const char *message,int packages_num);

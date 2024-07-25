@@ -8,11 +8,11 @@
 // 线程函数，用于异步处理消息  
 void* deal_async(void* arg) {  
     DealData* data = (DealData*)arg;  
-    data->deal_func(data->listened_interface,data->msg); // 调用 deal 函数处理消息  
+    data->deal_func(data->linked_node,data->listened_interface,data->msg); // 调用 deal 函数处理消息  
 }  
 
 
-int receive_message(const char *source_interface,Dealer deal,long max_waiting_time)    
+int receive_message(const char *linked_node,const char *source_interface,Dealer deal,long max_waiting_time)    
 {    
 	char *interface_type = get_interface_type(source_interface);
 	time_t begin_time = time(NULL); // Initialize start time  
@@ -22,6 +22,7 @@ int receive_message(const char *source_interface,Dealer deal,long max_waiting_ti
 	    // Declare a buffer for the received message, assuming it might be longer  
 		DealData data;          
 		data.deal_func = deal; // 将 deal 函数指针保存到结构体中
+		data.linked_node = linked_node;
 		data.listened_interface = source_interface;
 		
 	    // Attempt to receive a packet from the source interface  

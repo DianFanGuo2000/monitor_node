@@ -78,11 +78,22 @@ char* parse_communication_info_array_to_json() {
     cJSON *json_array = cJSON_CreateArray();  
     for (int i = 0; i < communication_info_cnt; i++) {  
         cJSON *json_obj = cJSON_CreateObject();  
+		cJSON_AddStringToObject(json_obj, "linked_node", communication_info_array[i].linked_node);  
         cJSON_AddStringToObject(json_obj, "interface_name", communication_info_array[i].interface_name);  
         char time_buffer[80]; // Assuming enough space for ctime(3) format  
         time_t_to_string(communication_info_array[i].updated_time,time_buffer,sizeof(time_buffer));
         cJSON_AddStringToObject(json_obj, "updated_time", time_buffer);  
-        cJSON_AddStringToObject(json_obj, "error_ratio_value", communication_info_array[i].error_ratio_value);  
+
+		// 将 tx 和 rx 转换为字符串并添加到 JSON 对象中  
+		char tx_str[32]; // 假设 tx 的值不会超过 10^9，因此 32 个字符足够  
+		char rx_str[32]; // 同上  
+		snprintf(tx_str, sizeof(tx_str), "%lu", communication_info_array[i].tx);  
+		snprintf(rx_str, sizeof(rx_str), "%lu", communication_info_array[i].rx);  
+			  
+		cJSON_AddStringToObject(json_obj, "tx", tx_str);  
+		cJSON_AddStringToObject(json_obj, "rx", rx_str);  
+
+        //cJSON_AddStringToObject(json_obj, "error_ratio_value", communication_info_array[i].error_ratio_value);  
         cJSON_AddItemToArray(json_array, json_obj);  
     }  
     char *json_string = cJSON_Print(json_array);  
@@ -91,18 +102,29 @@ char* parse_communication_info_array_to_json() {
 }  
 
 
-int update_communication_info_array(char* interface_name,time_t updated_time,char* error_ratio_value)
+int update_communication_info_array(char* linked_node,char* interface_name,time_t updated_time,unsigned long tx,unsigned long rx) //,char* error_ratio_value
 {
 	for (size_t i = 0; i < communication_info_cnt; i++) {
         if (strcmp(communication_info_array[i].interface_name, interface_name) == 0) {
+			communication_info_array[i].linked_node = linked_node;
 			communication_info_array[i].updated_time = updated_time;
-			communication_info_array[i].error_ratio_value = strdup(error_ratio_value);
+			communication_info_array[i].tx = tx;
+			communication_info_array[i].rx = rx;
+			//communication_info_array[i].error_ratio_value = strdup(error_ratio_value);
             return _SUCCESS;
         }
     }
 	return _ERROR;
 
 }
+
+
+void string_to_unsigned_long(const char* str, unsigned long* result) {  
+    *result = strtoul(str, NULL, 10); // 使用标准库函数转换  
+}  
+
+
+
 
   
 // Function to update the communication_info_array from a JSON string  
@@ -132,11 +154,25 @@ int update_communication_info_array_from_json(char* communication_info_array_jso
         int found = 0;
         for (int j = 0; j < communication_info_cnt; j++) {
             if (strcmp(communication_info_array[j].interface_name, cJSON_GetObjectItem(communication_info_item, "interface_name")->valuestring) == 0) {
-                free(communication_info_array[j].error_ratio_value);
+                //free(communication_info_array[j].error_ratio_value);
+                free(communication_info_array[j].linked_node);
+
+				communication_info_array[j].linked_node  = strdup(cJSON_GetObjectItem(communication_info_item, "linked_node")->valuestring);
+				
 				time_t updated_t;
 				string_to_time_t(cJSON_GetObjectItem(communication_info_item, "updated_time")->valuestring, &updated_t);
                 communication_info_array[j].updated_time = updated_t;
-                communication_info_array[j].error_ratio_value = strdup(cJSON_GetObjectItem(communication_info_item, "error_ratio_value")->valuestring);
+
+				unsigned long tx_;
+				unsigned long rx_;
+				// 转换并存储tx和rx  
+				string_to_unsigned_long(cJSON_GetObjectItem(communication_info_item, "tx")->valuestring, &tx_);	
+				communication_info_array[j].tx = tx_;  
+				string_to_unsigned_long(cJSON_GetObjectItem(communication_info_item, "rx")->valuestring, &rx_);	
+				communication_info_array[j].rx = rx_;  
+
+				
+                //communication_info_array[j].error_ratio_value = strdup(cJSON_GetObjectItem(communication_info_item, "error_ratio_value")->valuestring);
                 found = 1;
                 break;
             }
@@ -148,11 +184,22 @@ int update_communication_info_array_from_json(char* communication_info_array_jso
                 printf("Error: Memory allocation failed\n");
                 continue; // 或者处理错误
             }
+			communication_info_array[communication_info_cnt - 1].linked_node = strdup(cJSON_GetObjectItem(communication_info_item, "linked_node")->valuestring);
             communication_info_array[communication_info_cnt - 1].interface_name = strdup(cJSON_GetObjectItem(communication_info_item, "interface_name")->valuestring);
             time_t updated_t;
 			string_to_time_t(cJSON_GetObjectItem(communication_info_item, "updated_time")->valuestring, &updated_t);
             communication_info_array[communication_info_cnt - 1].updated_time = updated_t;
-            communication_info_array[communication_info_cnt - 1].error_ratio_value = strdup(cJSON_GetObjectItem(communication_info_item, "error_ratio_value")->valuestring);
+
+			unsigned long tx_;
+			unsigned long rx_;
+			// 转换并存储tx和rx  
+			string_to_unsigned_long(cJSON_GetObjectItem(communication_info_item, "tx")->valuestring, &tx_); 
+			communication_info_array[communication_info_cnt - 1].tx = tx_;  
+			string_to_unsigned_long(cJSON_GetObjectItem(communication_info_item, "rx")->valuestring, &rx_); 
+			communication_info_array[communication_info_cnt - 1].rx = rx_;  
+
+
+			//communication_info_array[communication_info_cnt - 1].error_ratio_value = strdup(cJSON_GetObjectItem(communication_info_item, "error_ratio_value")->valuestring);
         }
     }
 
@@ -460,9 +507,10 @@ void free_interface_info_array()
 void free_communication_info_array()
 {
 	for (int i = 0; i < communication_info_cnt; i++) {
+		free(communication_info_array[i].linked_node);
 		free(communication_info_array[i].interface_name);
 		free(communication_info_array[i].updated_time);
-		free(communication_info_array[i].error_ratio_value);
+		//free(communication_info_array[i].error_ratio_value);
 	}
 	free(communication_info_array);
 }
@@ -490,10 +538,13 @@ void start_and_load_info(const char *filename)
 
 	malloc_communication_info_array(size);
 	for (int i = 0; i < size; i++) {
+		communication_info_array[i].linked_node = strdup(interface_info_array[i].linked_node);
 		communication_info_array[i].interface_name = strdup(interface_info_array[i].interface_name);
 		time_t now = time(NULL); 
 		communication_info_array[i].updated_time = time(NULL);
-		communication_info_array[i].error_ratio_value = "0";
+		communication_info_array[i].tx = PAKCAGES_NUM_ONE_TIME;
+		communication_info_array[i].rx = 0;
+		//communication_info_array[i].error_ratio_value = "0";
 	}
 
 	
@@ -513,6 +564,20 @@ int get_interface_cnt()
 {
 	return interface_cnt;
 }
+
+
+char *get_located_node(int i)
+{
+	return interface_info_array[i].located_node;
+}
+
+char *get_linked_node(int i)
+{
+	return interface_info_array[i].linked_node;
+}
+
+
+
 char* get_interface_name(int i)
 {
 	return interface_info_array[i].interface_name;
