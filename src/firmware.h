@@ -20,11 +20,19 @@ typedef struct {
 	char* listened_interface;
 } DealData; 
 
+ 
+
+
 
 int receive_message(const char *linked_node,const char *source_interface,Dealer deal,long max_waiting_time);
 
 
 int send_message(const char *source_interface,const char *message);
+
+
+void set_status(const char *source_interface,const char *status);
+
+void sync_status(const char *source_interface);
 
 
 

@@ -1,0 +1,160 @@
+
+LIBVOS    =libvos.a 
+LIBINTERFACE  = libinter.a
+LIBUDP   = libudp.a
+LIBDACP   = libdacp.a
+LIBBASE   =  libbase.a
+LIBTRDP   =  libtrdpsrc.a
+
+
+McmMain = mcm
+McmDebug = debug
+
+
+CROSS_COMPILE=/home/cjy/work/buildroot-2019.02.1/output/host/usr/bin/aarch64-buildroot-linux-gnu-
+
+
+CC = $(CROSS_COMPILE)gcc
+OBJCOPY = $(CROSS_COMPILE)objcopy
+OBJDUMP = $(CROSS_COMPILE)objdump
+NM = $(CROSS_COMPILE)nm
+CPPFLAGS =
+
+LDFLAGS =
+CFLAGS = -Wall -ggdb3 -lrt -lpthread 
+
+CPPFLAGS += -I$(abspath ./DACP)
+CPPFLAGS += -I$(abspath ./DBG)
+CPPFLAGS += -I$(abspath ./FILE_TRANSFER)
+CPPFLAGS += -I$(abspath ./UDP)
+CPPFLAGS += -I$(abspath ./VOS)
+CPPFLAGS += -I$(abspath ./INTERFACE)
+CPPFLAGS += -I$(abspath ./BASE)
+CPPFLAGS += -I$(abspath ./TRDP)
+CPPFLAGS += -I$(abspath ./MCM)
+
+#CPPFLAGS += -DOS_NO_C_LIB_DEFINES
+
+COMPILE = $(CC) $(CPPFLAGS) $(CFLAGS) -c
+LINKCC = $(CC) 
+LINKAR = ar 
+#LIBA = -lvos -ludp -linter -ldacp -ltrdp -lrt -lpthread 
+LIBA = -Wl,--gc-sections -Wl,--start-group -linter -ldacp -lbase -ltrdp -ltrdpsrc -lrt -lpthread -lvos -ludp -Wl,--end-group
+
+#LIBVOS	
+SRC_VOS := $(wildcard ./VOS/*.c) 
+DEPS_VOS := $(patsubst %.c,%.d,$(SRC_VOS))
+OBJS_VOS := $(patsubst %.c,%.o,$(SRC_VOS))
+
+$(LIBVOS):$(OBJS_VOS)
+	$(LINKAR) -rsv $(LIBVOS) $(OBJS_VOS) 
+%.d:%.c     
+	$(CC) -MM $(CPPFLAGS) $< > $@
+%.o:%.c
+	$(COMPILE) $< -o $@
+
+
+
+#LIBINTERFACE	
+SRC_INTERFACE := $(wildcard ./INTERFACE/*.c) 
+DEPS_INTERFACE := $(patsubst %.c,%.d,$(SRC_INTERFACE))
+OBJS_INTERFACE := $(patsubst %.c,%.o,$(SRC_INTERFACE))
+
+$(LIBINTERFACE):$(OBJS_INTERFACE)
+	$(LINKAR) -rsv $(LIBINTERFACE) $(OBJS_INTERFACE) 
+%.d:%.c     
+	$(CC) -MM $(CPPFLAGS) $< > $@
+%.o:%.c
+	$(COMPILE) $< -o $@
+
+
+#LIBDACP	
+SRC_DACP := $(wildcard ./DACP/*.c) 
+DEPS_DACP := $(patsubst %.c,%.d,$(SRC_DACP))
+OBJS_DACP := $(patsubst %.c,%.o,$(SRC_DACP))
+
+$(LIBDACP):$(OBJS_DACP)
+	$(LINKAR) -rsv $(LIBDACP) $(OBJS_DACP) 
+%.d:%.c     
+	$(CC) -MM $(CPPFLAGS) $< > $@
+%.o:%.c
+	$(COMPILE) $< -o $@
+		
+	
+#LIBUDP	
+SRC_UDP := $(wildcard ./UDP/*.c) 
+DEPS_UDP := $(patsubst %.c,%.d,$(SRC_UDP))
+OBJS_UDP := $(patsubst %.c,%.o,$(SRC_UDP))
+
+$(LIBUDP):$(OBJS_UDP)
+	$(LINKAR) -rsv $(LIBUDP) $(OBJS_UDP) 
+%.d:%.c     
+	$(CC) -MM $(CPPFLAGS) $< > $@
+%.o:%.c
+	$(COMPILE) $< -o $@
+
+
+#LIBBASE	
+SRC_BASE := $(wildcard ./BASE/*.c) 
+DEPS_BASE := $(patsubst %.c,%.d,$(SRC_BASE))
+OBJS_BASE := $(patsubst %.c,%.o,$(SRC_BASE))
+
+$(LIBBASE):$(OBJS_BASE)
+	$(LINKAR) -rsv $(LIBBASE) $(OBJS_BASE) 
+%.d:%.c     
+	$(CC) -MM $(CPPFLAGS) $< > $@
+%.o:%.c
+	$(COMPILE) $< -o $@
+
+
+#LIBTRDP	
+SRC_TRDP := $(wildcard ./TRDP/*.c) 
+DEPS_TRDP := $(patsubst %.c,%.d,$(SRC_TRDP))
+OBJS_TRDP := $(patsubst %.c,%.o,$(SRC_TRDP))
+
+$(LIBTRDP):$(OBJS_TRDP)
+	$(LINKAR) -rsv $(LIBTRDP) $(OBJS_TRDP) 
+%.d:%.c     
+	$(CC) -MM $(CPPFLAGS) $< > $@
+%.o:%.c
+	$(COMPILE) $< -o $@
+
+
+#DEBUG
+SRCS_McmDebug := $(wildcard ./DBG/*.c)
+DEPS_McmDebug := $(patsubst %.c,%.d,$(SRCS_McmDebug))
+OBJS_McmDebug := $(patsubst %.c,%.o,$(SRCS_McmDebug))
+
+$(McmDebug):$(OBJS_McmDebug) $(DEPS_McmDebug)
+	$(LINKCC) -L./ $(OBJS_McmDebug) $(LIBA) -o $(McmDebug)  $(LDFLAGS)
+%.d:%.c
+	$(CC) -MM $(CPPFLAGS) $< > $@
+%.o:%.c
+	$(COMPILE) $< -o $@
+	
+#McmMain
+SRCS_McmMain := $(wildcard ./MCM/*.c)
+DEPS_McmMain := $(patsubst %.c,%.d,$(SRCS_McmMain))
+OBJS_McmMain := $(patsubst %.c,%.o,$(SRCS_McmMain))
+
+$(McmMain):$(OBJS_McmMain) $(DEPS_McmMain)
+	$(LINKCC) -L./ $(OBJS_McmMain) $(LIBA) -o $(McmMain)  $(LDFLAGS)
+%.d:%.c
+	$(CC) -MM $(CPPFLAGS) $< > $@
+%.o:%.c
+	$(COMPILE) $< -o $@
+ 
+	
+all: $(LIBVOS) $(LIBINTERFACE)  $(LIBUDP) $(LIBDACP) $(LIBBASE) $(LIBTRDP) $(McmDebug) $(McmMain)
+.PHONY:clean
+clean:
+	rm -f $(OBJS) $(DEPS) $(debug)  $(DEPS_DBG) $(OBJS_DACP) $(LIBDACP) $(OBJS_VOS) $(LIBVOS) $(OBJS_INTERFACE) $(LIBINTERFACE) $(OBJS_BASE) $(LIBBASE) $(OBJS_UDP) $(LIBUDP) $(OBJS_SoftReboot) $(SoftReboot) $(OBJS_DR300Test) $(DR300Test) $(OBJS_ERMNET) $(ERMNET) $(OBJS_ERMUPDATE) $(ERMUPDATE)  *.dump *.map *.debug
+explain:
+	@echo "The information represents in the program:"
+	@echo "Final executable name: $(PRGM)"
+	@echo "Source files: $(SRCS)"
+	@echo "Object files: $(OBJS)"
+depend:$(DEPS)
+	@echo "Dependencies are now up-to-date"
+-include $(DEPS)
+

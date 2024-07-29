@@ -17,6 +17,15 @@ void set_center_interface_name(char *interface_name)
 
 
 
+
+void update_status_in_current_round(const char *updated_interface, status_chooser choose,int current_round) {  
+    // 调用choose函数获取状态索引，并更新状态  
+    char* status_res = choose(updated_interface,current_round);  
+    set_status(updated_interface, status_res); 
+}  
+
+
+
 int sync_communication_info(const char* center_interface_name)
 {
 	if(is_this_interface_in_current_node(center_interface_name))
@@ -106,9 +115,15 @@ void deal_with_mnt(const char* linked_node,const char* listened_interface, const
 
 
 
+
+
   
-void listen_upon_one_interface_in_one_time(char *linked_node, char *listened_interface) {   
-        receive_message(linked_node,listened_interface, deal_with_mnt, MAX_WAITING_TIME_IN_ONE_ROUND);  
+void listen_upon_one_interface_in_one_time(char *linked_node, char *listened_interface,status_chooser choose) {
+	time_t current_time = time(NULL);  
+	int current_round = (current_time - get_test_begin_time()) / MAX_WAITING_TIME_IN_ONE_ROUND; 
+	update_status_in_current_round(listened_interface,choose,current_round);
+	
+	receive_message(linked_node,listened_interface, deal_with_mnt, MAX_WAITING_TIME_IN_ONE_ROUND);  
 }  
   
 
@@ -122,7 +137,7 @@ void *thread_function(void *args) {
 
 
 
-void test_upon_one_interface_in_one_time(const char *test_interface,const char *message,int packages_num)
+void test_upon_one_interface_in_one_time(const char *test_interface,const char *message,int packages_num,status_chooser choose)
 {  
 	time_t current_time = time(NULL);  
 	int current_round = (current_time - get_test_begin_time()) / MAX_WAITING_TIME_IN_ONE_ROUND; 
@@ -135,6 +150,8 @@ void test_upon_one_interface_in_one_time(const char *test_interface,const char *
 	}
 	if (current_round > round) { 
 		printf("current round is %d\n",current_round);
+		update_status_in_current_round(test_interface,choose,current_round);
+		
 		pthread_t threads[packages_num];  
 	    ThreadArgs args[packages_num];  
 		struct timespec delay;

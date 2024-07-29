@@ -13,11 +13,19 @@ void* deal_async(void* arg) {
 
 
 int receive_message(const char *linked_node,const char *source_interface,Dealer deal,long max_waiting_time)    
-{    
+{
+
+	char *interface_status = get_interface_status(source_interface);
+	if(strcmp(interface_status, "sending") == 0 || strcmp(interface_status, "closed") == 0 )
+	{
+		return _ERROR; /*如果是单纯sending或closed，那么不做任何接收*/
+	}
+
+
 	char *interface_type = get_interface_type(source_interface);
 	time_t begin_time = time(NULL); // Initialize start time  
+
     // Check if the interface type is "eth"  
-    
     if (strcmp(interface_type, "eth") == 0) {    
 	    // Declare a buffer for the received message, assuming it might be longer  
 		DealData data;          
@@ -46,7 +54,14 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 
 
 int send_message(const char *source_interface,const char *message)
-{    
+{   
+
+	char *interface_status = get_interface_status(source_interface);
+	if(strcmp(interface_status, "receiving") == 0 || strcmp(interface_status, "closed") == 0 )
+	{
+		return _ERROR; /*如果是单纯receiving或closed，那么不做任何发送*/
+	}
+
 	char *interface_type = get_interface_type(source_interface);
 	char msg[MAX_MSG_LEN]; // Buffer for the received message      
     time_t begin_time = time(NULL); // Initialize start time  
@@ -67,6 +82,30 @@ int send_message(const char *source_interface,const char *message)
     // This point should not be reached due to the infinite loop, but for completeness    
     return _ERROR; // In case of unexpected termination    
 }
+
+
+
+
+
+void set_status(const char *source_interface,const char *status)
+{
+	//status_array; // 先判断status在不在这个数组里面
+	//status = sending receiving sending_and_receiving closed
+	//这个先不写
+	//这个不能单纯只是设置接口状态数据库中的status字段，而应该真正调用底层接口设置接口的状态
+	//先判断是全双工还是半双工，如果是半双工，全部都合法，如果是全双工，sending receiving这两个输入不合法
+}
+
+
+
+void sync_status(const char *source_interface)
+{
+	//status = sending receiving sending_and_receiving closed
+	//这个先不写
+	//这个不能单纯只是返回接口状态数据库中的status字段，而应该真正调用底层接口去检查接口的状态，并且把检查结果同步到数据库
+	//这个在start_info之后，载入数组后要启动一下
+}
+
 
 
 

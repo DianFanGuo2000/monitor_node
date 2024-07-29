@@ -1,6 +1,6 @@
 
 
-cd ./src/base/MIX_Control_Code
+cd src/base/MIX_Control_Code
 make all
 
 echo "Entering 'src' directory..."  
@@ -21,5 +21,5 @@ make clean
 echo "Exiting 'communication_monitor' directory and returning to the parent directory..."  
 cd ..
 
-cd ./src/base/MIX_Control_Code
+cd src/base/MIX_Control_Code
 make clean

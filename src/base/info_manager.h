@@ -47,6 +47,8 @@ struct interface_info {
     struct rs485_info rs485_info;
 	struct rs485_info linked_rs485_info;
 
+
+	char *mode;
 	char *status;
 };
 
@@ -118,6 +120,12 @@ int update_communication_info_array_from_json(char* communication_info_array_jso
 
 int update_communication_info_array(char* linked_node,char* interface_name,time_t updated_time,unsigned long tx,unsigned long rx); //,char* error_ratio_value
 void string_to_unsigned_long(const char* str, unsigned long* result);
+
+int get_interface_index(const char* interface_name);
+
+
+char* get_interface_status(const char* interface_name);
+char* get_interface_mode(const char* interface_name);
 
 		
 

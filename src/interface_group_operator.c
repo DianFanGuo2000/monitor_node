@@ -2,6 +2,55 @@
 #include "interface_group_operator.h"
 
 
+
+
+char* work_at_which_round_for_test_when_half_duplex;
+char* work_at_which_round_for_listen_when_half_duplex;
+
+
+// Function to choose the status for testing based on interface type and current round  
+char* choose_status_for_test(const char *interface_name, const int current_round) {  
+    char* interface_type = get_interface_type(interface_name); // Get the interface type  
+    if (strcmp(interface_type, "eth") == 0) {  
+        return "sending_and_receiving"; // For Ethernet, always send and receive  
+    }  
+    // Check if interface is CAN or RS485  
+    if (strcmp(interface_type, "can") == 0 || strcmp(interface_type, "rs485") == 0) {  
+        // Decide based on half-duplex configuration and current round  
+        if (strcmp(work_at_which_round_for_test_when_half_duplex, "odd") == 0 && current_round % 2 == 1) {  
+            return "sending"; // If odd rounds and configured for odd, send  
+        }  
+        if (strcmp(work_at_which_round_for_test_when_half_duplex, "even") == 0 && current_round % 2 == 0) {  
+            return "sending"; // If even rounds and configured for even, send  
+        }  
+        return "receiving"; // If none of the above, receive  
+    }  
+    return "closed"; // Default status if interface type is not recognized  
+}  
+  
+// Function to choose the status for listening based on interface type and current round  
+char* choose_status_for_listen(const char *interface_name, const int current_round) {  
+    char* interface_type = get_interface_type(interface_name); // Get the interface type  
+    if (strcmp(interface_type, "eth") == 0) {  
+        return "sending_and_receiving"; // For Ethernet, always send and receive  
+    }  
+    // Check if interface is CAN or RS485  
+    if (strcmp(interface_type, "can") == 0 || strcmp(interface_type, "rs485") == 0) {  
+        // Decide based on half-duplex configuration and current round  
+        if (strcmp(work_at_which_round_for_listen_when_half_duplex, "odd") == 0 && current_round % 2 == 1) {  
+            return "receiving"; // If odd rounds and configured for odd, receive  
+        }  
+        if (strcmp(work_at_which_round_for_listen_when_half_duplex, "even") == 0 && current_round % 2 == 0) {  
+            return "receiving"; // If even rounds and configured for even, receive  
+        }  
+        return "sending"; // If none of the above, send (though typically in listen mode, it would be receiving)  
+    }  
+    return "closed"; // Default status if interface type is not recognized  
+}
+
+
+
+
 void test_upon_interface_group() {  
 	int cnt = get_interface_cnt();  
     int i;  
@@ -14,8 +63,9 @@ void test_upon_interface_group() {
   
             if (pid == 0) {  
                 // 子进程  
-				while(1)
-					test_upon_one_interface_in_one_time(get_interface_name(i), "hello, are you here?", PAKCAGES_NUM_ONE_TIME);  
+				while(1){
+					test_upon_one_interface_in_one_time(get_interface_name(i), "hello, are you here?", PAKCAGES_NUM_ONE_TIME,choose_status_for_test); 
+				}
                 exit(0); // 子进程完成后退出  
             } else if (pid < 0) {  
                 // fork 失败  
@@ -67,8 +117,9 @@ void listen_upon_interface_group() {
   
             if (pid == 0) {  
                 // 子进程  
-                while(1)
-                	listen_upon_one_interface_in_one_time(get_linked_node(i),get_interface_name(i));  
+                while(1){
+                	listen_upon_one_interface_in_one_time(get_linked_node(i),get_interface_name(i),choose_status_for_listen); 
+                }
                 exit(0); // 子进程完成后退出  
             } else if (pid < 0) {  
                 // fork 失败  
@@ -107,18 +158,18 @@ void listen_upon_interface_group() {
 
 
 
-
-
 #if 1
 int main(int argc, char *argv[]) {
-    if (argc != 5 && argc != 3) {  
-        fprintf(stderr, "Usage: %s <config_file> <mode> [ <center_interface_name> <res_file_name> (when listen mode)]\n", argv[0]);  
+    if (argc != 6 && argc != 4) {  
+        fprintf(stderr, "Usage: %s <config_file> <mode> <work_at_which_round_for_test_when_half_duplex> <work_at_which_round_for_listen_when_half_duplex> [ <center_interface_name> <res_file_name> (when listen mode)]\n", argv[0]);  
         fprintf(stderr, "Mode should be 'test' or 'listen'.\n");  
         return 1; // 表示程序因为错误的参数而退出  
     }  
   
     const char* config_file = argv[1];  
     const char* mode = argv[2];
+	work_at_which_round_for_test_when_half_duplex = argv[3];
+	work_at_which_round_for_listen_when_half_duplex = argv[4];
 
 	
 
@@ -128,8 +179,8 @@ int main(int argc, char *argv[]) {
 		test_upon_interface_group();
     } else if (strcmp(mode, "listen") == 0) {
         start_and_load_info(config_file);
-		set_center_interface_name(argv[3]);
-		set_res_file_name(argv[4]);
+		set_center_interface_name(argv[5]);
+		set_res_file_name(argv[6]);
 		listen_upon_interface_group();
 		// 陪试不需要同步测试结果
     } else {  
@@ -174,6 +225,40 @@ int main(int argc, char *argv[]) {
 
 #endif
 
+
+#if 0
+
+
+typedef int             INT32;
+#define STATUS  int
+
+
+extern INT32  udpCanStart(void);
+extern STATUS canAndCanFdTest(void);
+
+
+int main(int argc, char *argv[]) {  
+	
+	printf("x86 start \r\n");
+	
+		udpCanStart();
+		
+		canAndCanFdTest();
+	
+		
+	while(1)
+	{
+		vos_EdrTaskDelay(5000);
+	}
+	
+		return 1;
+
+  
+    return 0;  
+}
+
+
+#endif
 
 
 

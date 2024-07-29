@@ -212,7 +212,6 @@ int update_communication_info_array_from_json(char* communication_info_array_jso
 
 
 
-
 void write_interface_info_array_to_json(const char *filename, struct interface_info *array, size_t size) {  
     cJSON *interfaces = cJSON_CreateArray();  
     if (!interfaces) {  
@@ -272,7 +271,9 @@ void write_interface_info_array_to_json(const char *filename, struct interface_i
 		    cJSON_AddNumberToObject(linked_rs485_info, "baud_rate", array[i].linked_rs485_info.baud_rate);  
 		}  
 		cJSON_AddItemToObject(interface, "linked_rs485_info", linked_rs485_info); 
-  
+
+
+  		cJSON_AddStringToObject(interface, "mode", array[i].mode);  
         cJSON_AddStringToObject(interface, "status", array[i].status);  
   
         cJSON_AddItemToArray(interfaces, interface);  
@@ -387,6 +388,8 @@ void read_interface_info_array_from_json(const char *filename, struct interface_
         array[i].linked_interface_name = strdup(cJSON_GetObjectItem(interface, "linked_interface_name")->valuestring);
         array[i].linked_interface_type = strdup(cJSON_GetObjectItem(interface, "linked_interface_type")->valuestring);
         array[i].status = strdup(cJSON_GetObjectItem(interface, "status")->valuestring);
+		array[i].mode = strdup(cJSON_GetObjectItem(interface, "mode")->valuestring);
+
         // Handle nested structures
 		// Fill eth_info  
 		tmp = cJSON_GetObjectItem(interface, "eth_info");  
@@ -499,7 +502,8 @@ void free_interface_info_array()
 		free(interface_info_array[i].linked_interface_type);  
 		free(interface_info_array[i].eth_info.mac_addr);  
 		free(interface_info_array[i].linked_eth_info.mac_addr); 
-		free(interface_info_array[i].status);  
+		free(interface_info_array[i].status); 
+		free(interface_info_array[i].mode); 
 	}  
 	free(interface_info_array);
 }
@@ -566,6 +570,9 @@ int get_interface_cnt()
 }
 
 
+
+
+
 char *get_located_node(int i)
 {
 	return interface_info_array[i].located_node;
@@ -588,6 +595,41 @@ char* get_linked_interface_name(int i)
 	return interface_info_array[i].linked_interface_name;
 }
 
+
+int get_interface_index(const char* interface_name)
+{
+    for (size_t i = 0; i < interface_cnt; i++) {
+        if (strcmp(interface_info_array[i].interface_name, interface_name) == 0) {
+            return i;
+        }
+    }
+    return -1;
+
+}
+
+
+char* get_interface_status(const char* interface_name)
+{
+    for (size_t i = 0; i < interface_cnt; i++) {
+        if (strcmp(interface_info_array[i].interface_name, interface_name) == 0) {
+            return interface_info_array[i].status;
+        }
+    }
+    return NULL;
+
+}
+
+
+char* get_interface_mode(const char* interface_name)
+{
+    for (size_t i = 0; i < interface_cnt; i++) {
+        if (strcmp(interface_info_array[i].interface_name, interface_name) == 0) {
+            return interface_info_array[i].mode;
+        }
+    }
+    return NULL;
+
+}
 
 
 char* get_mac_addr(const char *interface_name) {

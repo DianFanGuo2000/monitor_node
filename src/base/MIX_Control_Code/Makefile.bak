@@ -1,0 +1,80 @@
+
+LIBUDP   = libCanRs485.a
+
+
+
+# McmMain = mcm
+
+
+
+#CROSS_COMPILE=/home/cjy/work/buildroot-2019.02.1/output/host/usr/bin/aarch64-buildroot-linux-gnu-
+
+
+CC = $(CROSS_COMPILE)gcc
+OBJCOPY = $(CROSS_COMPILE)objcopy
+OBJDUMP = $(CROSS_COMPILE)objdump
+NM = $(CROSS_COMPILE)nm
+CPPFLAGS =
+
+LDFLAGS =
+CFLAGS += -DTRG_ARM
+CFLAGS += -DTRG_64BIT
+CFLAGS += -DLINUX -DCDECL= -DDLL_DECL= -DHUGEPTR=
+CFLAGS += -g -O2 -Wall -Wextra -Wno-unused
+
+CPPFLAGS += -I$(abspath ./all_code/inc)
+CPPFLAGS += -I$(abspath ./test/inc)
+
+
+COMPILE = $(CC) $(CPPFLAGS) $(CFLAGS) -c
+LINKCC = $(CC) 
+LINKAR = ar 
+
+
+LIBA = -Wl,--gc-sections -Wl,--start-group -lrt -lpthread -lCanRs485 -lm -ldl -Wl,--end-group
+
+		
+	
+#LIBUDP	
+SRC_UDP := $(wildcard ./all_code/src/*.c) 
+DEPS_UDP := $(patsubst %.c,%.d,$(SRC_UDP))
+OBJS_UDP := $(patsubst %.c,%.o,$(SRC_UDP))
+
+$(LIBUDP):$(OBJS_UDP)
+	$(LINKAR) -rsv $(LIBUDP) $(OBJS_UDP) 
+%.d:%.c     
+	$(CC) -MM $(CPPFLAGS) $< > $@
+%.o:%.c
+	$(COMPILE) $< -o $@
+
+
+
+#McmMain
+# SRCS_McmMain := $(wildcard ./test/*.c)
+# DEPS_McmMain := $(patsubst %.c,%.d,$(SRCS_McmMain))
+# OBJS_McmMain := $(patsubst %.c,%.o,$(SRCS_McmMain))
+
+# $(McmMain):$(OBJS_McmMain) $(DEPS_McmMain)
+# 	$(LINKCC) -L./  $(OBJS_McmMain) $(LIBA) -Wl,-E -ldl -o $(McmMain)  $(LDFLAGS)
+# %.d:%.c
+# 	$(CC) -MM $(CPPFLAGS) $(CFLAGS) $< > $@
+# %.o:%.c
+# 	$(COMPILE) $< -o $@
+
+
+# all: $(LIBUDP) $(McmMain)
+
+all: $(LIBUDP)
+.PHONY:clean
+clean:
+	# rm -f $(OBJS_UDP) $(LIBUDP) $(DEPS_UDP) $(OBJS_McmMain) $(DEPS_McmMain) $(McmMain)*.dump *.map *.debug
+	rm -f $(OBJS_UDP) $(LIBUDP) $(DEPS_UDP) $(OBJS_McmMain) $(DEPS_McmMain) $(McmMain)*.dump *.map *.debug
+explain:
+	@echo "The information represents in the program:"
+	@echo "Final executable name: $(PRGM)"
+	@echo "Source files: $(SRCS)"
+	@echo "Object files: $(OBJS)"
+depend:$(DEPS)
+	@echo "Dependencies are now up-to-date"
+-include $(DEPS)
+
