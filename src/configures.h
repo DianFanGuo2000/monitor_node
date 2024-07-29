@@ -22,6 +22,7 @@
 
 #define ETH_P_SNMP 0x080C
 
+#define RS485_LEN 50
 
 
 #endif

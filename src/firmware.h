@@ -5,6 +5,10 @@
 #include <time.h> // For time functions  
 
 #include "./base/eth_recv_send.h"
+#include "./base/rs485_recv_send.h"
+#include "./base/can_recv_send.h"
+
+
 #include "./base/info_manager.h"
 #include "configures.h"
 

@@ -25,7 +25,10 @@ struct can_info {
     int can_id;  
 };  
   
-struct rs485_info {  
+struct rs485_info { 
+	int databits;
+	int stopbits;
+	unsigned char paritybits;
     int baud_rate;  
 };
 
@@ -92,7 +95,7 @@ char *get_linked_node(int i);
 
 int get_interface_cnt();
 char* get_interface_name(int i);
-char* get_linked_interface_name(int i);
+char* get_linked_interface_name_by_index(int i);
 
 
 char* get_mac_addr(const char *interface_name);
@@ -126,6 +129,19 @@ int get_interface_index(const char* interface_name);
 
 char* get_interface_status(const char* interface_name);
 char* get_interface_mode(const char* interface_name);
+
+
+
+int  get_baud_rate_by_index(int i);
+
+
+int  get_databits_by_index(int i);
+
+
+unsigned char  get_paritybits_by_index(int i);
+
+
+int  get_stopbits_by_index(int i);
 
 		
 

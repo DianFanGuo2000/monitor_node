@@ -158,7 +158,7 @@ void listen_upon_interface_group() {
 
 
 
-#if 1
+#if 0
 int main(int argc, char *argv[]) {
     if (argc != 6 && argc != 4) {  
         fprintf(stderr, "Usage: %s <config_file> <mode> <work_at_which_round_for_test_when_half_duplex> <work_at_which_round_for_listen_when_half_duplex> [ <center_interface_name> <res_file_name> (when listen mode)]\n", argv[0]);  
@@ -260,6 +260,23 @@ int main(int argc, char *argv[]) {
 
 #endif
 
+
+
+
+#if 1
+
+
+
+int main(int argc, char *argv[]) {  
+	
+
+
+  
+    return 0;  
+}
+
+
+#endif
 
 
 

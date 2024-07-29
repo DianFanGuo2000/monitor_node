@@ -262,13 +262,19 @@ void write_interface_info_array_to_json(const char *filename, struct interface_i
 	
 		cJSON *rs485_info = cJSON_CreateObject();  
 		if (array[i].rs485_info.baud_rate != -1) { // 假设 -1 是一个无效值，用于检查  
-		    cJSON_AddNumberToObject(rs485_info, "baud_rate", array[i].rs485_info.baud_rate);  
+		    cJSON_AddNumberToObject(rs485_info, "databits", array[i].rs485_info.databits); 
+			cJSON_AddNumberToObject(rs485_info, "stopbits", array[i].rs485_info.stopbits);
+			cJSON_AddNumberToObject(rs485_info, "paritybits", array[i].rs485_info.paritybits);
+			cJSON_AddNumberToObject(rs485_info, "baud_rate", array[i].rs485_info.baud_rate);
 		}  
 		cJSON_AddItemToObject(interface, "rs485_info", rs485_info); 
 
 		cJSON *linked_rs485_info = cJSON_CreateObject();  
 		if (array[i].linked_rs485_info.baud_rate != -1) { // 假设 -1 是一个无效值，用于检查  
-		    cJSON_AddNumberToObject(linked_rs485_info, "baud_rate", array[i].linked_rs485_info.baud_rate);  
+		    cJSON_AddNumberToObject(rs485_info, "databits", array[i].rs485_info.databits); 
+			cJSON_AddNumberToObject(rs485_info, "stopbits", array[i].rs485_info.stopbits);
+			cJSON_AddNumberToObject(rs485_info, "paritybits", array[i].rs485_info.paritybits);
+			cJSON_AddNumberToObject(rs485_info, "baud_rate", array[i].rs485_info.baud_rate); 
 		}  
 		cJSON_AddItemToObject(interface, "linked_rs485_info", linked_rs485_info); 
 
@@ -455,22 +461,75 @@ void read_interface_info_array_from_json(const char *filename, struct interface_
 			} else {  
 				array[i].rs485_info.baud_rate = -1;  
 			}  
+
+			cJSON *databits_item = cJSON_GetObjectItem(tmp, "databits");
+			if (databits_item && cJSON_IsNumber(databits_item)) {  
+				array[i].rs485_info.databits = databits_item->valuedouble;  
+			} else {  
+				array[i].rs485_info.databits = -1;  
+			}  
+
+			cJSON *stopbits_item = cJSON_GetObjectItem(tmp, "stopbits");
+			if (stopbits_item && cJSON_IsNumber(stopbits_item)) {  
+				array[i].rs485_info.stopbits = stopbits_item->valuedouble;  
+			} else {  
+				array[i].rs485_info.stopbits = -1;  
+			}  
+
+			cJSON *paritybits_item = cJSON_GetObjectItem(tmp, "paritybits");
+			if (paritybits_item && cJSON_IsNumber(paritybits_item)) {  
+				array[i].rs485_info.paritybits = paritybits_item->valuedouble;  
+			} else {  
+				array[i].rs485_info.paritybits = 0;  
+			}  
+
+	
 		} else {  
 			array[i].rs485_info.baud_rate = -1;  
+			array[i].rs485_info.databits = -1;  
+			array[i].rs485_info.stopbits = -1;  
+			array[i].rs485_info.paritybits = 0;  
 		}
+
 
 		// Fill linked_baud_rate  
 		tmp = cJSON_GetObjectItem(interface, "linked_rs485_info");  
 		if (tmp && cJSON_IsObject(tmp)) {  
 			cJSON *baud_rate_item = cJSON_GetObjectItem(tmp, "baud_rate");	
 			if (baud_rate_item && cJSON_IsNumber(baud_rate_item)) {  
-				array[i].linked_rs485_info.baud_rate = baud_rate_item->valuedouble;  
+				array[i].rs485_info.baud_rate = baud_rate_item->valuedouble;  
 			} else {  
-				array[i].linked_rs485_info.baud_rate = -1;  
+				array[i].rs485_info.baud_rate = -1;  
 			}  
+
+			cJSON *databits_item = cJSON_GetObjectItem(tmp, "databits");
+			if (databits_item && cJSON_IsNumber(databits_item)) {  
+				array[i].rs485_info.databits = databits_item->valuedouble;  
+			} else {  
+				array[i].rs485_info.databits = -1;  
+			}  
+
+			cJSON *stopbits_item = cJSON_GetObjectItem(tmp, "stopbits");
+			if (stopbits_item && cJSON_IsNumber(stopbits_item)) {  
+				array[i].rs485_info.stopbits = stopbits_item->valuedouble;  
+			} else {  
+				array[i].rs485_info.stopbits = -1;  
+			}  
+
+			cJSON *paritybits_item = cJSON_GetObjectItem(tmp, "paritybits");
+			if (paritybits_item && cJSON_IsNumber(paritybits_item)) {  
+				array[i].rs485_info.paritybits = paritybits_item->valuedouble;  
+			} else {  
+				array[i].rs485_info.paritybits = 0;  
+			}  
+
+	
 		} else {  
-			array[i].linked_rs485_info.baud_rate = -1;  
-		}		
+			array[i].rs485_info.baud_rate = -1;  
+			array[i].rs485_info.databits = -1;  
+			array[i].rs485_info.stopbits = -1;  
+			array[i].rs485_info.paritybits = 0;  
+		}
 
     }
 
@@ -590,7 +649,7 @@ char* get_interface_name(int i)
 	return interface_info_array[i].interface_name;
 }
 
-char* get_linked_interface_name(int i)
+char* get_linked_interface_name_by_index(int i)
 {
 	return interface_info_array[i].linked_interface_name;
 }
@@ -606,6 +665,30 @@ int get_interface_index(const char* interface_name)
     return -1;
 
 }
+
+int  get_baud_rate_by_index(int i)
+{
+	return interface_info_array[i].rs485_info.baud_rate;
+}
+
+
+int  get_databits_by_index(int i)
+{
+	return interface_info_array[i].rs485_info.databits;
+}
+
+
+unsigned char  get_paritybits_by_index(int i)
+{
+	return interface_info_array[i].rs485_info.paritybits;
+}
+
+
+int  get_stopbits_by_index(int i)
+{
+	return interface_info_array[i].rs485_info.stopbits;
+}
+
 
 
 char* get_interface_status(const char* interface_name)

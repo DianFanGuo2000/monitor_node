@@ -47,10 +47,66 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
         }  
 
 	    return _SUCCESS;    
-    }    
+    }
+
+
+	
+	if (strcmp(interface_type, "rs485") == 0) {	 
+			// Declare a buffer for the received message, assuming it might be longer  
+			DealData data;			
+			data.deal_func = deal; // 将 deal 函数指针保存到结构体中
+			data.linked_node = linked_node;
+			data.listened_interface = source_interface;
+
+			SerialPortParams params;
+			int index = get_interface_index(source_interface);
+			params.baudrate = get_baud_rate_by_index(index);
+			params.databits = get_databits_by_index(index);
+			params.stopbits = get_stopbits_by_index(index);
+			params.paritybits = get_paritybits_by_index(index);
+			
+			int fd = open_port(source_interface, 0, params);
+
+			// Attempt to receive a packet from the source interface  
+			if (receive_packet_rs485(fd,data.msg,RS485_LEN,max_waiting_time)<0) {	 
+				// If receiving the message fails, return an error and don't reply
+				return _ERROR;	  
+			}	 
+	
+	
+			pthread_t thread_id;  
+			if (pthread_create(&thread_id, NULL, deal_async, &data) != 0) {  
+				// 线程创建失败处理，返回错误  
+				return _ERROR;	
+			}  
+
+			close_port(fd);
+	
+			return _SUCCESS;	
+	}	 
 
 }
 
+
+void fillMessageToRS485Len(const char *message, char *RS485MSG, int rs485_len) {  
+    // 首先，将原始消息复制到 RS485MSG  
+    strncpy(RS485MSG, message, rs485_len);  
+	
+      
+    // 如果原始消息长度大于 RS485_LEN，截断它  
+    if (strlen(message) > rs485_len) {  
+        RS485MSG[rs485_len] = '\0'; // 确保字符串正确终止  
+    } else {  
+        // 否则，用空格填充剩余部分  
+        size_t len = strlen(RS485MSG);  
+        memset(RS485MSG + len, ' ', rs485_len - len);  
+        // 确保字符串在末尾正确终止  
+        RS485MSG[rs485_len] = '\0';  
+    }  
+      
+    // 可选：打印结果以验证  
+    printf("Filled message: '%s'\n", RS485MSG);  
+}  
 
 
 int send_message(const char *source_interface,const char *message)
@@ -78,6 +134,32 @@ int send_message(const char *source_interface,const char *message)
         }    
 		return _SUCCESS;
     }  
+
+
+    // Check if the interface type is "rs485" (could be removed if not needed)    
+    if (strcmp(interface_type, "rs485") == 0) {    
+		SerialPortParams params;
+		int index = get_interface_index(source_interface);
+		params.baudrate = get_baud_rate_by_index(index);
+		params.databits = get_databits_by_index(index);
+		params.stopbits = get_stopbits_by_index(index);
+		params.paritybits = get_paritybits_by_index(index);
+		
+		int fd = open_port(source_interface, 0, params);
+
+		// 填充至RS485_LEN，以保证发送长度一定是RS485_LEN个字节
+		char RS485MSG[RS485_LEN + 1];
+		fillMessageToRS485Len(message,RS485MSG,RS485_LEN);
+
+        if (send_packet_rs485(fd, RS485MSG, RS485_LEN) < 0) {    
+        	printf("send failed!\n");
+        	return _ERROR; // Retry sending    
+        }    
+		return _SUCCESS;
+    }  
+
+
+	
   
     // This point should not be reached due to the infinite loop, but for completeness    
     return _ERROR; // In case of unexpected termination    
