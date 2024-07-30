@@ -243,7 +243,7 @@ int main(int argc, char *argv[]) {
 #endif
 
 
-#if 1
+#if 0
 
 
 typedef int             INT32;
@@ -252,6 +252,7 @@ typedef int             INT32;
 
 extern INT32  udpCanStart(void);
 extern STATUS canAndCanFdTest(void);
+
 
 
 int main(int argc, char *argv[]) {  
@@ -280,14 +281,19 @@ int main(int argc, char *argv[]) {
 
 
 
-#if 0
+#if 1
 
 
 
 int main(int argc, char *argv[]) {  
-	
+	char res[10];
+	comCanSTDCfgInit(1,500);
+	comCanSTDCfgInit(2,500);
+	send_packet_can(1,"hello",5);
+	TASK_DELAY();
+	receive_packet_can(2,res,5,1);
 
-
+	printf("%s\n",res);
   
     return 0;  
 }

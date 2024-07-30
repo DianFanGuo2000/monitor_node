@@ -46,12 +46,13 @@ int init_basic_interface(int i)
     if (strcmp(interface_type, "can") == 0)  
     {  
         int channel_id = get_channel_id_by_index(i);  
-		if(comCanSTDCfgInit(channel_id)<0)
+		int baud_rate = get_baud_rate_by_index(i);
+		if(comCanSTDCfgInit(channel_id,baud_rate)<0)
 		{
 			set_interface_status(interface_name,"closed");
 			return _ERROR;
 		}
-		set_interface_status(interface_name,"sending_and_receiving");
+		set_interface_status(interface_name,"receiving");
     }  
   
     // Free dynamically allocated strings if necessary (not shown here)  
@@ -144,6 +145,31 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 	    return _SUCCESS;    
     }
 
+    if (strcmp(interface_type, "can") == 0) {   
+		// Declare a buffer for the received message, assuming it might be longer  
+		DealData data;          
+		data.deal_func = deal; // 将 deal 函数指针保存到结构体中
+		data.linked_node = linked_node;
+		data.listened_interface = source_interface;
+
+		
+		int i = get_interface_index(source_interface);
+		int can_id = get_channel_id_by_index(i);
+	    // Attempt to receive a packet from the source interface  
+	    if (receive_packet_can(can_id,data.msg,RS485_LEN,max_waiting_time)<0) {    
+	        // If receiving the message fails, return an error and don't reply
+	        return _ERROR;    
+	    }    
+
+
+        pthread_t thread_id;  
+        if (pthread_create(&thread_id, NULL, deal_async, &data) != 0) {  
+            // 线程创建失败处理，返回错误  
+            return _ERROR;  
+        }  
+
+	    return _SUCCESS;    
+    }
 
 	
 	if (strcmp(interface_type, "rs485") == 0) {	 
@@ -254,7 +280,21 @@ int send_message(const char *source_interface,const char *message)
     }  
 
 
-	
+    // Check if the interface type is "can" (could be removed if not needed)    
+    if (strcmp(interface_type, "can") == 0) {    
+		int i = get_interface_index(source_interface);
+		int can_id = get_channel_id_by_index(i);
+
+		// 填充至RS485_LEN，以保证发送长度一定是RS485_LEN个字节
+		char CANMSG[RS485_LEN + 1];
+		fillMessageToRS485Len(message,CANMSG,RS485_LEN);
+		
+        if (send_packet_can(can_id,CANMSG,RS485_LEN)< 0) {    
+        	printf("send failed!\n");
+        	return _ERROR; // Retry sending    
+        }    
+		return _SUCCESS;
+    }  	
   
     // This point should not be reached due to the infinite loop, but for completeness    
     return _ERROR; // In case of unexpected termination    
@@ -343,8 +383,8 @@ int set_status(const char *source_interface, const char *status)
 
       if (strcmp(interface_type, "can") == 0) {  
         // Compare the status string correctly using strcmp  
-        if (strcmp(status, "sending") == 0 || strcmp(status, "receiving") == 0) {  
-            printf("can cannot be set as 'sending' or 'receiving'\n");  
+        if (strcmp(status, "sending_and_receiving") == 0) {  
+            printf("can cannot be set as 'sending_and_receiving'\n");  
             return _ERROR;  
         }  
 		
@@ -355,12 +395,7 @@ int set_status(const char *source_interface, const char *status)
 	        return _ERROR;  
 	    } 
 		
-        if (strcmp(status, "sending_and_receiving") == 0) {  
-	        int channel_id = get_channel_id_by_index(i);  
-			if(comCanSTDCfgInit(channel_id)<0)
-			{
-				return _ERROR;
-			} 
+        if (strcmp(status, "sending") == 0 || strcmp(status, "receiving") == 0) {  
         }  
 
  

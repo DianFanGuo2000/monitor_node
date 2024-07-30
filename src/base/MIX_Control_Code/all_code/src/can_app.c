@@ -409,11 +409,11 @@ INT32 appCanCfgDataRecv(UINT32 com,char *recvDataPointer,UINT32 recvDataLength )
 
 
 
-INT32 appCan1DataRecv(char *recvDataPointer,UINT32 recvDataLength )
+INT32 appCan1DataRecv(char *recvDataPointer,UINT32 recvDataLength,INT32 Timeout_I32)
 {
     UINT16 i=0;
 	UINT32 *retPointer = NULL;  
-	vos_EdrSemWait(&g_udpRecvCan1DataSem_ID, WAIT_FOREVER);
+	vos_EdrSemWait(&g_udpRecvCan1DataSem_ID, Timeout_I32);
 	retPointer = memcpy((void *)recvDataPointer,g_recvCan1DataArray,recvDataLength);
 	memset(g_recvCan1DataArray,0x0,sizeof(g_recvCan1DataArray));
 	vos_EdrSemPost(&g_udpRecvCan1DataSem_ID); 	
@@ -427,11 +427,11 @@ INT32 appCan1DataRecv(char *recvDataPointer,UINT32 recvDataLength )
 }
 
 
-INT32 appCan2DataRecv(char *recvDataPointer,UINT32 recvDataLength )
+INT32 appCan2DataRecv(char *recvDataPointer,UINT32 recvDataLength,INT32 Timeout_I32)
 {
     UINT16 i=0;
 	UINT32 *retPointer = NULL;  
-	vos_EdrSemWait(&g_udpRecvCan2DataSem_ID, WAIT_FOREVER);
+	vos_EdrSemWait(&g_udpRecvCan2DataSem_ID, Timeout_I32);
 	retPointer = memcpy((void *)recvDataPointer,g_recvCan2DataArray,recvDataLength);
 	memset(g_recvCan2DataArray,0x0,sizeof(g_recvCan2DataArray));
 	vos_EdrSemPost(&g_udpRecvCan2DataSem_ID); 	
@@ -445,11 +445,11 @@ INT32 appCan2DataRecv(char *recvDataPointer,UINT32 recvDataLength )
 }
 
 
-INT32 appCan3DataRecv(char *recvDataPointer,UINT32 recvDataLength )
+INT32 appCan3DataRecv(char *recvDataPointer,UINT32 recvDataLength,INT32 Timeout_I32)
 {
     UINT16 i=0;
 	UINT32 *retPointer = NULL;  
-	vos_EdrSemWait(&g_udpRecvCan3DataSem_ID, WAIT_FOREVER);
+	vos_EdrSemWait(&g_udpRecvCan3DataSem_ID, Timeout_I32);
 	retPointer = memcpy((void *)recvDataPointer,g_recvCan3DataArray,recvDataLength);
 	memset(g_recvCan3DataArray,0x0,sizeof(g_recvCan3DataArray));
 	vos_EdrSemPost(&g_udpRecvCan3DataSem_ID); 	
@@ -463,11 +463,11 @@ INT32 appCan3DataRecv(char *recvDataPointer,UINT32 recvDataLength )
 }
 
 
-INT32 appCan4DataRecv(char *recvDataPointer,UINT32 recvDataLength )
+INT32 appCan4DataRecv(char *recvDataPointer,UINT32 recvDataLength,INT32 Timeout_I32)
 {
     UINT16 i=0;
 	UINT32 *retPointer = NULL;  
-	vos_EdrSemWait(&g_udpRecvCan4DataSem_ID, WAIT_FOREVER);
+	vos_EdrSemWait(&g_udpRecvCan4DataSem_ID, Timeout_I32);
 	retPointer = memcpy((void *)recvDataPointer,g_recvCan4DataArray,recvDataLength);
 	memset(g_recvCan4DataArray,0x0,sizeof(g_recvCan4DataArray));
 	vos_EdrSemPost(&g_udpRecvCan4DataSem_ID); 	
@@ -481,11 +481,11 @@ INT32 appCan4DataRecv(char *recvDataPointer,UINT32 recvDataLength )
 }
 
 
-INT32 appCan5DataRecv(char *recvDataPointer,UINT32 recvDataLength )
+INT32 appCan5DataRecv(char *recvDataPointer,UINT32 recvDataLength,INT32 Timeout_I32)
 {
     UINT16 i=0;
 	UINT32 *retPointer = NULL;  
-	vos_EdrSemWait(&g_udpRecvCan5DataSem_ID, WAIT_FOREVER);
+	vos_EdrSemWait(&g_udpRecvCan5DataSem_ID, Timeout_I32);
 	retPointer = memcpy((void *)recvDataPointer,g_recvCan5DataArray,recvDataLength);
 	memset(g_recvCan5DataArray,0x0,sizeof(g_recvCan5DataArray));
 	vos_EdrSemPost(&g_udpRecvCan5DataSem_ID); 	
@@ -510,12 +510,12 @@ INT32 appCan5DataRecv(char *recvDataPointer,UINT32 recvDataLength )
 
 
 
-INT32 appCanFd1DataRecv(char *recvDataPointer,UINT32 recvDataLength )
+INT32 appCanFd1DataRecv(char *recvDataPointer,UINT32 recvDataLength,INT32 Timeout_I32)
 {
     UINT16 i=0;
 	UINT32 *retPointer = NULL;
     
-	vos_EdrSemWait(&g_udpRecvCanFd1DataSem_ID, WAIT_FOREVER);
+	vos_EdrSemWait(&g_udpRecvCanFd1DataSem_ID, Timeout_I32);
 	retPointer = memcpy((void *)recvDataPointer,g_recvCanFd1DataArray,recvDataLength);
 	memset(g_recvCanFd1DataArray,0x0,sizeof(g_recvCanFd1DataArray));
 	vos_EdrSemPost(&g_udpRecvCanFd1DataSem_ID);
@@ -529,11 +529,11 @@ INT32 appCanFd1DataRecv(char *recvDataPointer,UINT32 recvDataLength )
 	
 }
 
-INT32 appCanFd2DataRecv(char *recvDataPointer,UINT32 recvDataLength )
+INT32 appCanFd2DataRecv(char *recvDataPointer,UINT32 recvDataLength,INT32 Timeout_I32)
 {
     UINT16 i=0;
 	UINT32 *retPointer = NULL;   
-	vos_EdrSemWait(&g_udpRecvCanFd2DataSem_ID, WAIT_FOREVER);
+	vos_EdrSemWait(&g_udpRecvCanFd2DataSem_ID, Timeout_I32);
 	retPointer = memcpy((void *)recvDataPointer,g_recvCanFd2DataArray,recvDataLength);
 	memset(g_recvCanFd2DataArray,0x0,sizeof(g_recvCanFd2DataArray));
 	vos_EdrSemPost(&g_udpRecvCanFd2DataSem_ID);
@@ -547,13 +547,13 @@ INT32 appCanFd2DataRecv(char *recvDataPointer,UINT32 recvDataLength )
 	
 }
 
-INT32 appCanFd3DataRecv(char *recvDataPointer,UINT32 recvDataLength )
+INT32 appCanFd3DataRecv(char *recvDataPointer,UINT32 recvDataLength,INT32 Timeout_I32)
 {
     UINT16 i=0;
 	UINT32 *retPointer = NULL;
 
     
-	vos_EdrSemWait(&g_udpRecvCanFd3DataSem_ID, WAIT_FOREVER);
+	vos_EdrSemWait(&g_udpRecvCanFd3DataSem_ID, Timeout_I32);
 	retPointer = memcpy((void *)recvDataPointer,g_recvCanFd3DataArray,recvDataLength);
 	memset(g_recvCanFd3DataArray,0x0,sizeof(g_recvCanFd3DataArray));
 	vos_EdrSemPost(&g_udpRecvCanFd3DataSem_ID);
@@ -572,21 +572,21 @@ INT32 appCanFd3DataRecv(char *recvDataPointer,UINT32 recvDataLength )
 
 
 
-INT32 appCanFdDataRecv(UINT32 com,char *recvDataPointer,UINT32 recvDataLength )
+INT32 appCanFdDataRecv(UINT32 com,char *recvDataPointer,UINT32 recvDataLength,INT32 Timeout_I32)
 {
 	STATUS retValue = 0;
 
 	if(com == 1)
 	{
-	    retValue = appCanFd1DataRecv(recvDataPointer,recvDataLength );
+	    retValue = appCanFd1DataRecv(recvDataPointer,recvDataLength,Timeout_I32);
 	}
 	else if(com == 4)
 	{
-	    retValue = appCanFd2DataRecv(recvDataPointer,recvDataLength );
+	    retValue = appCanFd2DataRecv(recvDataPointer,recvDataLength,Timeout_I32);
 	}
 	else if(com == 5)
 	{
-	    retValue = appCanFd3DataRecv(recvDataPointer,recvDataLength );
+	    retValue = appCanFd3DataRecv(recvDataPointer,recvDataLength,Timeout_I32);
 	}
 	else
 	{
@@ -605,11 +605,11 @@ INT32 appCanFdDataRecv(UINT32 com,char *recvDataPointer,UINT32 recvDataLength )
 
 
 
-INT32 appCanDataRecv(UINT32 com,char *recvDataPointer,UINT32 recvDataLength )
+INT32 appCanDataRecv(UINT32 com,char *recvDataPointer,UINT32 recvDataLength,INT32 Timeout_I32)
 {
 	STATUS retValue = 0;
 
-        if(recvDataPointer == NULL)
+    if(recvDataPointer == NULL)
    	{
           retValue = 3;
           return retValue;
@@ -617,42 +617,42 @@ INT32 appCanDataRecv(UINT32 com,char *recvDataPointer,UINT32 recvDataLength )
 
 	if(com == 1)
 	{
-	    retValue = appCanFd1DataRecv(recvDataPointer,recvDataLength );
+	    retValue = appCanFd1DataRecv(recvDataPointer,recvDataLength,Timeout_I32);
 	}
 	else if(com == 2)
 	{
-	    retValue = appCan3DataRecv(recvDataPointer,recvDataLength );
+	    retValue = appCan3DataRecv(recvDataPointer,recvDataLength,Timeout_I32);
 	}
 	else if(com == 3)
 	{
-	    retValue = appCan2DataRecv(recvDataPointer,recvDataLength );
+	    retValue = appCan2DataRecv(recvDataPointer,recvDataLength,Timeout_I32);
 	}	
         else if(com == 4)
 	{
-	    retValue = appCanFd2DataRecv(recvDataPointer,recvDataLength );
+	    retValue = appCanFd2DataRecv(recvDataPointer,recvDataLength,Timeout_I32);
 	}
 	else if(com == 5)
 	{
-	    retValue = appCanFd3DataRecv(recvDataPointer,recvDataLength );
+	    retValue = appCanFd3DataRecv(recvDataPointer,recvDataLength,Timeout_I32);
 	}
 	else if(com == 6)
 	{
-	    retValue = appCan5DataRecv(recvDataPointer,recvDataLength );
+	    retValue = appCan5DataRecv(recvDataPointer,recvDataLength,Timeout_I32);
 	}
 	else if(com == 7)
 	{
-	    retValue = appCan4DataRecv(recvDataPointer,recvDataLength );
+	    retValue = appCan4DataRecv(recvDataPointer,recvDataLength,Timeout_I32);
 	}
 	else if(com == 8)
 	{
-	    retValue = appCan1DataRecv(recvDataPointer,recvDataLength );
+	    retValue = appCan1DataRecv(recvDataPointer,recvDataLength,Timeout_I32);
 	}
 	else 
 	{
 	    retValue = 2;      
 	    printf("can channel value is error \n");
 	}
-        return  retValue;
+    return  retValue;
 }
 
 
@@ -1565,6 +1565,36 @@ STATUS canAndCanFdTest_before(void)
 
 #endif
 
+
+// Function to initialize CAN standard mode configuration  
+int comCanSTDCfgInit(int channel_id,int buad_rate)  
+{  
+    // Initialize CAN configuration for the given channel in standard mode with a baud rate of 500kbps  
+    int retValue = comCfgInit(channel_id, CAN_MODE_STD, buad_rate);  
+  
+    // Check if the configuration was successful  
+    if (retValue == OK)  
+    {  
+        // If successful, print a success message  
+        printf("Configuration of channel %d successful\n\r", channel_id);  
+        return OK; // Return success  
+    }  
+    else  
+    {  
+        // If not successful, print an error message  
+        printf("Configuration of channel %d failed\n\r", channel_id);  
+        return ERROR; // Return error  
+    }  
+}  
+
+INT32 TASK_DELAY()
+{
+	vos_EdrTaskDelay(TASK_DELAY_TIME);
+}
+
+
+
+
 STATUS canAndCanFdTest(void)
 {
 	UINT8 i = 0;
@@ -1687,7 +1717,7 @@ STATUS canAndCanFdTest(void)
      
 	}
 
-#if 0
+#if 1
 	
 	if(configSucessFlag == CHANNEL_CONFG_SUCESS)
 	{
@@ -1699,7 +1729,7 @@ STATUS canAndCanFdTest(void)
 					
 					
 					
-#if 10			
+#if 0			
                     memset(g_array,0x0,sizeof(g_array));
 					canProcessDataSendLifeAdd();
 					appCanDataSend(CHANNEL_ONE,0x1ff,g_array,CHANNEL_CAN_DATA_LENGTH);
@@ -1722,7 +1752,7 @@ STATUS canAndCanFdTest(void)
 #endif
 
 			/*channel 2*/
-#if 10				
+#if 0				
 
 					vos_EdrTaskDelay(TASK_DELAY_TIME);
 					canProcessDataSendLifeAdd();
@@ -1747,7 +1777,7 @@ STATUS canAndCanFdTest(void)
 #endif
 			
 			         /*channel 3*/
-#if 10
+#if 0
 					
 
 					vos_EdrTaskDelay(TASK_DELAY_TIME);
@@ -1771,7 +1801,7 @@ STATUS canAndCanFdTest(void)
 					memset(g_array,0x0,sizeof(g_array));			
 #endif					
 			               /*channel 4*/
-#if 10					
+#if 0					
 
 					vos_EdrTaskDelay(TASK_DELAY_TIME);
 					canProcessDataSendLifeAdd();

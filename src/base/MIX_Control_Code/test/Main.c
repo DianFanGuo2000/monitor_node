@@ -1,5 +1,5 @@
 
-
+/*
 
 #include "stdio.h"
 #include <pthread.h>
@@ -8,8 +8,6 @@
 
 typedef int             INT32;
 #define STATUS  int
-
-
 
 
 
@@ -57,4 +55,6 @@ pthread_create(&tid,NULL,ThreadTest,NULL);
 	
         return 1;
 }
+
+*/
 

@@ -12,7 +12,6 @@
 #include "./base/info_manager.h"
 #include "configures.h"
 
-extern int comCanSTDCfgInit(int channel_id);
 
 
 
