@@ -11,11 +11,11 @@ char* work_at_which_round_for_listen_when_half_duplex;
 // Function to choose the status for testing based on interface type and current round  
 char* choose_status_for_test(const char *interface_name, const int current_round) {  
     char* interface_type = get_interface_type(interface_name); // Get the interface type  
-    if (strcmp(interface_type, "eth") == 0) {  
+    if (strcmp(interface_type, "can") == 0 || strcmp(interface_type, "eth") == 0) {  
         return "sending_and_receiving"; // For Ethernet, always send and receive  
     }  
     // Check if interface is CAN or RS485  
-    if (strcmp(interface_type, "can") == 0 || strcmp(interface_type, "rs485") == 0) {  
+    if (strcmp(interface_type, "rs485") == 0) {  
         // Decide based on half-duplex configuration and current round  
         if (strcmp(work_at_which_round_for_test_when_half_duplex, "odd") == 0 && current_round % 2 == 1) {  
             return "sending"; // If odd rounds and configured for odd, send  
@@ -31,11 +31,11 @@ char* choose_status_for_test(const char *interface_name, const int current_round
 // Function to choose the status for listening based on interface type and current round  
 char* choose_status_for_listen(const char *interface_name, const int current_round) {  
     char* interface_type = get_interface_type(interface_name); // Get the interface type  
-    if (strcmp(interface_type, "eth") == 0) {  
+    if (strcmp(interface_type, "can") == 0 || strcmp(interface_type, "eth") == 0) {  
         return "sending_and_receiving"; // For Ethernet, always send and receive  
     }  
     // Check if interface is CAN or RS485  
-    if (strcmp(interface_type, "can") == 0 || strcmp(interface_type, "rs485") == 0) {  
+    if (strcmp(interface_type, "rs485") == 0) {  
         // Decide based on half-duplex configuration and current round  
         if (strcmp(work_at_which_round_for_listen_when_half_duplex, "odd") == 0 && current_round % 2 == 1) {  
             return "receiving"; // If odd rounds and configured for odd, receive  
@@ -158,7 +158,7 @@ void listen_upon_interface_group() {
 
 
 
-#if 1
+#if 0
 int main(int argc, char *argv[]) {
     if (argc != 6 && argc != 4) {  
         fprintf(stderr, "Usage: %s <config_file> <mode> <work_at_which_round_for_test_when_half_duplex> <work_at_which_round_for_listen_when_half_duplex> [ <center_interface_name> <res_file_name> (when listen mode)]\n", argv[0]);  
@@ -243,7 +243,7 @@ int main(int argc, char *argv[]) {
 #endif
 
 
-#if 0
+#if 1
 
 
 typedef int             INT32;

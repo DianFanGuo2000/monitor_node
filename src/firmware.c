@@ -22,6 +22,8 @@ int init_basic_interface(int i)
             // Handle NULL pointers appropriately  
             return _ERROR; // Or some other error code  
         }  
+
+		set_interface_status(interface_name,"sending_and_receiving");
   
         // Use snprintf or similar to safely format strings for system call  
         char cmd_up[256];  
@@ -37,6 +39,8 @@ int init_basic_interface(int i)
     {  
         int rs485_gpio_number = get_rs485_gpio_number_by_index(i);  
         exportGPIO(rs485_gpio_number); // Assuming exportGPIO is defined elsewhere  
+		set485RX();
+		set_interface_status(interface_name,"receiving");
     }  
 
     if (strcmp(interface_type, "can") == 0)  
@@ -44,8 +48,10 @@ int init_basic_interface(int i)
         int channel_id = get_channel_id_by_index(i);  
 		if(comCanSTDCfgInit(channel_id)<0)
 		{
+			set_interface_status(interface_name,"closed");
 			return _ERROR;
 		}
+		set_interface_status(interface_name,"sending_and_receiving");
     }  
   
     // Free dynamically allocated strings if necessary (not shown here)  
@@ -260,15 +266,15 @@ int send_message(const char *source_interface,const char *message)
 
 int set_status(const char *source_interface, const char *status)  
 {  
-    // Attempt to set the interface status  
-    if (set_interface_status(source_interface, status) < 0) {  
-        // Print an error message (assuming a function or macro for it)  
-        printf("Failed to set interface status\n");  
-        return _ERROR;  
-    }  
+	char *current_status = get_interface_status(source_interface);
+	if (strcmp(current_status, status) == 0) {
+		return _SUCCESS;
+	}
+ 
   
     // Get the interface type  
     char *interface_type = get_interface_type(source_interface);  
+	int i = get_interface_index(source_interface);
   
     // Check if the interface is of type 'rs485'  
     if (strcmp(interface_type, "rs485") == 0) {  
@@ -277,24 +283,93 @@ int set_status(const char *source_interface, const char *status)
             printf("rs485 cannot be set as 'sending_and_receiving'\n");  
             return _ERROR;  
         }  
-  
+		
+  		// Attempt to set the interface status  
+	    if (set_interface_status(source_interface, status) < 0) {  
+	        // Print an error message (assuming a function or macro for it)  
+	        printf("Failed to set interface status\n");  
+	        return _ERROR;  
+	    } 
+		
         if (strcmp(status, "sending") == 0) {  
+			int rs485_gpio_number = get_rs485_gpio_number_by_index(i);  
+        	exportGPIO(rs485_gpio_number); // Assuming exportGPIO is defined elsewhere  
             set485TX();  
-            return _SUCCESS;  
         }  
   
         if (strcmp(status, "receiving") == 0) {  
-            set485RX();  
-            return _SUCCESS;  
+			int rs485_gpio_number = get_rs485_gpio_number_by_index(i);  
+        	exportGPIO(rs485_gpio_number); // Assuming exportGPIO is defined elsewhere  
+            set485RX();   
         }  
   
         if (strcmp(status, "closed") == 0) {  
             // For 'closed' status, assuming no special action is needed  
             // Just return success  
-            return _SUCCESS;  
         }  
+
     }  
+
+
+    if (strcmp(interface_type, "eth") == 0) {  
+        // Compare the status string correctly using strcmp  
+        if (strcmp(status, "sending") == 0 || strcmp(status, "receiving") == 0) {  
+            printf("eth cannot be set as 'sending' or 'receiving'\n");  
+            return _ERROR;  
+        }  
+		
+  		// Attempt to set the interface status  
+	    if (set_interface_status(source_interface, status) < 0) {  
+	        // Print an error message (assuming a function or macro for it)  
+	        printf("Failed to set interface status\n");  
+	        return _ERROR;  
+	    } 
+		
+        if (strcmp(status, "sending_and_receiving") == 0) {  
+            // Use snprintf or similar to safely format strings for system call  
+	        char cmd_up[256];  
+	        snprintf(cmd_up, sizeof(cmd_up), "ifconfig %s up", source_interface);  
+	        system(cmd_up);  
+        }  
   
+        if (strcmp(status, "closed") == 0) {  
+	        char cmd_up[256];  
+	        snprintf(cmd_up, sizeof(cmd_up), "ifconfig %s down", source_interface);  
+	        system(cmd_up);
+        }  
+		
+
+    }  
+
+      if (strcmp(interface_type, "can") == 0) {  
+        // Compare the status string correctly using strcmp  
+        if (strcmp(status, "sending") == 0 || strcmp(status, "receiving") == 0) {  
+            printf("can cannot be set as 'sending' or 'receiving'\n");  
+            return _ERROR;  
+        }  
+		
+  		// Attempt to set the interface status  
+	    if (set_interface_status(source_interface, status) < 0) {  
+	        // Print an error message (assuming a function or macro for it)  
+	        printf("Failed to set interface status\n");  
+	        return _ERROR;  
+	    } 
+		
+        if (strcmp(status, "sending_and_receiving") == 0) {  
+	        int channel_id = get_channel_id_by_index(i);  
+			if(comCanSTDCfgInit(channel_id)<0)
+			{
+				return _ERROR;
+			} 
+        }  
+
+ 
+        if (strcmp(status, "closed") == 0) {  
+            // For 'closed' status, assuming no special action is needed  
+            // Just return success  
+        }  
+
+    }  
     // If we reach here, either the interface type is not 'rs485' or the status is unrecognized  
     // but we're returning success as per the original function logic  
     return _SUCCESS;  
