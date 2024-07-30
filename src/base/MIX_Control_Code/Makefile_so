@@ -1,0 +1,68 @@
+TARGET = libcan.so
+
+#CROSS_COMPILE=/home/cjy/bms/host/bin/aarch64-buildroot-linux-gnu-
+#CROSS_COMPILE=aarch64-buildroot-linux-gnu-
+
+DEST_DIR=../CRRC_BAMS_LIB/
+
+CC = $(CROSS_COMPILE)gcc
+OBJCOPY = $(CROSS_COMPILE)objcopy
+OBJDUMP = $(CROSS_COMPILE)objdump
+NM = $(CROSS_COMPILE)nm
+CPPFLAGS =
+LDFLAGS =
+
+# -D是在编译时添加宏定义
+# -fPIC 用于生成位置无关代码
+CFLAGS += -fPIC
+# -Wall 打开警告合集 -O2 开启编译优化选项级别 -Wextra 选项会启用一些额外的警告
+CFLAGS += -g -O2 -Wall -Wextra
+# -Wno-unused 忽略定义但未使用的警告
+#CFLAGS += -Wno-unused
+
+CPPFLAGS += -I$(abspath ./vos/inc)
+CPPFLAGS += -I$(abspath ./can/inc)
+CPPFLAGS += -I$(abspath ./gpio/inc)
+CPPFLAGS += -I$(abspath ./rs485/inc)
+CPPFLAGS += -I$(abspath ./modbus/inc)
+CPPFLAGS += -I$(abspath ./dio/inc)
+CPPFLAGS += -I$(abspath ./plat/inc)
+
+COMPILE = $(CC) $(CPPFLAGS) $(CFLAGS) -c
+LINKCC = $(CC) 
+LINKAR = ar 
+LINKCCSO = $(CC) -shared
+
+LIBA = -lrt -lpthread libmodbus.so 
+
+#TARGET:
+SRCS := $(wildcard ./vos/src/*.c) \
+		$(wildcard ./can/src/*.c)\
+		$(wildcard ./gpio/src/*.c)\
+		$(wildcard ./rs485/src/*.c)\
+		$(wildcard ./modbus/src/*.c)\
+		$(wildcard ./dio/src/*.c)\
+		$(wildcard ./plat/src/*.c)
+
+DEPS := $(patsubst %.c,%.d,$(SRCS))
+OBJS := $(patsubst %.c,%.o,$(SRCS))
+
+$(TARGET):$(OBJS)
+# 编译静态库
+#	$(LINKAR) -rsv $(TARGET) $(OBJS) 
+# 编译动态库
+	$(LINKCCSO) $(OBJS) $(LIBA) -Wl,-soname,$(TARGET) -o $(TARGET) $(LDFLAGS)
+%.d:%.c     
+	$(CC) -MM $(CPPFLAGS) $< > $@
+%.o:%.c
+	$(COMPILE) $< -o $@
+	
+all: $(TARGET)
+
+.PHONY:install
+install:
+	install $(TARGET) $(DEST_DIR)/$(TARGET)
+
+.PHONY:clean
+clean:
+	rm -f $(OBJS) $(DEPS) $(TARGET) *.dump *.map *.debug
