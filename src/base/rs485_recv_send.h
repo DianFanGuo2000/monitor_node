@@ -30,6 +30,8 @@ typedef struct _SerialPortParams
     unsigned char paritybits;
 } SerialPortParams;
 
+void exportGPIO(int rs485_gpio_number);
+
 
 int set_rs485(int fd);
 int openPortRaw(const char* port, int openMode);

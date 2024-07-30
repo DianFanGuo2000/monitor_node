@@ -644,7 +644,7 @@ char *get_linked_node(int i)
 
 
 
-char* get_interface_name(int i)
+char* get_interface_name_by_index(int i)
 {
 	return interface_info_array[i].interface_name;
 }
@@ -725,6 +725,7 @@ int set_interface_status(const char* interface_name, const char* status)
     // Iterate through the interface array to find the matching interface  
     for (size_t i = 0; i < interface_cnt; i++) {  
         if (strcmp(interface_info_array[i].interface_name, interface_name) == 0) {  
+			free(interface_info_array[i].status);
             // Use strdup to allocate and copy the new status  
             interface_info_array[i].status = strdup(status);  
             if (interface_info_array[i].status == NULL) {  
@@ -771,6 +772,11 @@ char* get_linked_mac_addr(const char *interface_name) {
         }
     }
     return NULL;
+}
+
+char* get_interface_type_by_index(int i)
+{
+    return interface_info_array[i].interface_type;
 }
 
 

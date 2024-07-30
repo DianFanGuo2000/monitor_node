@@ -3,6 +3,103 @@
 
 
 
+int init_basic_interface(int i)  
+{  
+    char *interface_name = get_interface_name_by_index(i);  
+    char *interface_type = get_interface_type_by_index(i);  
+  
+    if (interface_name == NULL || interface_type == NULL) {  
+        // Handle NULL pointers appropriately  
+        return _ERROR; // Or some other error code  
+    }  
+  
+    if (strcmp(interface_type, "eth") == 0)  
+    {  
+        char* ip_addr = get_ip_addr_by_index(i);  
+        char* mask = get_mask_by_index(i);  
+          
+        if (ip_addr == NULL || mask == NULL) {  
+            // Handle NULL pointers appropriately  
+            return _ERROR; // Or some other error code  
+        }  
+  
+        // Use snprintf or similar to safely format strings for system call  
+        char cmd_up[256];  
+        snprintf(cmd_up, sizeof(cmd_up), "ifconfig %s up", interface_name);  
+        system(cmd_up);  
+  
+        char cmd_addr[256];  
+        snprintf(cmd_addr, sizeof(cmd_addr), "ifconfig %s %s netmask %s", interface_name, ip_addr, mask);  
+        system(cmd_addr);  
+    }  
+  
+    if (strcmp(interface_type, "rs485") == 0)  
+    {  
+        int rs485_gpio_number = get_rs485_gpio_number_by_index(i);  
+        exportGPIO(rs485_gpio_number); // Assuming exportGPIO is defined elsewhere  
+    }  
+
+    if (strcmp(interface_type, "can") == 0)  
+    {  
+        int channel_id = get_channel_id_by_index(i);  
+  
+        int retValue = comCanCfgInit(channel_id, CAN_MODE_STD, 500);  
+        if (retValue == OK)  
+        {  
+            printf("Config channel %d succeed\n\r", channel_id);  
+        }  
+        else  
+        {  
+            // Handle configuration failure appropriately  
+            printf("Config channel %d failed\n\r", channel_id);  
+			return _ERROR;
+        }  
+    }  
+  
+    // Free dynamically allocated strings if necessary (not shown here)  
+  
+    return _SUCCESS; // Success  
+}  
+
+
+// Function to close a basic interface based on its type  
+int close_basic_interface(int i)  
+{  
+    char *interface_name = get_interface_name_by_index(i);  
+    char *interface_type = get_interface_type_by_index(i);  
+  
+    if (interface_name == NULL || interface_type == NULL) {  
+        // Handle NULL pointers appropriately  
+        printf("Error: Interface name or type is NULL\n");  
+        return _ERROR; // Return an error code  
+    }  
+  
+    if (strcmp(interface_type, "eth") == 0)  
+    {  
+        // Correctly use the interface_name variable in the system call  
+        char cmd[256];  
+        snprintf(cmd, sizeof(cmd), "ifconfig %s down", interface_name);  
+        system(cmd);  
+    }  
+  
+    if (strcmp(interface_type, "rs485") == 0)  
+    {  
+        // Currently no action is taken for rs485 type, but you might want to add some  
+        // For example, unexport the GPIO pin or disable the serial communication  
+    }  
+  
+    if (strcmp(interface_type, "can") == 0)  
+    {  
+        // Currently no action is taken for can type, but you might want to reset the CAN  
+        // controller or close the CAN channel  
+    }  
+  
+    // If needed, free dynamically allocated memory for interface_name and interface_type  
+    // (assuming they are dynamically allocated, which is not shown in the context)  
+  
+    return _SUCCESS; // Return success  
+}  
+
 
 
 // 线程函数，用于异步处理消息  
@@ -97,9 +194,9 @@ void fillMessageToRS485Len(const char *message, char *RS485MSG, int rs485_len) {
     if (strlen(message) > rs485_len) {  
         RS485MSG[rs485_len] = '\0'; // 确保字符串正确终止  
     } else {  
-        // 否则，用空格填充剩余部分  
+        // 否则，用'\0' 填充剩余部分  
         size_t len = strlen(RS485MSG);  
-        memset(RS485MSG + len, ' ', rs485_len - len);  
+        memset(RS485MSG + len, '\0', rs485_len - len);  
         // 确保字符串在末尾正确终止  
         RS485MSG[rs485_len] = '\0';  
     }  

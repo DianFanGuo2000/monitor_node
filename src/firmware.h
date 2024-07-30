@@ -11,7 +11,7 @@
 
 #include "./base/info_manager.h"
 #include "configures.h"
-
+#include "./base/MIX_Control_Code/all_code/src/can_app.c"
 
 
 
@@ -33,6 +33,9 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 
 int send_message(const char *source_interface,const char *message);
 
+int init_basic_interface(int i);
+
+int close_basic_interface(int i);
 
 int set_status(const char *source_interface,const char *status);
 

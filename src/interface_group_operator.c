@@ -226,7 +226,7 @@ int main(int argc, char *argv[]) {
 #endif
 
 
-#if 0
+#if 1
 
 
 typedef int             INT32;
@@ -263,7 +263,7 @@ int main(int argc, char *argv[]) {
 
 
 
-#if 1
+#if 0
 
 
 

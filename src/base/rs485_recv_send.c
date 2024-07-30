@@ -6,11 +6,27 @@
 int speed_arr[] = {B921600, B460800, B230400, B115200, B38400, B19200, B9600, B4800, B2400, B1200, B300};
 int name_arr[] = {921600, 460800, 230400, 115200, 38400, 19200, 9600, 4800, 2400, 1200, 300};
 
-void exportGPIO()
-{
-    if (access("/sys/class/gpio/gpio428", F_OK) != 0)
-        system("echo 428 > /sys/class/gpio/export");
-}
+// Function to export a GPIO pin to the user space  
+void exportGPIO(int rs485_gpio_number)  
+{  
+    char gpio_path[64]; // Assuming GPIO number won't exceed 5 digits + extra for path  
+    char export_cmd[128]; // Command buffer to hold the echo command  
+  
+    // Construct the path to check if the GPIO is already exported  
+    snprintf(gpio_path, sizeof(gpio_path), "/sys/class/gpio/gpio%d", rs485_gpio_number);  
+  
+    // Check if the GPIO is already exported  
+    if (access(gpio_path, F_OK) != 0)  
+    {  
+        // Construct the command to export the GPIO  
+        snprintf(export_cmd, sizeof(export_cmd), "echo %d > /sys/class/gpio/export", rs485_gpio_number);  
+  
+        // Execute the command to export the GPIO  
+        system(export_cmd);  
+    }  
+}  
+  
+
 
 void set485TX()
 {
@@ -313,8 +329,8 @@ int send_packet_rs485(int fd, const char *msg, unsigned int length)
 
 int receive_packet_rs485(int fd, unsigned char *msg, unsigned int length, int wait_time)
 {
-    exportGPIO();
-    set485RX();
+    //exportGPIO();
+    //set485RX();
     /* check msg is null or not */
     if (msg == NULL) {
         printf("ERROR: Buffer is NULL!\n");

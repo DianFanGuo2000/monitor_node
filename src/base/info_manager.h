@@ -90,12 +90,13 @@ void read_interface_info_array_from_json(const char *filename, struct interface_
 int string_to_time_t(const char* time_buffer, time_t* parsed_time);
 int time_t_to_string(time_t time_val, char* buffer, size_t buffer_size);
 
+char* get_interface_type_by_index(int i);
 
 
 char *get_linked_node(int i);
 
 int get_interface_cnt();
-char* get_interface_name(int i);
+char* get_interface_name_by_index(int i);
 char* get_linked_interface_name_by_index(int i);
 
 
@@ -149,6 +150,11 @@ int  get_stopbits_by_index(int i);
 bool isValidStatus(const char* status);
   
 int set_interface_status(const char* interface_name, const char* status);
+
+char* get_ip_addr_by_index(int i);	
+char* get_mask_by_index(int i);	
+int get_rs485_gpio_number_by_index(int i);	
+int get_channel_id_by_index(int i); 
 
 		
 
