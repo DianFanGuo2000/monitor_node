@@ -703,6 +703,42 @@ char* get_interface_status(const char* interface_name)
 }
 
 
+// Function to check if the status is valid  
+bool isValidStatus(const char* status) {  
+    static const char* validStatuses[] = {"sending", "receiving", "sending_and_receiving", "closed"};  
+    size_t numStatuses = sizeof(validStatuses) / sizeof(validStatuses[0]);  
+    for (size_t i = 0; i < numStatuses; i++) {  
+        if (strcmp(status, validStatuses[i]) == 0) {  
+            return true;  
+        }  
+    }  
+    return false;  
+}  
+  
+int set_interface_status(const char* interface_name, const char* status)  
+{  
+    // Check if the status is valid  
+    if (!isValidStatus(status)) {  
+        return _ERROR; // Return error if status is invalid  
+    }  
+  
+    // Iterate through the interface array to find the matching interface  
+    for (size_t i = 0; i < interface_cnt; i++) {  
+        if (strcmp(interface_info_array[i].interface_name, interface_name) == 0) {  
+            // Use strdup to allocate and copy the new status  
+            interface_info_array[i].status = strdup(status);  
+            if (interface_info_array[i].status == NULL) {  
+                // Handle memory allocation failure  
+                return _ERROR;  
+            }  
+            return _SUCCESS; // Return success if the interface was found and updated  
+        }  
+    }  
+    return _ERROR; // Return error if the interface was not found  
+}
+
+
+
 char* get_interface_mode(const char* interface_name)
 {
     for (size_t i = 0; i < interface_cnt; i++) {

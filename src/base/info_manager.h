@@ -12,6 +12,7 @@
 #include <stdlib.h>  
 #include <string.h>  
 #include <cjson/cJSON.h> /*��Ҫ��װcJSON */
+#include <stdbool.h>  
 
 
 
@@ -142,6 +143,12 @@ unsigned char  get_paritybits_by_index(int i);
 
 
 int  get_stopbits_by_index(int i);
+
+
+// Function to check if the status is valid  
+bool isValidStatus(const char* status);
+  
+int set_interface_status(const char* interface_name, const char* status);
 
 		
 

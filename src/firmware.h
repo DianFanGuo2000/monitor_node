@@ -34,9 +34,10 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 int send_message(const char *source_interface,const char *message);
 
 
-void set_status(const char *source_interface,const char *status);
+int set_status(const char *source_interface,const char *status);
 
 void sync_status(const char *source_interface);
+void fillMessageToRS485Len(const char *message, char *RS485MSG, int rs485_len);
 
 
 
