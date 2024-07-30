@@ -602,6 +602,22 @@ STATUS compareSendAndRecvData(char *pointer,UINT8 dataLength)
 }
 
 
+int comCanSTDCfgInit(int channel_id)
+{
+	
+	int retValue = comCanCfgInit(channel_id, CAN_MODE_STD, 500);  
+	if (retValue == OK)  
+	{  
+		printf("Config channel %d succeed\n\r", channel_id);  
+	}  
+	else  
+	{  
+		// Handle configuration failure appropriately  
+		printf("Config channel %d failed\n\r", channel_id);  
+		return ERROR;
+	} 
+	return OK;
+}
 
 
 

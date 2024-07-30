@@ -16,7 +16,7 @@ int init_basic_interface(int i)
     if (strcmp(interface_type, "eth") == 0)  
     {  
         char* ip_addr = get_ip_addr_by_index(i);  
-        char* mask = get_mask_by_index(i);  
+        char* mask = get_net_mask_by_index(i);  
           
         if (ip_addr == NULL || mask == NULL) {  
             // Handle NULL pointers appropriately  
@@ -42,18 +42,10 @@ int init_basic_interface(int i)
     if (strcmp(interface_type, "can") == 0)  
     {  
         int channel_id = get_channel_id_by_index(i);  
-  
-        int retValue = comCanCfgInit(channel_id, CAN_MODE_STD, 500);  
-        if (retValue == OK)  
-        {  
-            printf("Config channel %d succeed\n\r", channel_id);  
-        }  
-        else  
-        {  
-            // Handle configuration failure appropriately  
-            printf("Config channel %d failed\n\r", channel_id);  
+		if(comCanSTDCfgInit(channel_id)<0)
+		{
 			return _ERROR;
-        }  
+		}
     }  
   
     // Free dynamically allocated strings if necessary (not shown here)  

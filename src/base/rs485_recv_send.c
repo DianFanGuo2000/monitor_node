@@ -295,8 +295,8 @@ int close_port(int fd)
  */
 int send_packet_rs485(int fd, const char *msg, unsigned int length)
 {
-    exportGPIO();
-    set485TX();
+    //exportGPIO();
+    //set485TX();
     /* check msg is null or not */
 	if (msg == NULL) {
         printf("ERROR: Buffer is NULL!\n");

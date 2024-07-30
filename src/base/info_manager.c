@@ -237,12 +237,17 @@ void write_interface_info_array_to_json(const char *filename, struct interface_i
 
 		cJSON *eth_info = cJSON_CreateObject();  
 		if (array[i].eth_info.mac_addr != NULL) {  
-		    cJSON_AddStringToObject(eth_info, "mac_addr", array[i].eth_info.mac_addr);  
+		    cJSON_AddStringToObject(eth_info, "ip_addr", array[i].eth_info.ip_addr);  
+			cJSON_AddStringToObject(eth_info, "net_mask", array[i].eth_info.net_mask);  
+			cJSON_AddStringToObject(eth_info, "mac_addr", array[i].eth_info.mac_addr);  
 		}  
 		cJSON_AddItemToObject(interface, "eth_info", eth_info);  
 
+
 		cJSON *linked_eth_info = cJSON_CreateObject();  
 		if (array[i].linked_eth_info.mac_addr != NULL) {  
+		    cJSON_AddStringToObject(eth_info, "ip_addr", array[i].eth_info.ip_addr);  
+			cJSON_AddStringToObject(eth_info, "net_mask", array[i].eth_info.net_mask);
 		    cJSON_AddStringToObject(linked_eth_info, "mac_addr", array[i].linked_eth_info.mac_addr);  
 		}  
 		cJSON_AddItemToObject(interface, "linked_eth_info", linked_eth_info); 
@@ -259,9 +264,12 @@ void write_interface_info_array_to_json(const char *filename, struct interface_i
 		    cJSON_AddNumberToObject(linked_can_info, "can_id", array[i].linked_can_info.can_id);  
 		}
 		cJSON_AddItemToObject(interface, "linked_can_info", linked_can_info);
+
+
 	
 		cJSON *rs485_info = cJSON_CreateObject();  
 		if (array[i].rs485_info.baud_rate != -1) { // 假设 -1 是一个无效值，用于检查  
+			cJSON_AddNumberToObject(rs485_info, "rs485_gpio_number", array[i].rs485_info.rs485_gpio_number); 
 		    cJSON_AddNumberToObject(rs485_info, "databits", array[i].rs485_info.databits); 
 			cJSON_AddNumberToObject(rs485_info, "stopbits", array[i].rs485_info.stopbits);
 			cJSON_AddNumberToObject(rs485_info, "paritybits", array[i].rs485_info.paritybits);
@@ -271,6 +279,7 @@ void write_interface_info_array_to_json(const char *filename, struct interface_i
 
 		cJSON *linked_rs485_info = cJSON_CreateObject();  
 		if (array[i].linked_rs485_info.baud_rate != -1) { // 假设 -1 是一个无效值，用于检查  
+			cJSON_AddNumberToObject(rs485_info, "rs485_gpio_number", array[i].rs485_info.rs485_gpio_number);
 		    cJSON_AddNumberToObject(rs485_info, "databits", array[i].rs485_info.databits); 
 			cJSON_AddNumberToObject(rs485_info, "stopbits", array[i].rs485_info.stopbits);
 			cJSON_AddNumberToObject(rs485_info, "paritybits", array[i].rs485_info.paritybits);
@@ -396,10 +405,26 @@ void read_interface_info_array_from_json(const char *filename, struct interface_
         array[i].status = strdup(cJSON_GetObjectItem(interface, "status")->valuestring);
 		array[i].mode = strdup(cJSON_GetObjectItem(interface, "mode")->valuestring);
 
+
+
         // Handle nested structures
 		// Fill eth_info  
 		tmp = cJSON_GetObjectItem(interface, "eth_info");  
 		if (tmp && cJSON_IsObject(tmp)) {  
+			cJSON *ip_addr_item = cJSON_GetObjectItem(tmp, "ip_addr");  
+			if (ip_addr_item && cJSON_IsString(ip_addr_item)) {  
+				array[i].eth_info.ip_addr = strdup(ip_addr_item->valuestring);  
+			} else {  
+				array[i].eth_info.ip_addr = NULL;	
+			}  
+
+			cJSON *net_mask_item = cJSON_GetObjectItem(tmp, "net_mask");  
+			if (net_mask_item && cJSON_IsString(net_mask_item)) {  
+				array[i].eth_info.net_mask = strdup(net_mask_item->valuestring);  
+			} else {  
+				array[i].eth_info.net_mask = NULL;	
+			}  
+
 			cJSON *mac_addr_item = cJSON_GetObjectItem(tmp, "mac_addr");  
 			if (mac_addr_item && cJSON_IsString(mac_addr_item)) {  
 				array[i].eth_info.mac_addr = strdup(mac_addr_item->valuestring);  
@@ -407,20 +432,38 @@ void read_interface_info_array_from_json(const char *filename, struct interface_
 				array[i].eth_info.mac_addr = NULL;	
 			}  
 		} else {  
+			array[i].eth_info.ip_addr = NULL;
+			array[i].eth_info.net_mask = NULL;
 			array[i].eth_info.mac_addr = NULL;	
 		}  
 
 		// Fill linked_eth_info  
 		tmp = cJSON_GetObjectItem(interface, "linked_eth_info");  
 		if (tmp && cJSON_IsObject(tmp)) {  
+			cJSON *ip_addr_item = cJSON_GetObjectItem(tmp, "ip_addr");  
+			if (ip_addr_item && cJSON_IsString(ip_addr_item)) {  
+				array[i].eth_info.ip_addr = strdup(ip_addr_item->valuestring);  
+			} else {  
+				array[i].eth_info.ip_addr = NULL;	
+			}  
+
+			cJSON *net_mask_item = cJSON_GetObjectItem(tmp, "net_mask");  
+			if (net_mask_item && cJSON_IsString(net_mask_item)) {  
+				array[i].eth_info.net_mask = strdup(net_mask_item->valuestring);  
+			} else {  
+				array[i].eth_info.net_mask = NULL;	
+			}  
+
 			cJSON *mac_addr_item = cJSON_GetObjectItem(tmp, "mac_addr");  
 			if (mac_addr_item && cJSON_IsString(mac_addr_item)) {  
-				array[i].linked_eth_info.mac_addr = strdup(mac_addr_item->valuestring);  
+				array[i].eth_info.mac_addr = strdup(mac_addr_item->valuestring);  
 			} else {  
-				array[i].linked_eth_info.mac_addr = NULL;	
+				array[i].eth_info.mac_addr = NULL;	
 			}  
 		} else {  
-			array[i].linked_eth_info.mac_addr = NULL;	
+			array[i].eth_info.ip_addr = NULL;
+			array[i].eth_info.net_mask = NULL;
+			array[i].eth_info.mac_addr = NULL;		
 		} 
 
 
@@ -451,10 +494,19 @@ void read_interface_info_array_from_json(const char *filename, struct interface_
 			array[i].linked_can_info.can_id = -1;  
 		}
 
-		  
+
+
 		// Fill baud_rate  
 		tmp = cJSON_GetObjectItem(interface, "rs485_info");  
 		if (tmp && cJSON_IsObject(tmp)) {  
+			cJSON *rs485_gpio_number_item = cJSON_GetObjectItem(tmp, "rs485_gpio_number");	
+			if (rs485_gpio_number_item && cJSON_IsNumber(rs485_gpio_number_item)) {  
+				array[i].rs485_info.rs485_gpio_number = rs485_gpio_number_item->valuedouble;  
+			} else {  
+				array[i].rs485_info.rs485_gpio_number = -1;  
+			}  
+
+			
 			cJSON *baud_rate_item = cJSON_GetObjectItem(tmp, "baud_rate");	
 			if (baud_rate_item && cJSON_IsNumber(baud_rate_item)) {  
 				array[i].rs485_info.baud_rate = baud_rate_item->valuedouble;  
@@ -485,6 +537,7 @@ void read_interface_info_array_from_json(const char *filename, struct interface_
 
 	
 		} else {  
+			array[i].rs485_info.rs485_gpio_number = -1; 
 			array[i].rs485_info.baud_rate = -1;  
 			array[i].rs485_info.databits = -1;  
 			array[i].rs485_info.stopbits = -1;  
@@ -494,7 +547,14 @@ void read_interface_info_array_from_json(const char *filename, struct interface_
 
 		// Fill linked_baud_rate  
 		tmp = cJSON_GetObjectItem(interface, "linked_rs485_info");  
-		if (tmp && cJSON_IsObject(tmp)) {  
+		if (tmp && cJSON_IsObject(tmp)) { 
+			cJSON *rs485_gpio_number_item = cJSON_GetObjectItem(tmp, "rs485_gpio_number");	
+			if (rs485_gpio_number_item && cJSON_IsNumber(rs485_gpio_number_item)) {  
+				array[i].rs485_info.rs485_gpio_number = rs485_gpio_number_item->valuedouble;  
+			} else {  
+				array[i].rs485_info.rs485_gpio_number = -1;  
+			}  
+			
 			cJSON *baud_rate_item = cJSON_GetObjectItem(tmp, "baud_rate");	
 			if (baud_rate_item && cJSON_IsNumber(baud_rate_item)) {  
 				array[i].rs485_info.baud_rate = baud_rate_item->valuedouble;  
@@ -525,6 +585,7 @@ void read_interface_info_array_from_json(const char *filename, struct interface_
 
 	
 		} else {  
+			array[i].rs485_info.rs485_gpio_number = -1; 
 			array[i].rs485_info.baud_rate = -1;  
 			array[i].rs485_info.databits = -1;  
 			array[i].rs485_info.stopbits = -1;  
@@ -558,8 +619,12 @@ void free_interface_info_array()
 		free(interface_info_array[i].interface_type);  
 		free(interface_info_array[i].linked_node);	
 		free(interface_info_array[i].linked_interface_name);  
-		free(interface_info_array[i].linked_interface_type);  
+		free(interface_info_array[i].linked_interface_type);
+		free(interface_info_array[i].eth_info.ip_addr);
+		free(interface_info_array[i].eth_info.net_mask);
 		free(interface_info_array[i].eth_info.mac_addr);  
+		free(interface_info_array[i].linked_eth_info.ip_addr);
+		free(interface_info_array[i].linked_eth_info.net_mask);
 		free(interface_info_array[i].linked_eth_info.mac_addr); 
 		free(interface_info_array[i].status); 
 		free(interface_info_array[i].mode); 
@@ -714,6 +779,38 @@ bool isValidStatus(const char* status) {
     }  
     return false;  
 }  
+
+
+char* get_ip_addr_by_index(int i)
+{
+	return interface_info_array[i].eth_info.ip_addr;
+}
+
+
+char* get_net_mask_by_index(int i)
+{
+	return interface_info_array[i].eth_info.net_mask;
+}
+
+
+
+int get_rs485_gpio_number_by_index(int i)
+{
+	return interface_info_array[i].rs485_info.rs485_gpio_number;
+}
+
+
+
+
+int get_channel_id_by_index(int i)
+{
+	return interface_info_array[i].can_info.can_id;
+}
+
+
+
+
+
   
 int set_interface_status(const char* interface_name, const char* status)  
 {  

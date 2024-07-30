@@ -64,7 +64,7 @@ void test_upon_interface_group() {
             if (pid == 0) {  
                 // 子进程  
 				while(1){
-					test_upon_one_interface_in_one_time(get_interface_name(i), "hello, are you here?", PAKCAGES_NUM_ONE_TIME,choose_status_for_test); 
+					test_upon_one_interface_in_one_time(get_interface_name_by_index(i), "hello, are you here?", PAKCAGES_NUM_ONE_TIME,choose_status_for_test); 
 				}
                 exit(0); // 子进程完成后退出  
             } else if (pid < 0) {  
@@ -118,7 +118,7 @@ void listen_upon_interface_group() {
             if (pid == 0) {  
                 // 子进程  
                 while(1){
-                	listen_upon_one_interface_in_one_time(get_linked_node(i),get_interface_name(i),choose_status_for_listen); 
+                	listen_upon_one_interface_in_one_time(get_linked_node(i),get_interface_name_by_index(i),choose_status_for_listen); 
                 }
                 exit(0); // 子进程完成后退出  
             } else if (pid < 0) {  
@@ -158,7 +158,7 @@ void listen_upon_interface_group() {
 
 
 
-#if 0
+#if 1
 int main(int argc, char *argv[]) {
     if (argc != 6 && argc != 4) {  
         fprintf(stderr, "Usage: %s <config_file> <mode> <work_at_which_round_for_test_when_half_duplex> <work_at_which_round_for_listen_when_half_duplex> [ <center_interface_name> <res_file_name> (when listen mode)]\n", argv[0]);  
@@ -171,17 +171,34 @@ int main(int argc, char *argv[]) {
 	work_at_which_round_for_test_when_half_duplex = argv[3];
 	work_at_which_round_for_listen_when_half_duplex = argv[4];
 
-	
 
     if (strcmp(mode, "test") == 0) {  
         start_and_load_info(config_file); 
+		
+		int cnt = get_interface_cnt();
+		for(int i=0;i<cnt;i++)
+			init_basic_interface(i);
+		
 		// 下面开始循环测试各个配置好的物理通信接口
 		test_upon_interface_group();
+
+		for(int i=0;i<cnt;i++)
+			close_basic_interface(i);
+		
     } else if (strcmp(mode, "listen") == 0) {
         start_and_load_info(config_file);
+
+		int cnt = get_interface_cnt();
+		for(int i=0;i<cnt;i++)
+			init_basic_interface(i);
+
 		set_center_interface_name(argv[5]);
 		set_res_file_name(argv[6]);
+		
 		listen_upon_interface_group();
+
+		for(int i=0;i<cnt;i++)
+			close_basic_interface(i);
 		// 陪试不需要同步测试结果
     } else {  
         fprintf(stderr, "Invalid mode '%s'. Valid modes are 'test' 'listen'.\n", mode);  
@@ -226,7 +243,7 @@ int main(int argc, char *argv[]) {
 #endif
 
 
-#if 1
+#if 0
 
 
 typedef int             INT32;

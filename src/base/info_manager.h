@@ -18,7 +18,10 @@
 
 
 
-struct eth_info {  
+struct eth_info { 
+	char *ip_addr;  
+	char *net_mask;  
+
     char *mac_addr;  
 };  
   
@@ -27,6 +30,8 @@ struct can_info {
 };  
   
 struct rs485_info { 
+	int rs485_gpio_number;
+	
 	int databits;
 	int stopbits;
 	unsigned char paritybits;
@@ -152,7 +157,7 @@ bool isValidStatus(const char* status);
 int set_interface_status(const char* interface_name, const char* status);
 
 char* get_ip_addr_by_index(int i);	
-char* get_mask_by_index(int i);	
+char* get_net_mask_by_index(int i);	
 int get_rs485_gpio_number_by_index(int i);	
 int get_channel_id_by_index(int i); 
 

@@ -11,7 +11,8 @@
 
 #include "./base/info_manager.h"
 #include "configures.h"
-#include "./base/MIX_Control_Code/all_code/src/can_app.c"
+
+extern int comCanSTDCfgInit(int channel_id);
 
 
 
