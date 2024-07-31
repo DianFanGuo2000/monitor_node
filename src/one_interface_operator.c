@@ -76,6 +76,8 @@ pthread_mutex_t init_mutex = PTHREAD_MUTEX_INITIALIZER;
 // Initialization function  
 void init_test_or_listen_record_arrays() {  
     pthread_mutex_lock(&init_mutex); // Lock the mutex before initialization  
+
+	printf("recording variables being initialized\n");
   
     if (initialized_flag == -1) {  
         int number = get_interface_cnt();  
@@ -122,12 +124,15 @@ void init_test_or_listen_record_arrays() {
         // Mark as initialized  
         initialized_flag = 0;  
     }  
-  
+
+	printf("recording variables initialized done\n");
     pthread_mutex_unlock(&init_mutex); // Unlock the mutex after initialization  
 }  
 
 
 void free_test_or_listen_record_arrays() {  
+	pthread_mutex_lock(&init_mutex); // Lock the mutex before initialization 
+	printf("recording variables being free\n");
     // 假设initialized_flag和init_mutex是全局的，并且我们知道它们的状态  
     // 如果需要，可以在这里添加检查以确保在释放资源之前已经正确初始化  
   
@@ -151,10 +156,10 @@ void free_test_or_listen_record_arrays() {
         // 标记为未初始化（可选，取决于你的具体需求）  
         initialized_flag = -1;  
     }  
-  
-    // 注意：我们没有解锁init_mutex，因为在这个上下文中，我们不是在多线程环境中竞争这个互斥锁  
-    // 只有在多线程环境中，并且你需要在释放资源后继续使用该互斥锁时，才需要解锁它  
-    // 但在这个函数中，我们的目的是清理资源，而不是继续使用互斥锁  
+
+	printf("recording variables free done\n");
+	pthread_mutex_unlock(&init_mutex); // Unlock the mutex after initialization  
+
 }  
 
 void deal_with_mnt(const char* linked_node,const char* listened_interface, const char* msg) {  

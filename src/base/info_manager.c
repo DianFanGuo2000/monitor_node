@@ -390,9 +390,11 @@ void read_interface_info_array_from_json(const char *filename, struct interface_
 	{
 		_size=size;
 	}
+	//printf("xasxasx\n");
     for (int i = 0; i < _size; i++) {
         interface = cJSON_GetArrayItem(interfaces, i);
         if (!interface) continue;
+
 
         // Allocate and fill located_node
         array[i].located_node = strdup(cJSON_GetObjectItem(interface, "located_node")->valuestring);
@@ -404,7 +406,6 @@ void read_interface_info_array_from_json(const char *filename, struct interface_
         array[i].linked_interface_type = strdup(cJSON_GetObjectItem(interface, "linked_interface_type")->valuestring);
         array[i].status = strdup(cJSON_GetObjectItem(interface, "status")->valuestring);
 		array[i].mode = strdup(cJSON_GetObjectItem(interface, "mode")->valuestring);
-
 
 
         // Handle nested structures
@@ -442,29 +443,30 @@ void read_interface_info_array_from_json(const char *filename, struct interface_
 		if (tmp && cJSON_IsObject(tmp)) {  
 			cJSON *ip_addr_item = cJSON_GetObjectItem(tmp, "ip_addr");  
 			if (ip_addr_item && cJSON_IsString(ip_addr_item)) {  
-				array[i].eth_info.ip_addr = strdup(ip_addr_item->valuestring);  
+				array[i].linked_eth_info.ip_addr = strdup(ip_addr_item->valuestring);  
 			} else {  
-				array[i].eth_info.ip_addr = NULL;	
+				array[i].linked_eth_info.ip_addr = NULL;	
 			}  
 
 			cJSON *net_mask_item = cJSON_GetObjectItem(tmp, "net_mask");  
 			if (net_mask_item && cJSON_IsString(net_mask_item)) {  
-				array[i].eth_info.net_mask = strdup(net_mask_item->valuestring);  
+				array[i].linked_eth_info.net_mask = strdup(net_mask_item->valuestring);  
 			} else {  
-				array[i].eth_info.net_mask = NULL;	
+				array[i].linked_eth_info.net_mask = NULL;	
 			}  
 
 			cJSON *mac_addr_item = cJSON_GetObjectItem(tmp, "mac_addr");  
 			if (mac_addr_item && cJSON_IsString(mac_addr_item)) {  
-				array[i].eth_info.mac_addr = strdup(mac_addr_item->valuestring);  
+				array[i].linked_eth_info.mac_addr = strdup(mac_addr_item->valuestring);  
 			} else {  
-				array[i].eth_info.mac_addr = NULL;	
+				array[i].linked_eth_info.mac_addr = NULL;	
 			}  
 		} else {  
-			array[i].eth_info.ip_addr = NULL;
-			array[i].eth_info.net_mask = NULL;
-			array[i].eth_info.mac_addr = NULL;		
+			array[i].linked_eth_info.ip_addr = NULL;
+			array[i].linked_eth_info.net_mask = NULL;
+			array[i].linked_eth_info.mac_addr = NULL;		
 		} 
+
 
 
 		// Fill can_id	
@@ -550,46 +552,46 @@ void read_interface_info_array_from_json(const char *filename, struct interface_
 		if (tmp && cJSON_IsObject(tmp)) { 
 			cJSON *rs485_gpio_number_item = cJSON_GetObjectItem(tmp, "rs485_gpio_number");	
 			if (rs485_gpio_number_item && cJSON_IsNumber(rs485_gpio_number_item)) {  
-				array[i].rs485_info.rs485_gpio_number = rs485_gpio_number_item->valuedouble;  
+				array[i].linked_rs485_info.rs485_gpio_number = rs485_gpio_number_item->valuedouble;  
 			} else {  
-				array[i].rs485_info.rs485_gpio_number = -1;  
+				array[i].linked_rs485_info.rs485_gpio_number = -1;  
 			}  
 			
 			cJSON *baud_rate_item = cJSON_GetObjectItem(tmp, "baud_rate");	
 			if (baud_rate_item && cJSON_IsNumber(baud_rate_item)) {  
-				array[i].rs485_info.baud_rate = baud_rate_item->valuedouble;  
+				array[i].linked_rs485_info.baud_rate = baud_rate_item->valuedouble;  
 			} else {  
-				array[i].rs485_info.baud_rate = -1;  
+				array[i].linked_rs485_info.baud_rate = -1;  
 			}  
 
 			cJSON *databits_item = cJSON_GetObjectItem(tmp, "databits");
 			if (databits_item && cJSON_IsNumber(databits_item)) {  
-				array[i].rs485_info.databits = databits_item->valuedouble;  
+				array[i].linked_rs485_info.databits = databits_item->valuedouble;  
 			} else {  
-				array[i].rs485_info.databits = -1;  
+				array[i].linked_rs485_info.databits = -1;  
 			}  
 
 			cJSON *stopbits_item = cJSON_GetObjectItem(tmp, "stopbits");
 			if (stopbits_item && cJSON_IsNumber(stopbits_item)) {  
-				array[i].rs485_info.stopbits = stopbits_item->valuedouble;  
+				array[i].linked_rs485_info.stopbits = stopbits_item->valuedouble;  
 			} else {  
-				array[i].rs485_info.stopbits = -1;  
+				array[i].linked_rs485_info.stopbits = -1;  
 			}  
 
 			cJSON *paritybits_item = cJSON_GetObjectItem(tmp, "paritybits");
 			if (paritybits_item && cJSON_IsNumber(paritybits_item)) {  
-				array[i].rs485_info.paritybits = paritybits_item->valuedouble;  
+				array[i].linked_rs485_info.paritybits = paritybits_item->valuedouble;  
 			} else {  
-				array[i].rs485_info.paritybits = 0;  
+				array[i].linked_rs485_info.paritybits = 0;  
 			}  
 
 	
 		} else {  
-			array[i].rs485_info.rs485_gpio_number = -1; 
-			array[i].rs485_info.baud_rate = -1;  
-			array[i].rs485_info.databits = -1;  
-			array[i].rs485_info.stopbits = -1;  
-			array[i].rs485_info.paritybits = 0;  
+			array[i].linked_rs485_info.rs485_gpio_number = -1; 
+			array[i].linked_rs485_info.baud_rate = -1;  
+			array[i].linked_rs485_info.databits = -1;  
+			array[i].linked_rs485_info.stopbits = -1;  
+			array[i].linked_rs485_info.paritybits = 0;  
 		}
 
     }
@@ -652,6 +654,9 @@ time_t get_test_begin_time()
 
 void start_and_load_info(const char *filename)
 {
+
+	printf("loading interface information......\n");
+
 	int size = update_interface_cnt(filename);
 	int ret = string_to_time_t(TEST_BEIGIN_TIME, &test_begin_time);
 	
@@ -675,7 +680,7 @@ void start_and_load_info(const char *filename)
 		//communication_info_array[i].error_ratio_value = "0";
 	}
 
-	
+	printf("loaded\n");
 	
 }
 

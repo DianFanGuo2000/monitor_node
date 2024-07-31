@@ -158,19 +158,29 @@ void listen_upon_interface_group() {
 
 
 
-#if 0
+#if 1
 int main(int argc, char *argv[]) {
     if (argc != 6 && argc != 4) {  
-        fprintf(stderr, "Usage: %s <config_file> <mode> <work_at_which_round_for_test_when_half_duplex> <work_at_which_round_for_listen_when_half_duplex> [ <center_interface_name> <res_file_name> (when listen mode)]\n", argv[0]);  
+        fprintf(stderr, "Usage: %s <config_file> <mode> <work_at_which_round_when_half_duplex> [ <center_interface_name> <res_file_name> (when listen mode)]\n", argv[0]);  
         fprintf(stderr, "Mode should be 'test' or 'listen'.\n");  
         return 1; // 表示程序因为错误的参数而退出  
     }  
   
     const char* config_file = argv[1];  
     const char* mode = argv[2];
-	work_at_which_round_for_test_when_half_duplex = argv[3];
-	work_at_which_round_for_listen_when_half_duplex = argv[4];
 
+	
+	if(strcmp(mode, "test") == 0)
+	{
+		work_at_which_round_for_test_when_half_duplex = argv[3];
+	}
+
+	if(strcmp(mode, "listen") == 0)
+	{
+		work_at_which_round_for_listen_when_half_duplex = argv[3];
+	}
+
+	
 
     if (strcmp(mode, "test") == 0) {  
         start_and_load_info(config_file); 
@@ -196,8 +206,8 @@ int main(int argc, char *argv[]) {
 		for(int i=0;i<cnt;i++)
 			init_basic_interface(i);
 
-		set_center_interface_name(argv[5]);
-		set_res_file_name(argv[6]);
+		set_center_interface_name(argv[4]);
+		set_res_file_name(argv[5]);
 		init_test_or_listen_record_arrays();
 
 		
@@ -289,7 +299,7 @@ int main(int argc, char *argv[]) {
 
 
 
-#if 1
+#if 0
 
 
 

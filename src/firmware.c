@@ -6,7 +6,9 @@
 int init_basic_interface(int i)  
 {  
     char *interface_name = get_interface_name_by_index(i);  
-    char *interface_type = get_interface_type_by_index(i);  
+    char *interface_type = get_interface_type_by_index(i); 
+
+	printf("%s being initialized\n",interface_name);
   
     if (interface_name == NULL || interface_type == NULL) {  
         // Handle NULL pointers appropriately  
@@ -28,11 +30,14 @@ int init_basic_interface(int i)
         // Use snprintf or similar to safely format strings for system call  
         char cmd_up[256];  
         snprintf(cmd_up, sizeof(cmd_up), "ifconfig %s up", interface_name);  
-        system(cmd_up);  
+        system(cmd_up); 
+		
   
         char cmd_addr[256];  
         snprintf(cmd_addr, sizeof(cmd_addr), "ifconfig %s %s netmask %s", interface_name, ip_addr, mask);  
         system(cmd_addr);  
+
+		printf("interface_name:%s, ip_addr:%s, mask:%s\n",interface_name,ip_addr,mask);
     }  
   
     if (strcmp(interface_type, "rs485") == 0)  
