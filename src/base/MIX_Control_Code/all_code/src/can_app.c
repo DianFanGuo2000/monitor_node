@@ -1054,7 +1054,7 @@ STATUS comCfgInit(UINT32 com,UINT32 mode,UINT32 bpsRate)
 	cfgParameterSend.bpsRate = bpsRate;
 	//cfgParameterSend.canFdRate = canFdBpsRate;
 	
-        printf("send start ! \r\n");
+    printf("send start ! \r\n");
 	
 	appCanDataSendFunc(com,(char *)&cfgParameterSend,sizeof(CFG_INIT_INFO));
 	//vos_EdrTaskDelay(TASK_DELAY_TIME);
@@ -1066,7 +1066,7 @@ STATUS comCfgInit(UINT32 com,UINT32 mode,UINT32 bpsRate)
 		{
 			printf("com :%d,ininit wait %d times\n\r", com, num);
 		}
-        }
+     }
 
 	printf("com:%d, num is :%d\n\r", com, num);
 	

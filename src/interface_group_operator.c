@@ -11,11 +11,11 @@ char* work_at_which_round_for_listen_when_half_duplex;
 // Function to choose the status for testing based on interface type and current round  
 char* choose_status_for_test(const char *interface_name, const int current_round) {  
     char* interface_type = get_interface_type(interface_name); // Get the interface type  
-    if (strcmp(interface_type, "can") == 0 || strcmp(interface_type, "eth") == 0) {  
+    if (strcmp(interface_type, "eth") == 0) {  
         return "sending_and_receiving"; // For Ethernet, always send and receive  
     }  
     // Check if interface is CAN or RS485  
-    if (strcmp(interface_type, "rs485") == 0) {  
+    if (strcmp(interface_type, "can") == 0 || strcmp(interface_type, "rs485") == 0) {  
         // Decide based on half-duplex configuration and current round  
         if (strcmp(work_at_which_round_for_test_when_half_duplex, "odd") == 0 && current_round % 2 == 1) {  
             return "sending"; // If odd rounds and configured for odd, send  
@@ -31,11 +31,11 @@ char* choose_status_for_test(const char *interface_name, const int current_round
 // Function to choose the status for listening based on interface type and current round  
 char* choose_status_for_listen(const char *interface_name, const int current_round) {  
     char* interface_type = get_interface_type(interface_name); // Get the interface type  
-    if (strcmp(interface_type, "can") == 0 || strcmp(interface_type, "eth") == 0) {  
+    if (strcmp(interface_type, "eth") == 0) {  
         return "sending_and_receiving"; // For Ethernet, always send and receive  
     }  
     // Check if interface is CAN or RS485  
-    if (strcmp(interface_type, "rs485") == 0) {  
+    if (strcmp(interface_type, "can") == 0 || strcmp(interface_type, "rs485") == 0) {  
         // Decide based on half-duplex configuration and current round  
         if (strcmp(work_at_which_round_for_listen_when_half_duplex, "odd") == 0 && current_round % 2 == 1) {  
             return "receiving"; // If odd rounds and configured for odd, receive  
@@ -178,9 +178,13 @@ int main(int argc, char *argv[]) {
 		int cnt = get_interface_cnt();
 		for(int i=0;i<cnt;i++)
 			init_basic_interface(i);
+
+		init_test_or_listen_record_arrays();
 		
 		// 下面开始循环测试各个配置好的物理通信接口
 		test_upon_interface_group();
+
+		free_test_or_listen_record_arrays();
 
 		for(int i=0;i<cnt;i++)
 			close_basic_interface(i);
@@ -194,8 +198,12 @@ int main(int argc, char *argv[]) {
 
 		set_center_interface_name(argv[5]);
 		set_res_file_name(argv[6]);
+		init_test_or_listen_record_arrays();
+
 		
 		listen_upon_interface_group();
+
+		free_test_or_listen_record_arrays();
 
 		for(int i=0;i<cnt;i++)
 			close_basic_interface(i);

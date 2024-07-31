@@ -57,27 +57,125 @@ int sync_communication_info(const char* center_interface_name)
 
 
 
-int cnt = 0; // 全局计数器，需要线程安全  
-pthread_mutex_t cnt_mutex = PTHREAD_MUTEX_INITIALIZER; // 互斥锁保护 cnt  
-int round = 0;  
+// Global flag indicating whether initialization has occurred  
+int initialized_flag = -1;  
+  
+// Global counter array, needs to be thread-safe  
+int *cnt_array = NULL;  
+  
+// Array of mutexes to protect cnt_array  
+pthread_mutex_t *cnt_mutex_array = NULL;  
+  
+// Assuming round_array should be an array as well, initialized to 0  
+int *round_array = NULL;  
 
+// Mutex to protect the initialization process  
+pthread_mutex_t init_mutex = PTHREAD_MUTEX_INITIALIZER; 
+
+
+// Initialization function  
+void init_test_or_listen_record_arrays() {  
+    pthread_mutex_lock(&init_mutex); // Lock the mutex before initialization  
+  
+    if (initialized_flag == -1) {  
+        int number = get_interface_cnt();  
+  
+        // Allocate memory for arrays  
+        cnt_array = malloc(number * sizeof(int));  
+        if (cnt_array == NULL) {  
+            // Handle error  
+            pthread_mutex_unlock(&init_mutex); // Unlock the mutex on error  
+            return;  
+        }  
+  
+        cnt_mutex_array = malloc(number * sizeof(pthread_mutex_t));  
+        if (cnt_mutex_array == NULL) {  
+            // Cleanup cnt_array and handle error  
+            free(cnt_array);  
+            pthread_mutex_unlock(&init_mutex); // Unlock the mutex on error  
+            return;  
+        }  
+  
+        // Initialize mutexes  
+        for (int i = 0; i < number; i++) {  
+            pthread_mutex_init(&cnt_mutex_array[i], NULL);  
+        }  
+  
+        // Assuming round_array should also be an array, initialized to 0  
+        round_array = malloc(number * sizeof(int));  
+        if (round_array == NULL) {  
+            // Cleanup cnt_array, cnt_mutex_array, and handle error  
+            free(cnt_array);  
+            for (int i = 0; i < number; i++) {  
+                pthread_mutex_destroy(&cnt_mutex_array[i]);  
+            }  
+            free(cnt_mutex_array);  
+            pthread_mutex_unlock(&init_mutex); // Unlock the mutex on error  
+            return;  
+        }  
+  
+        // Initialize round_array to 0  
+        for (int i = 0; i < number; i++) {  
+            round_array[i] = 0;  
+        }  
+  
+        // Mark as initialized  
+        initialized_flag = 0;  
+    }  
+  
+    pthread_mutex_unlock(&init_mutex); // Unlock the mutex after initialization  
+}  
+
+
+void free_test_or_listen_record_arrays() {  
+    // 假设initialized_flag和init_mutex是全局的，并且我们知道它们的状态  
+    // 如果需要，可以在这里添加检查以确保在释放资源之前已经正确初始化  
+  
+    // 如果数组和互斥锁已经初始化，则释放它们  
+    if (initialized_flag == 0) {  
+        // 释放round_array  
+        free(round_array);  
+        round_array = NULL; // 可选，将指针置为NULL以避免野指针  
+  
+        // 销毁cnt_mutex_array中的每个互斥锁并释放内存  
+        for (int i = 0; i < get_interface_cnt(); i++) { // 注意：这里假设get_interface_cnt()在释放时仍然有效  
+            pthread_mutex_destroy(&cnt_mutex_array[i]);  
+        }  
+        free(cnt_mutex_array);  
+        cnt_mutex_array = NULL; // 可选  
+  
+        // 释放cnt_array  
+        free(cnt_array);  
+        cnt_array = NULL; // 可选  
+  
+        // 标记为未初始化（可选，取决于你的具体需求）  
+        initialized_flag = -1;  
+    }  
+  
+    // 注意：我们没有解锁init_mutex，因为在这个上下文中，我们不是在多线程环境中竞争这个互斥锁  
+    // 只有在多线程环境中，并且你需要在释放资源后继续使用该互斥锁时，才需要解锁它  
+    // 但在这个函数中，我们的目的是清理资源，而不是继续使用互斥锁  
+}  
 
 void deal_with_mnt(const char* linked_node,const char* listened_interface, const char* msg) {  
 	//printf("%s\n",msg);
     if(strcmp(msg, "hello, are you here?") == 0)
     {
-    	time_t current_time = time(NULL);  
+		time_t current_time = time(NULL);  
         int current_round = (current_time - get_test_begin_time()) / MAX_WAITING_TIME_IN_ONE_ROUND;
 		//printf("current_time: %d\n",current_time);
 		//printf("test_begin_time: %d\n",get_test_begin_time());
-		if(round == 0)
+		
+		int ind = get_interface_index(listened_interface);
+		if(round_array[ind] == 0)
 		{
-			round = current_round;
+			round_array[ind] = current_round;
 			return ;
 		}
-		if (current_round > round) { 
+
+		if (current_round > round_array[ind]) { 
 			printf("current_round is %d\n",current_round);
-            pthread_mutex_lock(&cnt_mutex);
+            pthread_mutex_lock(&cnt_mutex_array[ind]);
 			
 			//在这个地方把上一轮统计结果传出去，要不直接就保存下来
 			char *result = malloc(RESULT_STRING_SIZE);  
@@ -85,22 +183,22 @@ void deal_with_mnt(const char* linked_node,const char* listened_interface, const
 		        // 处理内存分配失败的情况  
 		        return NULL;  
 		    }  
-		    double ratio = 1 - (double)cnt / PAKCAGES_NUM_ONE_TIME;  
+		    double ratio = 1 - (double)cnt_array[ind]/ PAKCAGES_NUM_ONE_TIME;  
 		    snprintf(result, RESULT_STRING_SIZE, "%.2f", ratio); 
-			update_communication_info_array(linked_node,listened_interface,time(NULL),PAKCAGES_NUM_ONE_TIME,cnt);
-			printf("the interface \"%s\" got an error ratio value with %s ( tx:%d rx:%d)\n",listened_interface,result,PAKCAGES_NUM_ONE_TIME,cnt); 
+			update_communication_info_array(linked_node,listened_interface,time(NULL),PAKCAGES_NUM_ONE_TIME,cnt_array[ind]);
+			printf("the interface \"%s\" got an error ratio value with %s ( tx:%d rx:%d)\n",listened_interface,result,PAKCAGES_NUM_ONE_TIME,cnt_array[ind]); 
 			free(result);	
 
 			sync_communication_info(center_interface_name);
 
 
-            cnt = 1; // 重置计数器  
-            round = current_round; 
-            pthread_mutex_unlock(&cnt_mutex);  
+            cnt_array[ind] = 1; // 重置计数器  
+            round_array[ind]= current_round; 
+            pthread_mutex_unlock(&cnt_mutex_array[ind]);  
         }else{
-			pthread_mutex_lock(&cnt_mutex); 
-	        cnt++;  
-			pthread_mutex_unlock(&cnt_mutex);   
+			pthread_mutex_lock(&cnt_mutex_array[ind]); 
+	        cnt_array[ind]++;  
+			pthread_mutex_unlock(&cnt_mutex_array[ind]);   
 		}
 		return;
     }else if(update_communication_info_array_from_json(msg)==_SUCCESS)
@@ -139,16 +237,20 @@ void *thread_function(void *args) {
 
 void test_upon_one_interface_in_one_time(const char *test_interface,const char *message,int packages_num,status_chooser choose)
 {  
+
 	time_t current_time = time(NULL);  
 	int current_round = (current_time - get_test_begin_time()) / MAX_WAITING_TIME_IN_ONE_ROUND; 
 	//printf("current_time: %d\n",current_time);
 	//printf("test_begin_time: %d\n",get_test_begin_time());
-	if(round == 0)
+
+	int ind = get_interface_index(test_interface);
+	if(round_array[ind] == 0)
 	{
-		round = current_round;
+		round_array[ind] = current_round;
 		return ;
 	}
-	if (current_round > round) { 
+
+	if (current_round > round_array[ind]) { 
 		printf("current round is %d\n",current_round);
 		update_status_in_current_round(test_interface,choose,current_round);
 		
@@ -168,7 +270,7 @@ void test_upon_one_interface_in_one_time(const char *test_interface,const char *
 	    for (int i = 0; i < packages_num; i++) {  
 	        pthread_join(threads[i], NULL);  
 	    }  
-		round=current_round;
+		round_array[ind]=current_round;
 	}
 }  
 

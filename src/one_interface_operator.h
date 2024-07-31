@@ -40,6 +40,9 @@ void listen_upon_one_interface_in_one_time(char *linked_node, char *listened_int
 
 void test_upon_one_interface_in_one_time(const char *test_interface,const char *message,int packages_num,status_chooser choose);
 
+void init_test_or_listen_record_arrays();
+void free_test_or_listen_record_arrays();
+
 
 
 #endif
