@@ -1,7 +1,9 @@
 # 定义编译器和编译选项  
 CC=gcc  
 CFLAGS=-I. -Wall  
-LDFLAGS=-L/usr/local/lib  
+LDFLAGS=-L/usr/local/lib
+
+  
   
 # 定义源文件和目标文件（包括当前目录和base目录下的.c文件）  
 SRCS=$(wildcard *.c)  
@@ -24,6 +26,7 @@ all: $(TARGET)
   
 # 主目标，依赖于所有.o文件  
 $(TARGET): $(OBJS) $(BASE_OBJS) $(CAN_OBJS)
+	@echo "Building $(TARGET) from: $(OBJS) $(BASE_OBJS) $(CAN_OBJS)"
 	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)  
   
 # 清理编译生成的文件  

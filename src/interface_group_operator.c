@@ -158,10 +158,16 @@ void listen_upon_interface_group() {
 
 
 
-#if 1
+#if 0
+
+
+/*型式试验入口*/
+
+
+
 int main(int argc, char *argv[]) {
-    if (argc != 6 && argc != 4) {  
-        fprintf(stderr, "Usage: %s <config_file> <mode> <work_at_which_round_when_half_duplex> [ <center_interface_name> <res_file_name> (when listen mode)]\n", argv[0]);  
+    if (argc != 5 && argc != 3) {  
+        fprintf(stderr, "Usage: %s <config_file> <mode> <work_at_which_round_when_half_duplex> [<res_file_name> (when listen mode)]\n", argv[0]);  
         fprintf(stderr, "Mode should be 'test' or 'listen'.\n");  
         return 1; // 表示程序因为错误的参数而退出  
     }  
@@ -206,8 +212,7 @@ int main(int argc, char *argv[]) {
 		for(int i=0;i<cnt;i++)
 			init_basic_interface(i);
 
-		set_center_interface_name(argv[4]);
-		set_res_file_name(argv[5]);
+		set_res_file_name(argv[4]);
 		init_test_or_listen_record_arrays();
 
 		
@@ -232,6 +237,11 @@ int main(int argc, char *argv[]) {
 
 
 #if 0
+
+
+/*时间转换测试*/
+
+
 int main(int argc, char *argv[]) {  
     time_t parsed_time = time(NULL);  // 获取当前时间  
     char time_str[80];  
@@ -262,6 +272,9 @@ int main(int argc, char *argv[]) {
 
 
 #if 0
+
+/*之前的 CAN 测试代码*/
+
 
 
 typedef int             INT32;
@@ -301,6 +314,7 @@ int main(int argc, char *argv[]) {
 
 #if 0
 
+/*can自收自发测试*/
 
 
 int main(int argc, char *argv[]) {  
@@ -319,6 +333,122 @@ int main(int argc, char *argv[]) {
 
 #endif
 
+
+
+#if 0
+
+/*rs485发测试*/
+
+
+int main(int argc, char *argv[]) {  
+    int fd;
+    int length;
+    unsigned char msg[32] = {0};
+    SerialPortParams params;
+	params.baudrate = 115200;
+	params.databits = 8;
+	params.stopbits = 1;
+	params.paritybits = 'N';
+
+    fd = open_port("/dev/ttyS1", 0, params);
+
+	if(fd < 0)
+    {
+        printf("Open port failed!\n");
+        return _ERROR;
+    }
+    while(1)
+	{
+		char RS485MSG_ARRAY[RS485_LEN + 1];
+		fillMessageToRS485Len("RS485 TEST!",RS485MSG_ARRAY,RS485_LEN);
+
+        if (send_packet_rs485(fd, RS485MSG_ARRAY, RS485_LEN) < 0) {    
+        	printf("send failed!\n");
+        	return _ERROR; // Retry sending    
+        }    
+        printf("--------Write---------   %d: %s\n", RS485_LEN, RS485MSG_ARRAY);
+		usleep(3000000);
+        /*length = receive_packet_rs485(fd, msg, sizeof(RS485MSG), 5);
+	        if(length > 0)
+	        {	
+	            printf("--------Read---------   %d: %s\n", length, msg);
+	            if (strcmp(msg, RS485MSG)==0)
+	            {
+	                printf("ok\n");
+	            }
+	            usleep(3000000);
+	        }
+	        else
+	        {
+	            printf("TIME OUT.\n");
+	            break;
+	        }*/
+    }
+    printf("Close...\n");
+    close_port(fd);
+    return _SUCCESS; 
+}
+
+
+#endif
+
+
+
+
+#if 1
+
+/*rs485收测试*/
+
+
+int main(int argc, char *argv[]) {
+    int fd;
+    int length;
+    unsigned char msg[MAX_MSG_LEN+1] = {0};
+    SerialPortParams params;
+        params.baudrate = 115200;
+        params.databits = 8;
+        params.stopbits = 1;
+        params.paritybits = 'N';
+
+    fd = open_port("/dev/ttyS1", 0, params);
+
+        if(fd < 0)
+    {
+        printf("Open port failed!\n");
+        return _ERROR;
+    }
+    while(1)
+        {
+	printf("fd:%d RS485_LEN: %d\n", fd,MAX_MSG_LEN);
+        //length = send_packet_rs485(fd, RS485MSG, sizeof(RS485MSG));
+        //printf("--------Write---------   %d: %s\n", length, RS485MSG);
+	//usleep(3000000);
+
+        length = receive_packet_rs485(fd, msg, MAX_MSG_LEN, 5);
+        if(length > 0)
+        {
+           printf("--------Read---------   %d: %s\n", length, msg);
+		   printf("strlen(msg): %d\n", strlen(msg));
+		   printf("strlen(RS485MSG): %d\n", strlen("RS485 TEST!"));
+           if (strcmp(msg, "RS485 TEST!")==0)
+          {
+              printf("right\n");
+           }
+            usleep(3000000);
+       }
+       else
+        {
+            printf("TIME OUT.\n");
+          //break;
+       }
+    }
+    printf("Close...\n");
+    close_port(fd);
+    return _SUCCESS;
+}
+
+
+#endif
 
 
 

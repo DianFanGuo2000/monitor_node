@@ -10,10 +10,6 @@ void set_res_file_name(char *file_name)
 	res_file_name=file_name;
 }
 
-void set_center_interface_name(char *interface_name)
-{
-	center_interface_name=interface_name;
-}
 
 
 
@@ -89,6 +85,8 @@ void init_test_or_listen_record_arrays() {
             pthread_mutex_unlock(&init_mutex); // Unlock the mutex on error  
             return;  
         }  
+		for(int i=0;i<number;i++)
+			cnt_array[i]=0;
   
         cnt_mutex_array = malloc(number * sizeof(pthread_mutex_t));  
         if (cnt_mutex_array == NULL) {  
@@ -104,7 +102,7 @@ void init_test_or_listen_record_arrays() {
         }  
   
         // Assuming round_array should also be an array, initialized to 0  
-        round_array = malloc(number * sizeof(int));  
+        round_array = malloc(number * sizeof(int)); 
         if (round_array == NULL) {  
             // Cleanup cnt_array, cnt_mutex_array, and handle error  
             free(cnt_array);  
@@ -115,7 +113,6 @@ void init_test_or_listen_record_arrays() {
             pthread_mutex_unlock(&init_mutex); // Unlock the mutex on error  
             return;  
         }  
-  
         // Initialize round_array to 0  
         for (int i = 0; i < number; i++) {  
             round_array[i] = 0;  
@@ -163,7 +160,7 @@ void free_test_or_listen_record_arrays() {
 }  
 
 void deal_with_mnt(const char* linked_node,const char* listened_interface, const char* msg) {  
-	//printf("%s\n",msg);
+	printf("%s\n",msg);
     if(strcmp(msg, "hello, are you here?") == 0)
     {
 		time_t current_time = time(NULL);  
@@ -194,7 +191,7 @@ void deal_with_mnt(const char* linked_node,const char* listened_interface, const
 			printf("the interface \"%s\" got an error ratio value with %s ( tx:%d rx:%d)\n",listened_interface,result,PAKCAGES_NUM_ONE_TIME,cnt_array[ind]); 
 			free(result);	
 
-			sync_communication_info(center_interface_name);
+			sync_communication_info(get_center_interface_name(ind));
 
 
             cnt_array[ind] = 1; // ÖØÖÃ¼ÆÊýÆ÷  

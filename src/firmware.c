@@ -42,6 +42,15 @@ int init_basic_interface(int i)
   
     if (strcmp(interface_type, "rs485") == 0)  
     {  
+		SerialPortParams params;
+		params.baudrate = get_baud_rate_by_index(i);
+		params.databits = get_databits_by_index(i);
+		params.stopbits = get_stopbits_by_index(i);
+		params.paritybits = get_paritybits_by_index(i);
+			
+		int fd = open_port(interface_name, 0, params);
+		set_temporary_fd(i,fd);
+	
         int rs485_gpio_number = get_rs485_gpio_number_by_index(i);  
         exportGPIO(rs485_gpio_number); // Assuming exportGPIO is defined elsewhere  
 		set485RX();
@@ -161,7 +170,7 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 		int i = get_interface_index(source_interface);
 		int can_id = get_channel_id_by_index(i);
 	    // Attempt to receive a packet from the source interface  
-	    if (receive_packet_can(can_id,data.msg,RS485_LEN,max_waiting_time)<0) {    
+	    if (receive_packet_can(can_id,data.msg,MAX_MSG_LEN,max_waiting_time)<0) {    
 	        // If receiving the message fails, return an error and don't reply
 	        return _ERROR;    
 	    }    
@@ -184,17 +193,14 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 			data.linked_node = linked_node;
 			data.listened_interface = source_interface;
 
-			SerialPortParams params;
 			int index = get_interface_index(source_interface);
-			params.baudrate = get_baud_rate_by_index(index);
-			params.databits = get_databits_by_index(index);
-			params.stopbits = get_stopbits_by_index(index);
-			params.paritybits = get_paritybits_by_index(index);
-			
-			int fd = open_port(source_interface, 0, params);
+			int fd = get_temporary_fd(index);
+
+
+			//printAllInfo();
 
 			// Attempt to receive a packet from the source interface  
-			if (receive_packet_rs485(fd,data.msg,RS485_LEN,max_waiting_time)<0) {	 
+			if (receive_packet_rs485(fd,data.msg,MAX_MSG_LEN,max_waiting_time)<0) {	 
 				// If receiving the message fails, return an error and don't reply
 				return _ERROR;	  
 			}	 
@@ -214,24 +220,25 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 }
 
 
-void fillMessageToRS485Len(const char *message, char *RS485MSG, int rs485_len) {  
+/*res_msg长度需要为max_message_len+1，这样字符串长度才是max_message_len*/
+void fillMessageToMaxMsgLen(const char *message, char *res_msg, int max_message_len) {  
     // 首先，将原始消息复制到 RS485MSG  
-    strncpy(RS485MSG, message, rs485_len);  
+    strncpy(res_msg, message, max_message_len);  
 	
       
     // 如果原始消息长度大于 RS485_LEN，截断它  
-    if (strlen(message) > rs485_len) {  
-        RS485MSG[rs485_len] = '\0'; // 确保字符串正确终止  
+    if (strlen(message) > max_message_len) {  
+        res_msg[max_message_len] = '\0'; // 确保字符串正确终止  
     } else {  
         // 否则，用'\0' 填充剩余部分  
-        size_t len = strlen(RS485MSG);  
-        memset(RS485MSG + len, '\0', rs485_len - len);  
+        size_t len = strlen(res_msg);  
+        memset(res_msg + len, '\0', max_message_len - len);  
         // 确保字符串在末尾正确终止  
-        RS485MSG[rs485_len] = '\0';  
+        res_msg[max_message_len] = '\0';  
     }  
       
     // 可选：打印结果以验证  
-    printf("Filled message: '%s'\n", RS485MSG);  
+    printf("Filled message: '%s'\n", res_msg);  
 }  
 
 
@@ -245,9 +252,7 @@ int send_message(const char *source_interface,const char *message)
 	}
 
 	char *interface_type = get_interface_type(source_interface);
-	char msg[MAX_MSG_LEN]; // Buffer for the received message      
-    time_t begin_time = time(NULL); // Initialize start time  
-  
+
     // Check if the interface type is "eth" (could be removed if not needed)    
     if (strcmp(interface_type, "eth") == 0) {    
         // Retrieve the MAC addresses    
@@ -263,21 +268,17 @@ int send_message(const char *source_interface,const char *message)
 
 
     // Check if the interface type is "rs485" (could be removed if not needed)    
-    if (strcmp(interface_type, "rs485") == 0) {    
-		SerialPortParams params;
-		int index = get_interface_index(source_interface);
-		params.baudrate = get_baud_rate_by_index(index);
-		params.databits = get_databits_by_index(index);
-		params.stopbits = get_stopbits_by_index(index);
-		params.paritybits = get_paritybits_by_index(index);
+    if (strcmp(interface_type, "rs485") == 0) {  
+
+		// 填充至MAX_MSG_LEN，以保证发送长度一定是MAX_MSG_LEN个字节
+		char RS485MSG[MAX_MSG_LEN + 1];
+		fillMessageToMaxMsgLen(message,RS485MSG,MAX_MSG_LEN);
+
 		
-		int fd = open_port(source_interface, 0, params);
+		int index = get_interface_index(source_interface);
+		int fd = get_temporary_fd(index);
 
-		// 填充至RS485_LEN，以保证发送长度一定是RS485_LEN个字节
-		char RS485MSG[RS485_LEN + 1];
-		fillMessageToRS485Len(message,RS485MSG,RS485_LEN);
-
-        if (send_packet_rs485(fd, RS485MSG, RS485_LEN) < 0) {    
+        if (send_packet_rs485(fd, RS485MSG, MAX_MSG_LEN) < 0) {    
         	printf("send failed!\n");
         	return _ERROR; // Retry sending    
         }    
@@ -290,11 +291,11 @@ int send_message(const char *source_interface,const char *message)
 		int i = get_interface_index(source_interface);
 		int can_id = get_channel_id_by_index(i);
 
-		// 填充至RS485_LEN，以保证发送长度一定是RS485_LEN个字节
-		char CANMSG[RS485_LEN + 1];
-		fillMessageToRS485Len(message,CANMSG,RS485_LEN);
+		// 填充至MAX_MSG_LEN，以保证发送长度一定是MAX_MSG_LEN个字节
+		char CANMSG[MAX_MSG_LEN + 1];
+		fillMessageToMaxMsgLen(message,CANMSG,MAX_MSG_LEN);
 		
-        if (send_packet_can(can_id,CANMSG,RS485_LEN)< 0) {    
+        if (send_packet_can(can_id,CANMSG,MAX_MSG_LEN)< 0) {    
         	printf("send failed!\n");
         	return _ERROR; // Retry sending    
         }    
@@ -337,15 +338,15 @@ int set_status(const char *source_interface, const char *status)
 	    } 
 		
         if (strcmp(status, "sending") == 0) {  
-			int rs485_gpio_number = get_rs485_gpio_number_by_index(i);  
-        	exportGPIO(rs485_gpio_number); // Assuming exportGPIO is defined elsewhere  
-            set485TX();  
+			// int rs485_gpio_number = get_rs485_gpio_number_by_index(i);  
+        	// exportGPIO(rs485_gpio_number); // Assuming exportGPIO is defined elsewhere  
+            // set485TX();  
         }  
   
         if (strcmp(status, "receiving") == 0) {  
-			int rs485_gpio_number = get_rs485_gpio_number_by_index(i);  
-        	exportGPIO(rs485_gpio_number); // Assuming exportGPIO is defined elsewhere  
-            set485RX();   
+			// int rs485_gpio_number = get_rs485_gpio_number_by_index(i);  
+        	// exportGPIO(rs485_gpio_number); // Assuming exportGPIO is defined elsewhere  
+            // set485RX();   
         }  
   
         if (strcmp(status, "closed") == 0) {  

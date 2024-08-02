@@ -297,6 +297,8 @@ int send_packet_rs485(int fd, const char *msg, unsigned int length)
 {
     //exportGPIO();
     //set485TX();
+    
+	printf("fd:%d msg_len:%d msg:%s\n",fd,length,msg);
     /* check msg is null or not */
 	if (msg == NULL) {
         printf("ERROR: Buffer is NULL!\n");
@@ -331,6 +333,7 @@ int receive_packet_rs485(int fd, unsigned char *msg, unsigned int length, int wa
 {
     //exportGPIO();
     //set485RX();
+    
     /* check msg is null or not */
     if (msg == NULL) {
         printf("ERROR: Buffer is NULL!\n");
@@ -345,6 +348,7 @@ int receive_packet_rs485(int fd, unsigned char *msg, unsigned int length, int wa
 
     /* clear the msg */
     memset(msg, 0, length);
+	
 
     int bytesReadTotal = 0;    // The total number of bytes read so far.
     int bytesReadNow = 0;      // The number of bytes read during this call to read.
@@ -361,6 +365,7 @@ int receive_packet_rs485(int fd, unsigned char *msg, unsigned int length, int wa
     timeout.tv_usec = 0;
 
     while (bytesReadTotal < length) {
+		printf("fd:%d msg_len:%d msg:%s\n",fd,length,msg);
         /* Try to read data. */
         int retval = select(fd + 1, &readfds, NULL, NULL, &timeout);
         /* If select() times out, return the current number of bytes read. */

@@ -233,6 +233,7 @@ void write_interface_info_array_to_json(const char *filename, struct interface_i
         cJSON_AddStringToObject(interface, "linked_node", array[i].linked_node);  
         cJSON_AddStringToObject(interface, "linked_interface_name", array[i].linked_interface_name);  
         cJSON_AddStringToObject(interface, "linked_interface_type", array[i].linked_interface_type);  
+		cJSON_AddStringToObject(interface, "center_interface_name", array[i].center_interface_name);  
 
 
 		cJSON *eth_info = cJSON_CreateObject();  
@@ -404,6 +405,8 @@ void read_interface_info_array_from_json(const char *filename, struct interface_
         array[i].linked_node = strdup(cJSON_GetObjectItem(interface, "linked_node")->valuestring);
         array[i].linked_interface_name = strdup(cJSON_GetObjectItem(interface, "linked_interface_name")->valuestring);
         array[i].linked_interface_type = strdup(cJSON_GetObjectItem(interface, "linked_interface_type")->valuestring);
+		array[i].center_interface_name = strdup(cJSON_GetObjectItem(interface, "center_interface_name")->valuestring);
+
         array[i].status = strdup(cJSON_GetObjectItem(interface, "status")->valuestring);
 		array[i].mode = strdup(cJSON_GetObjectItem(interface, "mode")->valuestring);
 
@@ -622,6 +625,8 @@ void free_interface_info_array()
 		free(interface_info_array[i].linked_node);	
 		free(interface_info_array[i].linked_interface_name);  
 		free(interface_info_array[i].linked_interface_type);
+		free(interface_info_array[i].center_interface_name);
+
 		free(interface_info_array[i].eth_info.ip_addr);
 		free(interface_info_array[i].eth_info.net_mask);
 		free(interface_info_array[i].eth_info.mac_addr);  
@@ -759,6 +764,15 @@ int  get_stopbits_by_index(int i)
 	return interface_info_array[i].rs485_info.stopbits;
 }
 
+int  get_temporary_fd(int i)
+{
+	return interface_info_array[i].rs485_info.temporary_fd;
+}
+
+void  set_temporary_fd(int i,int fd)
+{
+	interface_info_array[i].rs485_info.temporary_fd = fd;
+}
 
 
 char* get_interface_status(const char* interface_name)
@@ -893,6 +907,15 @@ char* get_interface_type(const char *interface_name)
 
 }
 
+
+char* get_center_interface_name(int i)
+{
+	return interface_info_array[i].center_interface_name;
+}
+
+
+// Function to print interface information  
+// Function to print interface information  
 void print_interface_info(const struct interface_info *info) {  
     if (info == NULL) {  
         printf("Interface info is NULL\n");  
@@ -904,25 +927,47 @@ void print_interface_info(const struct interface_info *info) {
     printf("Interface Type: %s\n", info->interface_type);  
     printf("Linked Node: %s\n", info->linked_node);  
     printf("Linked Interface Name: %s\n", info->linked_interface_name);  
-    printf("Linked Interface Type: %s\n", info->linked_interface_type);  
-  
+    printf("Linked Interface Type: %s\n", info->linked_interface_type);    
+    printf("Center Interface Name: %s\n", info->center_interface_name);  
+
     printf("Ethernet Info:\n");  
-    printf("  MAC Address: %s\n", info->eth_info.mac_addr);  
+    printf("\tIP Address: %s\n", info->eth_info.ip_addr);  
+    printf("\tNet Mask: %s\n", info->eth_info.net_mask);  
+    printf("\tMAC Address: %s\n", info->eth_info.mac_addr);  
+  
     printf("Linked Ethernet Info:\n");  
-    printf("  MAC Address: %s\n", info->linked_eth_info.mac_addr);  
+    printf("\tIP Address: %s\n", info->linked_eth_info.ip_addr);  
+    printf("\tNet Mask: %s\n", info->linked_eth_info.net_mask);  
+    printf("\tMAC Address: %s\n", info->linked_eth_info.mac_addr);  
   
     printf("CAN Info:\n");  
-    printf("  CAN ID: %d\n", info->can_info.can_id);  
+    printf("\tCAN ID: %d\n", info->can_info.can_id);  
+  
     printf("Linked CAN Info:\n");  
-    printf("  CAN ID: %d\n", info->linked_can_info.can_id);  
+    printf("\tCAN ID: %d\n", info->linked_can_info.can_id);  
   
     printf("RS485 Info:\n");  
-    printf("  Baud Rate: %d\n", info->rs485_info.baud_rate);  
-    printf("Linked RS485 Info:\n");  
-    printf("  Baud Rate: %d\n", info->linked_rs485_info.baud_rate);  
+    printf("\tGPIO Number: %d\n", info->rs485_info.rs485_gpio_number);  
+    printf("\tData Bits: %d\n", info->rs485_info.databits);  
+    printf("\tStop Bits: %d\n", info->rs485_info.stopbits);  
+    printf("\tParity Bits: %u\n", info->rs485_info.paritybits);  
+    printf("\tBaud Rate: %d\n", info->rs485_info.baud_rate);  
+    printf("\tTemporary FD: %d\n", info->rs485_info.temporary_fd);  
   
-    printf("Status: %s\n", info->status);  
+    printf("Linked RS485 Info:\n");  
+    printf("\tGPIO Number: %d\n", info->linked_rs485_info.rs485_gpio_number);  
+    printf("\tData Bits: %d\n", info->linked_rs485_info.databits);  
+    printf("\tStop Bits: %d\n", info->linked_rs485_info.stopbits);  
+    printf("\tParity Bits: %u\n", info->linked_rs485_info.paritybits);  
+    printf("\tBaud Rate: %d\n", info->linked_rs485_info.baud_rate);  
+    printf("\tTemporary FD: %d\n", info->linked_rs485_info.temporary_fd);  
+  
+    printf("Mode: %s\n", info->mode);
+    printf("Status: %s\n", info->status);
+
+
 }
+
 
 
 void print_interface_info_array(const struct interface_info *array, int size) {  

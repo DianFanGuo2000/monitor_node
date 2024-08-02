@@ -13,7 +13,6 @@ typedef struct {
 } ThreadArgs;  
 
 char *res_file_name;
-char* center_interface_name;
 
 
 // 函数指针类型定义，用于根据当前轮次选择状态索引  
@@ -28,7 +27,6 @@ void update_status_in_current_round(const char *updated_interface, status_choose
 
 
 void set_res_file_name(char *file_name);
-void set_center_interface_name(char *interface_name);
 int sync_communication_info(const char* center_interface_name);
 
 

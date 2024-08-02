@@ -36,6 +36,8 @@ struct rs485_info {
 	int stopbits;
 	unsigned char paritybits;
     int baud_rate;  
+
+	int temporary_fd;
 };
 
 struct interface_info {
@@ -45,9 +47,7 @@ struct interface_info {
 	char *linked_node;
     char *linked_interface_name;  
     char *linked_interface_type;  
-	char *center_node;
     char *center_interface_name;  
-    char *center_interface_type;  
 
     struct eth_info eth_info;
 	struct eth_info linked_eth_info;
@@ -161,6 +161,11 @@ char* get_net_mask_by_index(int i);
 int get_rs485_gpio_number_by_index(int i);	
 int get_channel_id_by_index(int i); 
 
-		
+
+int  get_temporary_fd(int i);
+
+void  set_temporary_fd(int i,int fd);
+
+char* get_center_interface_name(int i);
 
 #endif

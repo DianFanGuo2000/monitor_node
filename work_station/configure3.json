@@ -1,49 +1,11 @@
 [{
 	"located_node": "virtual_machine",
-	"interface_name":       "ens33",
-	"interface_type":       "eth",
-	"linked_node":  "fpu",
-	"linked_interface_name":        "enp3s0",
-	"linked_interface_type":        "eth",
-	"eth_info":     {
-		"ip_addr":     "192.168.1.51",
-		"net_mask":     "255.255.255.0",
-		"mac_addr":     "00:0c:29:8e:5f:92"
-	},
-	"linked_eth_info":     {
-		"ip_addr":     "192.168.1.10",
-		"net_mask":     "255.255.255.0",
-		"mac_addr":     "00:80:0f:77:40:12"
-	},
-	"can_info":     {
-			"can_id":       -1
-	},
-	"linked_can_info":     {
-		"can_id":       -1
-	},
-	"rs485_info":   {
-			"rs485_gpio_number":    482,
-			"baud_rate":    500,
-			"databits":    8,
-			"stopbits":    1,
-			"paritybits":    78
-	},
-	"linked_rs485_info":     {
-		"rs485_gpio_number":    482,
-		"baud_rate":    500,
-		"databits":    8,
-		"stopbits":    1,
-		"paritybits":    78
-	},
-	"status":       "sending_and_receiving",
-	"mode":       "full-duplex"
-},{
-	"located_node": "virtual_machine",
 	"interface_name":       "/dev/ttyS1",
 	"interface_type":       "rs485",
 	"linked_node":  "fpu",
 	"linked_interface_name":        "/dev/ttyS4",
 	"linked_interface_type":        "rs485",
+	"center_interface_name":        "/dev/ttyS1",
 	"eth_info":     {
 		"ip_addr":     "192.168.1.51",
 		"net_mask":     "255.255.255.0",

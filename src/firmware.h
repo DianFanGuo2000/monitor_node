@@ -19,7 +19,7 @@ typedef void (*Dealer)(const char* located_node,const char* listened_interface, 
 
 typedef struct {  
     Dealer deal_func;  
-    char msg[MAX_MSG_LEN];
+    char msg[MAX_MSG_LEN+1];
 	char* linked_node;
 	char* listened_interface;
 } DealData; 
@@ -40,7 +40,7 @@ int close_basic_interface(int i);
 int set_status(const char *source_interface,const char *status);
 
 void sync_status(const char *source_interface);
-void fillMessageToRS485Len(const char *message, char *RS485MSG, int rs485_len);
+void fillMessageToMaxMsgLen(const char *message, char *res_msg, int max_message_len);
 
 
 
