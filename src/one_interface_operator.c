@@ -160,7 +160,7 @@ void free_test_or_listen_record_arrays() {
 }  
 
 void deal_with_mnt(const char* linked_node,const char* listened_interface, const char* msg) {  
-	printf("%s\n",msg);
+	printf("linked_node:%s listened_interface:%s msg:%s \n",linked_node,listened_interface,msg);
     if(strcmp(msg, "hello, are you here?") == 0)
     {
 		time_t current_time = time(NULL);  
@@ -216,22 +216,22 @@ void deal_with_mnt(const char* linked_node,const char* listened_interface, const
 
 
 
+void listen_upon_one_interface_in_one_time(char *linked_node, char *listened_interface, status_chooser choose) {  
+    time_t current_time = time(NULL);  
+    int current_round = (current_time - get_test_begin_time()) / MAX_WAITING_TIME_IN_ONE_ROUND;  
+    update_status_in_current_round(listened_interface, choose, current_round);  
 
-  
-void listen_upon_one_interface_in_one_time(char *linked_node, char *listened_interface,status_chooser choose) {
-	time_t current_time = time(NULL);  
-	int current_round = (current_time - get_test_begin_time()) / MAX_WAITING_TIME_IN_ONE_ROUND; 
-	update_status_in_current_round(listened_interface,choose,current_round);
-	
-	receive_message(linked_node,listened_interface, deal_with_mnt, MAX_WAITING_TIME_IN_ONE_ROUND);  
+	receive_message(linked_node,listened_interface, deal_with_mnt, MAX_WAITING_TIME_IN_ONE_ROUND); 
+
 }  
   
 
 
 
-void *thread_function(void *args) {  
-    ThreadArgs *ta = (ThreadArgs *)args;  
-	send_message(ta->test_interface, ta->message);
+
+void *test_thread_function(void *arg) {  
+    ThreadArgs *ta = (ThreadArgs *)arg;  
+	send_message(ta->interface_name, ta->message);
     return NULL;  
 }  
 
@@ -263,10 +263,10 @@ void test_upon_one_interface_in_one_time(const char *test_interface,const char *
 		delay.tv_nsec = SENDING_TIME_SPEC;  // 100∫¡√Î = 100,000,000ƒ…√Î  
 	  
 	    for (int i = 0; i < packages_num; i++) {  
-	        args[i].test_interface = test_interface;  
+	        args[i].interface_name = test_interface;  
 	        args[i].message = message;  
 			nanosleep(&delay, NULL);
-	        pthread_create(&threads[i], NULL, thread_function, &args[i]);  
+	        pthread_create(&threads[i], NULL, test_thread_function, &args[i]);  
 	    }  
 	  
 	    for (int i = 0; i < packages_num; i++) {  

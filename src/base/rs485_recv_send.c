@@ -364,8 +364,9 @@ int receive_packet_rs485(int fd, unsigned char *msg, unsigned int length, int wa
     timeout.tv_sec = wait_time;
     timeout.tv_usec = 0;
 
+	//printf("fd:%d msg_len:%d msg:%s wait_time:%d\n",fd,length,msg,wait_time);
+
     while (bytesReadTotal < length) {
-		printf("fd:%d msg_len:%d msg:%s\n",fd,length,msg);
         /* Try to read data. */
         int retval = select(fd + 1, &readfds, NULL, NULL, &timeout);
         /* If select() times out, return the current number of bytes read. */
@@ -399,6 +400,12 @@ int receive_packet_rs485(int fd, unsigned char *msg, unsigned int length, int wa
         /* Update the total number of bytes read so far. */
         bytesReadTotal += bytesReadNow;
     }
+	if(bytesReadTotal==0) /*if timeout with retval==0*/
+	{
+		printf("Timeout!\n");
+		return _ERROR;
+	}
+	printf("fd:%d msg_len:%d msg:%s\n",fd,length,msg);
     return bytesReadTotal;
 }
 

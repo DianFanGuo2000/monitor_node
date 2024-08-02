@@ -49,12 +49,21 @@ int init_basic_interface(int i)
 		params.paritybits = get_paritybits_by_index(i);
 			
 		int fd = open_port(interface_name, 0, params);
+		if(fd < 0)
+	    {
+	        printf("Open port failed!\n");
+	        return _ERROR;
+	    }
 		set_temporary_fd(i,fd);
+
+		printf("interface_name:%s, fd:%d, baudrate:%d, databits:%d, stopbits:%d, paritybits:%c\n",interface_name,fd,
+			params.baudrate,params.databits,params.stopbits,params.paritybits);
+
 	
-        int rs485_gpio_number = get_rs485_gpio_number_by_index(i);  
-        exportGPIO(rs485_gpio_number); // Assuming exportGPIO is defined elsewhere  
-		set485RX();
-		set_interface_status(interface_name,"receiving");
+        //int rs485_gpio_number = get_rs485_gpio_number_by_index(i);  
+        //exportGPIO(rs485_gpio_number); // Assuming exportGPIO is defined elsewhere  
+		//set485RX();
+		//set_interface_status(interface_name,"receiving");
     }  
 
     if (strcmp(interface_type, "can") == 0)  
@@ -99,6 +108,8 @@ int close_basic_interface(int i)
     {  
         // Currently no action is taken for rs485 type, but you might want to add some  
         // For example, unexport the GPIO pin or disable the serial communication  
+        int fd = get_temporary_fd(i);
+        close_port(fd);
     }  
   
     if (strcmp(interface_type, "can") == 0)  
@@ -118,10 +129,14 @@ int close_basic_interface(int i)
 // 线程函数，用于异步处理消息  
 void* deal_async(void* arg) {  
     DealData* data = (DealData*)arg;  
+	//printf("data->msg:%s \n",data->msg);
     data->deal_func(data->linked_node,data->listened_interface,data->msg); // 调用 deal 函数处理消息  
 }  
 
 
+
+// Declare a buffer for the received message, assuming it might be longer  
+DealData data;	
 int receive_message(const char *linked_node,const char *source_interface,Dealer deal,long max_waiting_time)    
 {
 
@@ -136,18 +151,20 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 	time_t begin_time = time(NULL); // Initialize start time  
 
     // Check if the interface type is "eth"  
-    if (strcmp(interface_type, "eth") == 0) {    
-	    // Declare a buffer for the received message, assuming it might be longer  
-		DealData data;          
+    if (strcmp(interface_type, "eth") == 0) {      
 		data.deal_func = deal; // 将 deal 函数指针保存到结构体中
 		data.linked_node = linked_node;
 		data.listened_interface = source_interface;
 		
 	    // Attempt to receive a packet from the source interface  
-	    if (receive_packet(source_interface, data.msg, max_waiting_time)<0) {    
-	        // If receiving the message fails, return an error and don't reply
-	        return _ERROR;    
-	    }    
+		char TEMP_MSG[MAX_MSG_LEN+1];
+		if (receive_packet(fd,TEMP_MSG,MAX_MSG_LEN,max_waiting_time)<0) {  
+			// If receiving the message fails, return an error and don't reply
+			//usleep(3000000);
+			return _ERROR;	  
+		}	 
+		strncpy(data.msg, TEMP_MSG, MAX_MSG_LEN + 1); // 不直接拿data.msg作为形参，防止其随着原函数声明周期结束而被析构
+
 
 
         pthread_t thread_id;  
@@ -159,9 +176,7 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 	    return _SUCCESS;    
     }
 
-    if (strcmp(interface_type, "can") == 0) {   
-		// Declare a buffer for the received message, assuming it might be longer  
-		DealData data;          
+    if (strcmp(interface_type, "can") == 0) {           
 		data.deal_func = deal; // 将 deal 函数指针保存到结构体中
 		data.linked_node = linked_node;
 		data.listened_interface = source_interface;
@@ -169,11 +184,14 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 		
 		int i = get_interface_index(source_interface);
 		int can_id = get_channel_id_by_index(i);
-	    // Attempt to receive a packet from the source interface  
-	    if (receive_packet_can(can_id,data.msg,MAX_MSG_LEN,max_waiting_time)<0) {    
-	        // If receiving the message fails, return an error and don't reply
-	        return _ERROR;    
-	    }    
+	    // Attempt to receive a packet from the source interface    
+		char TEMP_MSG[MAX_MSG_LEN+1];
+		if (receive_packet_can(fd,TEMP_MSG,MAX_MSG_LEN,max_waiting_time)<0) {  
+			// If receiving the message fails, return an error and don't reply
+			//usleep(3000000);
+			return _ERROR;	  
+		}	 
+		strncpy(data.msg, TEMP_MSG, MAX_MSG_LEN + 1); // 不直接拿data.msg作为形参，防止其随着原函数声明周期结束而被析构
 
 
         pthread_t thread_id;  
@@ -187,8 +205,7 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 
 	
 	if (strcmp(interface_type, "rs485") == 0) {	 
-			// Declare a buffer for the received message, assuming it might be longer  
-			DealData data;			
+
 			data.deal_func = deal; // 将 deal 函数指针保存到结构体中
 			data.linked_node = linked_node;
 			data.listened_interface = source_interface;
@@ -199,21 +216,26 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 
 			//printAllInfo();
 
+			char TEMP_MSG[MAX_MSG_LEN+1];
 			// Attempt to receive a packet from the source interface  
-			if (receive_packet_rs485(fd,data.msg,MAX_MSG_LEN,max_waiting_time)<0) {	 
+			if (receive_packet_rs485(fd,TEMP_MSG,MAX_MSG_LEN,max_waiting_time)<0) {	 
 				// If receiving the message fails, return an error and don't reply
+				//usleep(3000000);
 				return _ERROR;	  
 			}	 
-	
-	
+			strncpy(data.msg, TEMP_MSG, MAX_MSG_LEN + 1); // 不直接拿data.msg作为形参，防止其随着原函数声明周期结束而被析构
+
+			
+			//printAllInfo();
+
+			//printf("%s\n",data.msg);
+
 			pthread_t thread_id;  
 			if (pthread_create(&thread_id, NULL, deal_async, &data) != 0) {  
 				// 线程创建失败处理，返回错误  
 				return _ERROR;	
 			}  
 
-			close_port(fd);
-	
 			return _SUCCESS;	
 	}	 
 

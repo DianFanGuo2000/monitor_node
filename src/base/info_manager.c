@@ -673,7 +673,7 @@ void start_and_load_info(const char *filename)
 	
 	malloc_interface_info_array(size);
 	read_interface_info_array_from_json(filename,interface_info_array,interface_cnt);
-
+	
 	malloc_communication_info_array(size);
 	for (int i = 0; i < size; i++) {
 		communication_info_array[i].linked_node = strdup(interface_info_array[i].linked_node);

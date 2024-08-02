@@ -63,9 +63,11 @@ void test_upon_interface_group() {
   
             if (pid == 0) {  
                 // 子进程  
+                init_basic_interface(i);
 				while(1){
 					test_upon_one_interface_in_one_time(get_interface_name_by_index(i), "hello, are you here?", PAKCAGES_NUM_ONE_TIME,choose_status_for_test); 
 				}
+				close_basic_interface(i);
                 exit(0); // 子进程完成后退出  
             } else if (pid < 0) {  
                 // fork 失败  
@@ -117,9 +119,11 @@ void listen_upon_interface_group() {
   
             if (pid == 0) {  
                 // 子进程  
+                init_basic_interface(i);
                 while(1){
                 	listen_upon_one_interface_in_one_time(get_linked_node(i),get_interface_name_by_index(i),choose_status_for_listen); 
                 }
+				close_basic_interface(i);
                 exit(0); // 子进程完成后退出  
             } else if (pid < 0) {  
                 // fork 失败  
@@ -158,7 +162,7 @@ void listen_upon_interface_group() {
 
 
 
-#if 0
+#if 1
 
 
 /*型式试验入口*/
@@ -166,7 +170,7 @@ void listen_upon_interface_group() {
 
 
 int main(int argc, char *argv[]) {
-    if (argc != 5 && argc != 3) {  
+    if (argc != 5 && argc != 4) {  
         fprintf(stderr, "Usage: %s <config_file> <mode> <work_at_which_round_when_half_duplex> [<res_file_name> (when listen mode)]\n", argv[0]);  
         fprintf(stderr, "Mode should be 'test' or 'listen'.\n");  
         return 1; // 表示程序因为错误的参数而退出  
@@ -191,38 +195,22 @@ int main(int argc, char *argv[]) {
     if (strcmp(mode, "test") == 0) {  
         start_and_load_info(config_file); 
 		
-		int cnt = get_interface_cnt();
-		for(int i=0;i<cnt;i++)
-			init_basic_interface(i);
-
 		init_test_or_listen_record_arrays();
 		
 		// 下面开始循环测试各个配置好的物理通信接口
 		test_upon_interface_group();
-
-		free_test_or_listen_record_arrays();
-
-		for(int i=0;i<cnt;i++)
-			close_basic_interface(i);
+		
+		free_test_or_listen_record_arrays();		
 		
     } else if (strcmp(mode, "listen") == 0) {
         start_and_load_info(config_file);
-
-		int cnt = get_interface_cnt();
-		for(int i=0;i<cnt;i++)
-			init_basic_interface(i);
-
 		set_res_file_name(argv[4]);
 		init_test_or_listen_record_arrays();
 
-		
+		// 下面开始循环监听各个配置好的物理通信接口
 		listen_upon_interface_group();
 
 		free_test_or_listen_record_arrays();
-
-		for(int i=0;i<cnt;i++)
-			close_basic_interface(i);
-		// 陪试不需要同步测试结果
     } else {  
         fprintf(stderr, "Invalid mode '%s'. Valid modes are 'test' 'listen'.\n", mode);  
         return 1; // 表示程序因为无效的模式而退出  
@@ -395,7 +383,7 @@ int main(int argc, char *argv[]) {
 
 
 
-#if 1
+#if 0
 
 /*rs485收测试*/
 

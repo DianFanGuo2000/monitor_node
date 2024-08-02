@@ -8,7 +8,7 @@
 
 
 typedef struct {  
-    const char *test_interface;  
+    const char *interface_name;  
     const char *message;
 } ThreadArgs;  
 
