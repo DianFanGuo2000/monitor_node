@@ -168,4 +168,13 @@ void  set_temporary_fd(int i,int fd);
 
 char* get_center_interface_name(int i);
 
+void print_communication_info(const struct communication_info*info);
+
+
+
+void print_communication_info_array(const struct communication_info *array, int size);
+
+void printAllCommucationInfo();
+
+
 #endif

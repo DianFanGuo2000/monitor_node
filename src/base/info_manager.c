@@ -913,6 +913,39 @@ char* get_center_interface_name(int i)
 	return interface_info_array[i].center_interface_name;
 }
 
+void print_communication_info(const struct communication_info*info)
+{
+    printf("Located Node: %s\n", info->linked_node);  
+    printf("Interface Name: %s\n", info->interface_name);  
+	char time_buffer[80]; // Assuming enough space for ctime(3) format  
+    time_t_to_string(info->updated_time,time_buffer,sizeof(time_buffer));
+    printf("Updated Time: %s\n", time_buffer);  
+    printf("Tx Number: %d\n", info->tx);  
+	printf("Rx Number: %d\n", info->rx);  
+
+}
+
+
+
+void print_communication_info_array(const struct communication_info *array, int size) {  
+    if (array == NULL || size <= 0) {  
+        printf("communication info array is NULL or size is invalid\n");  
+        return;  
+    }  
+  
+    for (int i = 0; i < size; i++) {  
+        printf("Interface %d:\n", i + 1);  
+        print_communication_info(&array[i]);  
+        printf("\n"); // 添加空行以分隔不同的接口信息  
+    }  
+}
+
+void printAllCommucationInfo()
+{
+	print_interface_info_array(interface_info_array,interface_cnt);
+}
+
+
 
 // Function to print interface information  
 // Function to print interface information  

@@ -191,6 +191,8 @@ void deal_with_mnt(const char* linked_node,const char* listened_interface, const
 			printf("the interface \"%s\" got an error ratio value with %s ( tx:%d rx:%d)\n",listened_interface,result,PAKCAGES_NUM_ONE_TIME,cnt_array[ind]); 
 			free(result);	
 
+			printAllCommucationInfo();
+
 			sync_communication_info(get_center_interface_name(ind));
 
 
