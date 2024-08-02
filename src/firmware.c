@@ -158,7 +158,7 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 		
 	    // Attempt to receive a packet from the source interface  
 		char TEMP_MSG[MAX_MSG_LEN+1];
-		if (receive_packet(fd,TEMP_MSG,MAX_MSG_LEN,max_waiting_time)<0) {  
+		if (receive_packet(source_interface,TEMP_MSG,max_waiting_time)<0) {  
 			// If receiving the message fails, return an error and don't reply
 			//usleep(3000000);
 			return _ERROR;	  
@@ -186,7 +186,7 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 		int can_id = get_channel_id_by_index(i);
 	    // Attempt to receive a packet from the source interface    
 		char TEMP_MSG[MAX_MSG_LEN+1];
-		if (receive_packet_can(fd,TEMP_MSG,MAX_MSG_LEN,max_waiting_time)<0) {  
+		if (receive_packet_can(can_id,TEMP_MSG,MAX_MSG_LEN,max_waiting_time)<0) {  
 			// If receiving the message fails, return an error and don't reply
 			//usleep(3000000);
 			return _ERROR;	  

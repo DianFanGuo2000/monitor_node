@@ -49,7 +49,167 @@ char* choose_status_for_listen(const char *interface_name, const int current_rou
 }
 
 
+/*
 
+下面代码是对多进程中某些进程被异常中断后将其拉起来的功能的尝试，现在先挂起不做，如果后面有这个需要了再做
+
+int *status_array;  
+pthread_mutex_t *mutex_array;  
+pid_t *pid_array;  
+int array_size; // 假设您有一个表示数组大小的变量  
+  
+// Function to get the index of a PID in the pid_array  
+int get_pid_index(pid_t *pid_array, pid_t pid, int size) {  
+    for (int i = 0; i < size; i++) {  
+        if (pid_array[i] == pid) {  
+            return i;  
+        }  
+    }  
+    return -1; // Return -1 if PID not found  
+}  
+  
+void* child_handler(void* arg) {  
+    pid_t pid = *(pid_t*)arg;  
+    int i = get_pid_index(pid_array, pid, array_size);  
+    if (i == -1) {  
+        fprintf(stderr, "PID %d not found in pid_array\n", pid);  
+        return NULL;  
+    }  
+  
+    int status;  
+    while (1) {  
+        pid_t wpid = waitpid(pid, &status, WNOHANG);  
+        if (wpid == pid) {  
+            pthread_mutex_lock(&mutex_array[i]);  
+            if (WIFEXITED(status)) {  
+                printf("Child %d exited normally with status %d, restarting...\n", pid, WEXITSTATUS(status));  
+                status_array[i] = WEXITSTATUS(status);  
+            } else if (WIFSIGNALED(status)) {  
+                printf("Child %d killed by signal %d, restarting...\n", pid, WTERMSIG(status));  
+                status_array[i] = -WTERMSIG(status); // Use negative number to indicate killed by signal  
+            }  
+            pthread_mutex_unlock(&mutex_array[i]);  
+            break; // Child process handled, exit loop  
+        }  
+        sleep(1); // Wait briefly before retrying  
+    }  
+    return NULL;  
+}  
+
+
+
+int *status_array;  
+pthread_mutex_t *mutex_array;  
+pid_t *pid_array;  
+int array_size; // 假设您有一个表示数组大小的变量  
+
+void test_upon_interface_group() {  
+	int cnt = get_interface_cnt();  
+    int i;  
+    pid_t pid;  
+    int status;
+	status_array = malloc();
+	status_array[i] = -1;
+	pid_array = malloc();
+	array_size = cnt;
+
+
+  	while(1){
+	    for (i = 0; i < cnt; i++) { 
+			if status[i]==0{continue;}
+	            pid = fork();  
+	            if (pid == 0) {  
+	                // 子进程  
+	                init_basic_interface(i);
+					while(1){
+						test_upon_one_interface_in_one_time(get_interface_name_by_index(i), "hello, are you here?", PAKCAGES_NUM_ONE_TIME,choose_status_for_test); 
+					}
+					close_basic_interface(i);
+	                exit(0); // 子进程完成后退出  
+	            } else if (pid < 0) {  
+	                // fork 失败  
+	                perror("fork failed");  
+	                sleep(1);  // 短暂等待后重试  
+	                continue;  // 回到循环开始，重新尝试fork  
+	            } 
+				pthread_create(&thread, NULL, child_handler, &pid);  
+	    }  
+	}
+
+    // 所有子进程（或它们的重启尝试）都已完成  
+    while (wait(NULL) > 0);  
+}  
+
+*/
+
+
+
+
+void test_upon_interface_group() {  
+    int cnt = get_interface_cnt();  
+    int i;  
+    pid_t pid;  
+    int status;  
+  
+    // Iterate through all interfaces  
+    for (i = 0; i < cnt; i++) {  
+        pid = fork();  
+        if (pid == 0) {  
+            // Child process  
+            init_basic_interface(i);  
+            while (1) {  
+                test_upon_one_interface_in_one_time(get_interface_name_by_index(i), "hello, are you here?", PAKCAGES_NUM_ONE_TIME, choose_status_for_test);  
+            }  
+            exit(0); // Uncomment this line if you can exit the loop safely  
+        } else if (pid < 0) {  
+            // fork failed  
+            perror("fork failed");  
+            sleep(1);  // Brief wait before retrying  
+            continue;  // Retry the fork  
+        }  
+    }  
+  
+    // Wait for all child processes to exit  
+    // This loop will continue until there are no more child processes to wait for  
+     while (wait(NULL) > 0);  
+}  
+
+
+void listen_upon_interface_group() {  
+    int cnt = get_interface_cnt();  
+    int i;  
+    pid_t pid;  
+    int status;  
+  
+    for (i = 0; i < cnt; i++) 
+	{  
+            pid = fork();  
+            if (pid == 0) {  
+                // 子进程  
+                init_basic_interface(i);
+                while(1){
+                	listen_upon_one_interface_in_one_time(get_linked_node(i),get_interface_name_by_index(i),choose_status_for_listen); 
+                }
+				close_basic_interface(i);
+                exit(0); // 子进程完成后退出  
+            } else if (pid < 0) {  
+                // fork 失败  
+                perror("fork failed");  
+                sleep(1);  // 短暂等待后重试  
+                continue;  // 回到循环开始，重新尝试fork  
+            }  
+    }  
+
+    // 所有子进程（或它们的重启尝试）都已完成  
+    while (wait(NULL) > 0);  
+}  
+
+
+  
+
+/*
+
+// 下面函数虽然可以拉起死掉的子进程，但是只能执行第一个子进程，有很大的局限性，所以舍弃掉拉起死去子进程的功能
 
 void test_upon_interface_group() {  
 	int cnt = get_interface_cnt();  
@@ -160,6 +320,7 @@ void listen_upon_interface_group() {
     while (wait(NULL) > 0);  
 }  
 
+*/
 
 
 #if 1
