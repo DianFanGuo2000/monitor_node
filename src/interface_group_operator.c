@@ -208,9 +208,6 @@ void listen_upon_interface_group() {
 */
 
 
-/*多线程不太对，有问题，线程切换导致第二个第三个等接口的接收结果不太正确*/
-
-
 
 // 线程函数  
 void* test_interface_thread(void* arg) {  
@@ -409,14 +406,110 @@ void listen_upon_interface_group() {
 
 /*型式试验入口*/
 
+#include <unistd.h> // 包含 access 函数的声明  
+
+int is_valid_filename(const char *filename) {  
+    // 首先检查指针是否为空和字符串是否为空  
+    if (filename == NULL || *filename == '\0') {  
+        // 这里的逻辑取决于你的定义：“空”或“空字符串”的 filename 是否被认为是“有效”的  
+        // 在这个例子中，我们假设它们不是有效的  
+        return 0;  
+    }  
+  
+    // 使用 access 函数检查文件是否存在且可访问  
+    // F_OK 检查文件是否存在  
+    // 注意：这里的 R_OK, W_OK, X_OK 需要根据你的实际需求来选择或组合  
+    // 但为了简单起见，这里只检查文件是否存在  
+    if (access(filename, F_OK) == -1) {  
+        // 如果 access 返回 -1，表示出现错误（文件不存在或没有权限等）  
+        // 注意：在多线程或多进程环境中，文件可能在 access 调用之后立即被删除或修改  
+        // 因此，这个检查并不是完全可靠的  
+        // 检查 errno 可以提供更多关于为什么 access 失败的信息，但在这里我们简单返回 0  
+        return 0;  
+    }  
+  
+    // 如果 access 成功，我们假设文件名是有效的  
+    return 1;  
+}
 
 
 int main(int argc, char *argv[]) {
-    if (argc != 5 && argc != 4) {  
-        fprintf(stderr, "Usage: %s <config_file> <mode> <work_at_which_round_when_half_duplex> [<res_file_name> (when listen mode)]\n", argv[0]);  
-        fprintf(stderr, "Mode should be 'test' or 'listen'.\n");  
-        return 1; // 表示程序因为错误的参数而退出  
-    }  
+	// 检查参数数量  
+	if (argc < 3) {  
+		// 参数不足  
+		fprintf(stderr, "Usage: %s <config_file> test odd/even\n", argv[0]);  
+		fprintf(stderr, "Or:	 %s <config_file> listen odd/even <res_file_name>\n", argv[0]);  
+		fprintf(stderr, "Not enough arguments.\n");  
+		return 1; // 表示程序因为错误的参数而退出  
+	} else if (argc == 4) {  
+		// 四个参数，检查模式是否为 'test'	
+		if (strcmp(argv[2], "test") != 0) {  
+			fprintf(stderr, "Invalid mode '%s'. Mode should be 'test' for 4 arguments.\n", argv[2]); 
+			fprintf(stderr, "Usage: %s <config_file> test odd/even\n", argv[0]);  
+			fprintf(stderr, "Or:	 %s <config_file> listen odd/even <res_file_name>\n", argv[0]);  
+			return 1;  
+		}  
+		if (!is_valid_filename(argv[1])) {	
+			fprintf(stderr, "Invalid round parameter '%s'. It should be a file path.\n", argv[1]);	
+			fprintf(stderr, "Usage: %s <config_file> test odd/even\n", argv[0]);  
+			fprintf(stderr, "Or:	 %s <config_file> listen odd/even <res_file_name>\n", argv[0]);  
+			return 1;  
+		}  
+
+		// 检查奇偶参数  
+		if (strcmp(argv[3], "odd") != 0 && strcmp(argv[3], "even") != 0) {  
+			// 奇偶参数不是 'odd' 或 'even'  
+			fprintf(stderr, "Invalid round parameter '%s'. It should be 'odd' or 'even'.\n", argv[3]);	
+			fprintf(stderr, "Usage: %s <config_file> test odd/even\n", argv[0]);  
+			fprintf(stderr, "Or:	 %s <config_file> listen odd/even <res_file_name>\n", argv[0]);  
+			return 1;  
+		}  
+
+	} else if (argc == 5) {  
+		// 五个参数，检查模式是否为 'listen'  
+		if (strcmp(argv[2], "listen") != 0) {  
+			fprintf(stderr, "Invalid mode '%s'. Mode should be 'listen' for 5 arguments.\n", argv[2]);	
+			fprintf(stderr, "Usage: %s <config_file> test odd/even\n", argv[0]);  
+			fprintf(stderr, "Or:	 %s <config_file> listen odd/even <res_file_name>\n", argv[0]);  
+			return 1;  
+		}  
+	    // 检查奇偶参数  
+	    if (strcmp(argv[3], "odd") != 0 && strcmp(argv[3], "even") != 0) {  
+	        // 奇偶参数不是 'odd' 或 'even'  
+	        fprintf(stderr, "Invalid round parameter '%s'. It should be 'odd' or 'even'.\n", argv[3]);  
+			fprintf(stderr, "Usage: %s <config_file> test odd/even\n", argv[0]);  
+			fprintf(stderr, "Or:	 %s <config_file> listen odd/even <res_file_name>\n", argv[0]);  
+	        return 1;  
+	    }
+		if (!is_valid_filename(argv[1])) {	
+			fprintf(stderr, "Invalid round parameter '%s'. It should be a file path.\n", argv[1]);	
+			fprintf(stderr, "Usage: %s <config_file> test odd/even\n", argv[0]);  
+			fprintf(stderr, "Or:	 %s <config_file> listen odd/even <res_file_name>\n", argv[0]);  
+			return 1;  
+		}  
+
+		if (!is_valid_filename(argv[4])) {	
+			fprintf(stderr, "Invalid round parameter '%s'. It should be a file path.\n", argv[4]);	
+			fprintf(stderr, "Usage: %s <config_file> test odd/even\n", argv[0]);  
+			fprintf(stderr, "Or:	 %s <config_file> listen odd/even <res_file_name>\n", argv[0]);  
+			return 1;  
+		}  
+
+	} else {  
+		// 参数过多  
+		fprintf(stderr, "Too many arguments.\n");  
+		fprintf(stderr, "Usage: %s <config_file> test odd/even\n", argv[0]);  
+		fprintf(stderr, "Or:	 %s <config_file> listen odd/even <res_file_name>\n", argv[0]);  
+		return 1;  
+	}  
+	  
+
+  
+
+  
+    // 如果是监听模式且参数数量不足  
+
+
   
     const char* config_file = argv[1];  
     const char* mode = argv[2];
