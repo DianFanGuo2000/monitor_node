@@ -219,6 +219,27 @@ int update_communication_info_array_from_json(char* communication_info_array_jso
 
 
 
+int read_communication_info_array_from_json(const char *filename) {
+	char buffer[BUFFER_SIZE];
+	FILE *file = fopen(filename, "r");  
+    if (file == NULL) {  
+        printf("open failed\n");  
+        return _ERROR;  
+    }  
+    int i = 0;  
+    while (i < BUFFER_SIZE - 1 && fscanf(file, "%c", &buffer[i]) == 1) {
+        i++;  
+    }
+	if (i < BUFFER_SIZE) { 
+		buffer[i] = '\0';  
+    }  
+	fclose(file);
+
+	free_communication_info_array();
+	malloc_communication_info_array(0);
+	return update_communication_info_array_from_json(buffer);
+}
+
 
 void write_interface_info_array_to_json(const char *filename, struct interface_info *array, size_t size) {  
     cJSON *interfaces = cJSON_CreateArray();  
@@ -362,13 +383,14 @@ int update_interface_cnt(const char *filename)
 }
 
 
+
 void read_interface_info_array_from_json(const char *filename, struct interface_info *array,size_t size) {
 	cJSON *json, *interfaces, *interface, *tmp; 
 	char buffer[BUFFER_SIZE];
 	FILE *file = fopen(filename, "r");  
     if (file == NULL) {  
         printf("open failed\n");  
-        return 1;  
+        return _ERROR;  
     }  
     int i = 0;  
     while (i < BUFFER_SIZE - 1 && fscanf(file, "%c", &buffer[i]) == 1) {

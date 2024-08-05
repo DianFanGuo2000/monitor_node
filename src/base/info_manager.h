@@ -175,6 +175,7 @@ void print_communication_info(const struct communication_info*info);
 void print_communication_info_array(const struct communication_info *array, int size);
 
 void printAllCommucationInfo();
+int read_communication_info_array_from_json(const char *filename);
 
 
 #endif
