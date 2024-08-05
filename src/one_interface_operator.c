@@ -302,8 +302,16 @@ void test_upon_one_interface_in_one_time(const char *test_interface,const char *
 	        args[i].message = message;  
 			nanosleep(&delay, NULL);
 	        pthread_create(&threads[i], NULL, test_thread_function, &args[i]);  
-			printf("now sending the package %d through the interface \"%s\"\n",i+1,test_interface);
-	    }  
+
+			char *interface_status = choose(test_interface,current_round);
+			if(strcmp(interface_status, "receiving") == 0 || strcmp(interface_status, "closed") == 0 )
+			{
+				continue;
+			}else
+			{
+				printf("now sending the package %d through the interface \"%s\"\n",i+1,test_interface);
+			}
+		}  
 	  
 	    for (int i = 0; i < packages_num; i++) {  
 	        pthread_join(threads[i], NULL);  

@@ -262,7 +262,7 @@ void fillMessageToMaxMsgLen(const char *message, char *res_msg, int max_message_
     }  
       
     // 可选：打印结果以验证  
-    printf("Filled message: '%s'\n", res_msg);  
+    //intf("Filled message: '%s'\n", res_msg);  
 }  
 
 
