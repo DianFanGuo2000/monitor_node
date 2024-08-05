@@ -16,7 +16,7 @@
  */  
 int receive_packet(const char *interface_name, unsigned char *msg,long max_waiting_time)  
 {  
-	printf("source_interface: %s\n",interface_name);
+	//printf("source_interface: %s\n",interface_name);
     // Create a raw socket for packet capturing  
     int sockfd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_SNMP));  
     if (sockfd < 0) {  
@@ -160,14 +160,14 @@ int stringToMacAddress(const char* macStr, unsigned char* macAddr) {
  */  
 int send_packet(const char *interface_name, const char *message, const char *ether_shost, const char *ether_dhost)  
 {  
-	if(!ether_shost)
+	/*if(!ether_shost)
 	{
 		printf("ether_shost is NULL!");
 	}else if(!ether_dhost)
 	{
 		printf("ether_dhost is NULL!");
 	}
-	printf("source_interface:%s ether_shost:%s ether_dhost:%s\n",interface_name,ether_shost,ether_dhost);
+	printf("source_interface:%s ether_shost:%s ether_dhost:%s\n",interface_name,ether_shost,ether_dhost);*/
 
 
 	stringToMacAddress(ether_shost,srcmac);

@@ -57,6 +57,9 @@ char* get_interface_name_by_linked_interface_name(char* linked_interface_name)
     return NULL;
 }
 
+
+
+
 void write_communication_info_array_to_json(const char* filename)
 {
 	FILE *file = fopen(filename, "w");  
@@ -70,6 +73,9 @@ void write_communication_info_array_to_json(const char* filename)
 	free(communication_info_array_json_str);
     fclose(file);  
 }
+
+
+
 
 
 
@@ -100,6 +106,8 @@ char* parse_communication_info_array_to_json() {
     cJSON_Delete(json_array);  
     return json_string;  
 }  
+
+
 
 
 int update_communication_info_array(char* linked_node,char* interface_name,time_t updated_time,unsigned long tx,unsigned long rx) //,char* error_ratio_value
@@ -942,7 +950,7 @@ void print_communication_info_array(const struct communication_info *array, int 
 
 void printAllCommucationInfo()
 {
-	print_interface_info_array(interface_info_array,interface_cnt);
+	print_communication_info_array(communication_info_array,communication_info_cnt);
 }
 
 

@@ -160,56 +160,85 @@ void free_test_or_listen_record_arrays() {
 }  
 
 void deal_with_mnt(const char* linked_node,const char* listened_interface, const char* msg) {  
-	printf("linked_node:%s listened_interface:%s msg:%s \n",linked_node,listened_interface,msg);
+	//printf("linked_node:%s listened_interface:%s msg:%s \n",linked_node,listened_interface,msg);
+	int ind = get_interface_index(listened_interface);
+	time_t current_time = time(NULL);  
+    int current_round = (current_time - get_test_begin_time()) / MAX_WAITING_TIME_IN_ONE_ROUND;
+
+	pthread_mutex_lock(&cnt_mutex_array[ind]);
     if(strcmp(msg, "hello, are you here?") == 0)
     {
-		time_t current_time = time(NULL);  
-        int current_round = (current_time - get_test_begin_time()) / MAX_WAITING_TIME_IN_ONE_ROUND;
+
 		//printf("current_time: %d\n",current_time);
 		//printf("test_begin_time: %d\n",get_test_begin_time());
 		
-		int ind = get_interface_index(listened_interface);
 		if(round_array[ind] == 0)
 		{
+			cnt_array[ind] = 1; // 重置计数器 
 			round_array[ind] = current_round;
+			pthread_mutex_unlock(&cnt_mutex_array[ind]);
 			return ;
 		}
 
+
+		if (current_round > round_array[ind]) {
+			printf("round changed! ");
+			printf("current_round is %d, current listened interface is %s, the cnt of this interface after this listen time is %d\n",current_round,listened_interface,1);
+		}else
+		{
+			printf("round stay the same! ");
+			printf("current_round is %d, current listened interface is %s, the cnt of this interface after this listen time is %d\n",current_round,listened_interface,cnt_array[ind]+1);
+		}
+
+
 		if (current_round > round_array[ind]) { 
-			printf("current_round is %d\n",current_round);
-            pthread_mutex_lock(&cnt_mutex_array[ind]);
+            //pthread_mutex_lock(&cnt_mutex_array[ind]);
 			
 			//在这个地方把上一轮统计结果传出去，要不直接就保存下来
 			char *result = malloc(RESULT_STRING_SIZE);  
 		    if (result == NULL) {  
 		        // 处理内存分配失败的情况  
-		        return NULL;  
+				pthread_mutex_unlock(&cnt_mutex_array[ind]);   
+				return NULL;  
 		    }  
+
+			/*
 		    double ratio = 1 - (double)cnt_array[ind]/ PAKCAGES_NUM_ONE_TIME;  
 		    snprintf(result, RESULT_STRING_SIZE, "%.2f", ratio); 
-			update_communication_info_array(linked_node,listened_interface,time(NULL),PAKCAGES_NUM_ONE_TIME,cnt_array[ind]);
 			printf("the interface \"%s\" got an error ratio value with %s ( tx:%d rx:%d)\n",listened_interface,result,PAKCAGES_NUM_ONE_TIME,cnt_array[ind]); 
-			free(result);	
+			free(result);	*/
 
+			update_communication_info_array(linked_node,listened_interface,time(NULL),PAKCAGES_NUM_ONE_TIME,cnt_array[ind]);
+
+			printf("\n");
+			printf("now sync the listened result of last round( %d ), current listened interface is %s, the result is below:\n",round_array[ind],listened_interface);
 			printAllCommucationInfo();
+			printf("\n");
+			
+			//printf("listened_interface get_interface_status(listened_interface) current_round: %s %s %d\n",listened_interface,get_interface_status(listened_interface),current_round);
+
 
 			sync_communication_info(get_center_interface_name(ind));
 
 
             cnt_array[ind] = 1; // 重置计数器  
             round_array[ind]= current_round; 
-            pthread_mutex_unlock(&cnt_mutex_array[ind]);  
+            //pthread_mutex_unlock(&cnt_mutex_array[ind]);  
         }else{
-			pthread_mutex_lock(&cnt_mutex_array[ind]); 
+			//pthread_mutex_lock(&cnt_mutex_array[ind]); 
 	        cnt_array[ind]++;  
-			pthread_mutex_unlock(&cnt_mutex_array[ind]);   
+			//printf("listened_interface get_interface_status(listened_interface) : %s %s\n",listened_interface,get_interface_status(listened_interface));
+			//pthread_mutex_unlock(&cnt_mutex_array[ind]);   
 		}
+		pthread_mutex_unlock(&cnt_mutex_array[ind]);   
 		return;
     }else if(update_communication_info_array_from_json(msg)==_SUCCESS)
     {
     	write_communication_info_array_to_json(res_file_name);
+		pthread_mutex_unlock(&cnt_mutex_array[ind]);   
 		return;
     }
+	pthread_mutex_unlock(&cnt_mutex_array[ind]);   
 	printf("msg is wrong!\n");
 	printf("msg: %s\n",msg);
 }  
@@ -262,13 +291,18 @@ void test_upon_one_interface_in_one_time(const char *test_interface,const char *
 	    ThreadArgs args[packages_num];  
 		struct timespec delay;
 		delay.tv_sec = 0;  // 秒      
+		delay.tv_nsec = WAITING_TIME_FOR_SENDING_AFTER_ONE_ROUND_CHANGING_POINT;  // 100毫秒 = 100,000,000纳秒  
+		nanosleep(&delay, NULL);
+		
+		delay.tv_sec = 0;  // 秒      
 		delay.tv_nsec = SENDING_TIME_SPEC;  // 100毫秒 = 100,000,000纳秒  
-	  
+		
 	    for (int i = 0; i < packages_num; i++) {  
 	        args[i].interface_name = test_interface;  
 	        args[i].message = message;  
 			nanosleep(&delay, NULL);
 	        pthread_create(&threads[i], NULL, test_thread_function, &args[i]);  
+			printf("now sending the package %d through the interface \"%s\"\n",i+1,test_interface);
 	    }  
 	  
 	    for (int i = 0; i < packages_num; i++) {  

@@ -298,7 +298,7 @@ int send_packet_rs485(int fd, const char *msg, unsigned int length)
     //exportGPIO();
     //set485TX();
     
-	printf("fd:%d msg_len:%d msg:%s\n",fd,length,msg);
+	/*printf("fd:%d msg_len:%d msg:%s\n",fd,length,msg);*/
     /* check msg is null or not */
 	if (msg == NULL) {
         printf("ERROR: Buffer is NULL!\n");
@@ -405,7 +405,7 @@ int receive_packet_rs485(int fd, unsigned char *msg, unsigned int length, int wa
 		printf("Timeout!\n");
 		return _ERROR;
 	}
-	printf("fd:%d msg_len:%d msg:%s\n",fd,length,msg);
+	//printf("fd:%d msg_len:%d msg:%s\n",fd,length,msg);
     return bytesReadTotal;
 }
 

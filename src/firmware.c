@@ -136,7 +136,7 @@ void* deal_async(void* arg) {
 
 
 // Declare a buffer for the received message, assuming it might be longer  
-DealData data;	
+//DealData data;	/*千万注意，这是一个全局变量，所以一定要加锁来访问，不然可能会引发奇奇怪怪的错误*/
 int receive_message(const char *linked_node,const char *source_interface,Dealer deal,long max_waiting_time)    
 {
 
@@ -151,7 +151,8 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 	time_t begin_time = time(NULL); // Initialize start time  
 
     // Check if the interface type is "eth"  
-    if (strcmp(interface_type, "eth") == 0) {      
+    if (strcmp(interface_type, "eth") == 0) {   
+		DealData data;
 		data.deal_func = deal; // 将 deal 函数指针保存到结构体中
 		data.linked_node = linked_node;
 		data.listened_interface = source_interface;
@@ -176,7 +177,8 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 	    return _SUCCESS;    
     }
 
-    if (strcmp(interface_type, "can") == 0) {           
+    if (strcmp(interface_type, "can") == 0) { 
+		DealData data;
 		data.deal_func = deal; // 将 deal 函数指针保存到结构体中
 		data.linked_node = linked_node;
 		data.listened_interface = source_interface;
@@ -205,7 +207,7 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 
 	
 	if (strcmp(interface_type, "rs485") == 0) {	 
-
+			DealData data;
 			data.deal_func = deal; // 将 deal 函数指针保存到结构体中
 			data.linked_node = linked_node;
 			data.listened_interface = source_interface;

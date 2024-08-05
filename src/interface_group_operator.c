@@ -144,7 +144,8 @@ void test_upon_interface_group() {
 
 
 
-
+/*2024.8.5 不能使用多进程，因为底层的infor_manager是全局共享的，不同的进程会有自己独立的info_manager，破坏了这种共享，所以要改成多线程*/
+/*
 void test_upon_interface_group() {  
     int cnt = get_interface_cnt();  
     int i;  
@@ -204,8 +205,88 @@ void listen_upon_interface_group() {
     while (wait(NULL) > 0);  
 }  
 
+*/
 
+
+/*多线程不太对，有问题，线程切换导致第二个第三个等接口的接收结果不太正确*/
+
+
+
+// 线程函数  
+void* test_interface_thread(void* arg) {  
+    int index = *(int*)arg;  
+    init_basic_interface(index);  
+    while (1) {  
+        test_upon_one_interface_in_one_time(get_interface_name_by_index(index), "hello, are you here?", PAKCAGES_NUM_ONE_TIME, choose_status_for_test);  
+    }  
+    // 注意：实际使用中，你可能需要一个机制来优雅地退出这个循环  
+    return NULL;  
+}  
   
+void test_upon_interface_group() {  
+    int cnt = get_interface_cnt();  
+    pthread_t threads[cnt];  
+    int indexes[cnt];  
+    int i;  
+  
+    // 为每个接口创建一个线程  
+    for (i = 0; i < cnt; i++) {  
+        indexes[i] = i;  
+        if (pthread_create(&threads[i], NULL, test_interface_thread, &indexes[i]) != 0) {  
+            perror("pthread_create failed");  
+            exit(EXIT_FAILURE);  
+        }  
+    }  
+  
+    // 等待所有线程完成  
+    // 注意：由于我们的线程是无限循环的，这里实际上不会执行到这一行  
+    // 除非你有其他机制来停止线程（如信号、条件变量等）  
+    for (i = 0; i < cnt; i++) {  
+        pthread_join(threads[i], NULL);  
+    }  
+  
+    // 注意：在实际应用中，你可能不会这样等待无限循环的线程  
+}  
+  
+
+
+// 线程函数  
+void* listen_interface_thread(void* arg) {  
+    int index = *(int*)arg;  
+    init_basic_interface(index);  
+    while (1) {  
+        listen_upon_one_interface_in_one_time(get_linked_node(index),get_interface_name_by_index(index),choose_status_for_listen);  
+    }  
+    // 注意：实际使用中，你可能需要一个机制来优雅地退出这个循环  
+    return NULL;  
+}  
+  
+void listen_upon_interface_group() {  
+    int cnt = get_interface_cnt();  
+    pthread_t threads[cnt];  
+    int indexes[cnt];  
+    int i;  
+  
+    // 为每个接口创建一个线程  
+    for (i = 0; i < cnt; i++) {  
+        indexes[i] = i;  
+        if (pthread_create(&threads[i], NULL, listen_interface_thread, &indexes[i]) != 0) {  
+            perror("pthread_create failed");  
+            exit(EXIT_FAILURE);  
+        }  
+    }  
+  
+    // 等待所有线程完成  
+    // 注意：由于我们的线程是无限循环的，这里实际上不会执行到这一行  
+    // 除非你有其他机制来停止线程（如信号、条件变量等）  
+    for (i = 0; i < cnt; i++) {  
+        pthread_join(threads[i], NULL);  
+    }  
+  
+    // 注意：在实际应用中，你可能不会这样等待无限循环的线程  
+}  
+  
+
 
 /*
 
