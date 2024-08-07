@@ -263,6 +263,8 @@ void write_interface_info_array_to_json(const char *filename, struct interface_i
         cJSON_AddStringToObject(interface, "linked_interface_name", array[i].linked_interface_name);  
         cJSON_AddStringToObject(interface, "linked_interface_type", array[i].linked_interface_type);  
 		cJSON_AddStringToObject(interface, "center_interface_name", array[i].center_interface_name);  
+		cJSON_AddStringToObject(interface, "status_chooser", array[i].status_chooser);  
+		
 
 
 		cJSON *eth_info = cJSON_CreateObject();  
@@ -406,6 +408,7 @@ void read_interface_info_array_from_json(const char *filename, struct interface_
         const char *error_ptr = cJSON_GetErrorPtr();
         if (error_ptr != NULL) {
             fprintf(stderr, "Error before: %s\n", error_ptr);
+			fprintf(stderr, "Buffer content: %s\n", buffer);
         }
         return;
     }
@@ -436,6 +439,9 @@ void read_interface_info_array_from_json(const char *filename, struct interface_
         array[i].linked_interface_name = strdup(cJSON_GetObjectItem(interface, "linked_interface_name")->valuestring);
         array[i].linked_interface_type = strdup(cJSON_GetObjectItem(interface, "linked_interface_type")->valuestring);
 		array[i].center_interface_name = strdup(cJSON_GetObjectItem(interface, "center_interface_name")->valuestring);
+		array[i].status_chooser = strdup(cJSON_GetObjectItem(interface, "status_chooser")->valuestring);
+
+		
 
         array[i].status = strdup(cJSON_GetObjectItem(interface, "status")->valuestring);
 		array[i].mode = strdup(cJSON_GetObjectItem(interface, "mode")->valuestring);
@@ -656,6 +662,8 @@ void free_interface_info_array()
 		free(interface_info_array[i].linked_interface_name);  
 		free(interface_info_array[i].linked_interface_type);
 		free(interface_info_array[i].center_interface_name);
+		free(interface_info_array[i].status_chooser);
+		
 
 		free(interface_info_array[i].eth_info.ip_addr);
 		free(interface_info_array[i].eth_info.net_mask);
@@ -816,6 +824,12 @@ char* get_interface_status(const char* interface_name)
 
 }
 
+char* get_interface_status_by_index(int i)
+{
+    return interface_info_array[i].status;
+
+}
+
 
 // Function to check if the status is valid  
 bool isValidStatus(const char* status) {  
@@ -924,6 +938,14 @@ char* get_interface_type_by_index(int i)
 {
     return interface_info_array[i].interface_type;
 }
+
+char* get_status_chooser_by_index(int i)
+{
+    return interface_info_array[i].status_chooser;
+}
+
+
+
 
 
 char* get_interface_type(const char *interface_name)

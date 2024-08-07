@@ -1,8 +1,11 @@
 #ifndef CONFIGURES_H  
 #define CONFIGURES_H  
 
+
+
+
 #define RESULT_STRING_SIZE 20
-#define BUFFER_SIZE 2048
+#define BUFFER_SIZE 4096
 
 #define MAX_WAITING_TIME_IN_ONE_ROUND 8 // s
 #define TEST_BEIGIN_TIME "Tue Jul 23 18:31:15 2024" // s

@@ -3,52 +3,6 @@
 
 
 
-
-char* work_at_which_round_for_test_when_half_duplex;
-char* work_at_which_round_for_listen_when_half_duplex;
-
-
-// Function to choose the status for testing based on interface type and current round  
-char* choose_status_for_test(const char *interface_name, const int current_round) {  
-    char* interface_type = get_interface_type(interface_name); // Get the interface type  
-    if (strcmp(interface_type, "eth") == 0) {  
-        return "sending_and_receiving"; // For Ethernet, always send and receive  
-    }  
-    // Check if interface is CAN or RS485  
-    if (strcmp(interface_type, "can") == 0 || strcmp(interface_type, "rs485") == 0) {  
-        // Decide based on half-duplex configuration and current round  
-        if (strcmp(work_at_which_round_for_test_when_half_duplex, "odd") == 0 && current_round % 2 == 1) {  
-            return "sending"; // If odd rounds and configured for odd, send  
-        }  
-        if (strcmp(work_at_which_round_for_test_when_half_duplex, "even") == 0 && current_round % 2 == 0) {  
-            return "sending"; // If even rounds and configured for even, send  
-        }  
-        return "receiving"; // If none of the above, receive  
-    }  
-    return "closed"; // Default status if interface type is not recognized  
-}  
-  
-// Function to choose the status for listening based on interface type and current round  
-char* choose_status_for_listen(const char *interface_name, const int current_round) {  
-    char* interface_type = get_interface_type(interface_name); // Get the interface type  
-    if (strcmp(interface_type, "eth") == 0) {  
-        return "sending_and_receiving"; // For Ethernet, always send and receive  
-    }  
-    // Check if interface is CAN or RS485  
-    if (strcmp(interface_type, "can") == 0 || strcmp(interface_type, "rs485") == 0) {  
-        // Decide based on half-duplex configuration and current round  
-        if (strcmp(work_at_which_round_for_listen_when_half_duplex, "odd") == 0 && current_round % 2 == 1) {  
-            return "receiving"; // If odd rounds and configured for odd, receive  
-        }  
-        if (strcmp(work_at_which_round_for_listen_when_half_duplex, "even") == 0 && current_round % 2 == 0) {  
-            return "receiving"; // If even rounds and configured for even, receive  
-        }  
-        return "sending"; // If none of the above, send (though typically in listen mode, it would be receiving)  
-    }  
-    return "closed"; // Default status if interface type is not recognized  
-}
-
-
 /*
 
 下面代码是对多进程中某些进程被异常中断后将其拉起来的功能的尝试，现在先挂起不做，如果后面有这个需要了再做
@@ -214,7 +168,7 @@ void* test_interface_thread(void* arg) {
     int index = *(int*)arg;  
     init_basic_interface(index);  
     while (1) {  
-        test_upon_one_interface_in_one_time(get_interface_name_by_index(index), "hello, are you here?", PAKCAGES_NUM_ONE_TIME, choose_status_for_test);  
+        test_upon_one_interface_in_one_time(get_interface_name_by_index(index), "hello, are you here?", PAKCAGES_NUM_ONE_TIME);  
     }  
     // 注意：实际使用中，你可能需要一个机制来优雅地退出这个循环  
     return NULL;  
@@ -252,7 +206,7 @@ void* listen_interface_thread(void* arg) {
     int index = *(int*)arg;  
     init_basic_interface(index);  
     while (1) {  
-        listen_upon_one_interface_in_one_time(get_linked_node(index),get_interface_name_by_index(index),choose_status_for_listen);  
+        listen_upon_one_interface_in_one_time(get_linked_node(index),get_interface_name_by_index(index));  
     }  
     // 注意：实际使用中，你可能需要一个机制来优雅地退出这个循环  
     return NULL;  
@@ -401,7 +355,7 @@ void listen_upon_interface_group() {
 */
 
 
-#if 0
+#if 1
 
 
 /*型式试验入口*/
@@ -437,69 +391,57 @@ int main(int argc, char *argv[]) {
 	// 检查参数数量  
 	if (argc < 3) {  
 		// 参数不足  
-		fprintf(stderr, "Usage: %s <config_file> test odd/even\n", argv[0]);  
-		fprintf(stderr, "Or:	 %s <config_file> listen odd/even <res_file_name>\n", argv[0]);  
+		fprintf(stderr, "Usage: %s <config_file> test\n", argv[0]);  
+		fprintf(stderr, "Or:	 %s <config_file> listen <res_file_name>\n", argv[0]);  
 		fprintf(stderr, "Not enough arguments.\n");  
 		return 1; // 表示程序因为错误的参数而退出  
-	} else if (argc == 4) {  
-		// 四个参数，检查模式是否为 'test'	
+	} else if (argc == 3) {  
+		// 3个参数，检查模式是否为 'test'	
 		if (strcmp(argv[2], "test") != 0) {  
 			fprintf(stderr, "Invalid mode '%s'. Mode should be 'test' for 4 arguments.\n", argv[2]); 
-			fprintf(stderr, "Usage: %s <config_file> test odd/even\n", argv[0]);  
-			fprintf(stderr, "Or:	 %s <config_file> listen odd/even <res_file_name>\n", argv[0]);  
+			fprintf(stderr, "Usage: %s <config_file> test\n", argv[0]);  
+			fprintf(stderr, "Or:	 %s <config_file> listen <res_file_name>\n", argv[0]); 
+
 			return 1;  
 		}  
 		if (!is_valid_filename(argv[1])) {	
 			fprintf(stderr, "Invalid round parameter '%s'. It should be a file path.\n", argv[1]);	
-			fprintf(stderr, "Usage: %s <config_file> test odd/even\n", argv[0]);  
-			fprintf(stderr, "Or:	 %s <config_file> listen odd/even <res_file_name>\n", argv[0]);  
+			fprintf(stderr, "Usage: %s <config_file> test\n", argv[0]);  
+			fprintf(stderr, "Or:	 %s <config_file> listen <res_file_name>\n", argv[0]); 
+
 			return 1;  
 		}  
 
-		// 检查奇偶参数  
-		if (strcmp(argv[3], "odd") != 0 && strcmp(argv[3], "even") != 0) {  
-			// 奇偶参数不是 'odd' 或 'even'  
-			fprintf(stderr, "Invalid round parameter '%s'. It should be 'odd' or 'even'.\n", argv[3]);	
-			fprintf(stderr, "Usage: %s <config_file> test odd/even\n", argv[0]);  
-			fprintf(stderr, "Or:	 %s <config_file> listen odd/even <res_file_name>\n", argv[0]);  
-			return 1;  
-		}  
-
-	} else if (argc == 5) {  
-		// 五个参数，检查模式是否为 'listen'  
+	} else if (argc == 4) {  
+		// 4个参数，检查模式是否为 'listen'  
 		if (strcmp(argv[2], "listen") != 0) {  
 			fprintf(stderr, "Invalid mode '%s'. Mode should be 'listen' for 5 arguments.\n", argv[2]);	
-			fprintf(stderr, "Usage: %s <config_file> test odd/even\n", argv[0]);  
-			fprintf(stderr, "Or:	 %s <config_file> listen odd/even <res_file_name>\n", argv[0]);  
+			fprintf(stderr, "Usage: %s <config_file> test\n", argv[0]);  
+			fprintf(stderr, "Or:	 %s <config_file> listen <res_file_name>\n", argv[0]); 
+
 			return 1;  
 		}  
-	    // 检查奇偶参数  
-	    if (strcmp(argv[3], "odd") != 0 && strcmp(argv[3], "even") != 0) {  
-	        // 奇偶参数不是 'odd' 或 'even'  
-	        fprintf(stderr, "Invalid round parameter '%s'. It should be 'odd' or 'even'.\n", argv[3]);  
-			fprintf(stderr, "Usage: %s <config_file> test odd/even\n", argv[0]);  
-			fprintf(stderr, "Or:	 %s <config_file> listen odd/even <res_file_name>\n", argv[0]);  
-	        return 1;  
-	    }
 		if (!is_valid_filename(argv[1])) {	
 			fprintf(stderr, "Invalid round parameter '%s'. It should be a file path.\n", argv[1]);	
-			fprintf(stderr, "Usage: %s <config_file> test odd/even\n", argv[0]);  
-			fprintf(stderr, "Or:	 %s <config_file> listen odd/even <res_file_name>\n", argv[0]);  
+			fprintf(stderr, "Usage: %s <config_file> test\n", argv[0]);  
+			fprintf(stderr, "Or:	 %s <config_file> listen <res_file_name>\n", argv[0]); 
+
 			return 1;  
 		}  
 
-		if (!is_valid_filename(argv[4])) {	
-			fprintf(stderr, "Invalid round parameter '%s'. It should be a file path.\n", argv[4]);	
-			fprintf(stderr, "Usage: %s <config_file> test odd/even\n", argv[0]);  
-			fprintf(stderr, "Or:	 %s <config_file> listen odd/even <res_file_name>\n", argv[0]);  
+		if (!is_valid_filename(argv[3])) {	
+			fprintf(stderr, "Invalid round parameter '%s'. It should be a file path.\n", argv[3]);	
+			fprintf(stderr, "Usage: %s <config_file> test\n", argv[0]);  
+			fprintf(stderr, "Or:	 %s <config_file> listen <res_file_name>\n", argv[0]);  
 			return 1;  
 		}  
 
 	} else {  
 		// 参数过多  
 		fprintf(stderr, "Too many arguments.\n");  
-		fprintf(stderr, "Usage: %s <config_file> test odd/even\n", argv[0]);  
-		fprintf(stderr, "Or:	 %s <config_file> listen odd/even <res_file_name>\n", argv[0]);  
+		fprintf(stderr, "Usage: %s <config_file> test\n", argv[0]);  
+		fprintf(stderr, "Or:	 %s <config_file> listen <res_file_name>\n", argv[0]); 
+
 		return 1;  
 	}  
 	  
@@ -514,18 +456,6 @@ int main(int argc, char *argv[]) {
     const char* config_file = argv[1];  
     const char* mode = argv[2];
 
-	
-	if(strcmp(mode, "test") == 0)
-	{
-		work_at_which_round_for_test_when_half_duplex = argv[3];
-	}
-
-	if(strcmp(mode, "listen") == 0)
-	{
-		work_at_which_round_for_listen_when_half_duplex = argv[3];
-	}
-
-	
 
     if (strcmp(mode, "test") == 0) {  
         start_and_load_info(config_file); 
@@ -539,7 +469,7 @@ int main(int argc, char *argv[]) {
 		
     } else if (strcmp(mode, "listen") == 0) {
         start_and_load_info(config_file);
-		set_res_file_name(argv[4]);
+		set_res_file_name(argv[3]);
 		init_test_or_listen_record_arrays();
 
 		// 下面开始循环监听各个配置好的物理通信接口
@@ -635,7 +565,7 @@ int main(int argc, char *argv[]) {
 
 
 
-#if 1
+#if 0
 
 /*can自收自发测试*/
 
@@ -657,7 +587,7 @@ int main(int argc, char *argv[]) {
     // 假设有一个合适的延迟函数，比如 TASK_DELAY();  
     // TASK_DELAY(); // 如果这个函数是必要的，请提供它的实现或声明  
   
-    appCanDataRecv(1, recv, sizeof(recv), -1); // 删除了多余的参数  
+    appCanDataRecv(2, recv, sizeof(recv), -1); // 删除了多余的参数  
     printf("%s\n", recv);  
   
     return 0;  

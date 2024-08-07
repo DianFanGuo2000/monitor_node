@@ -1,4 +1,4 @@
-#ifdef __cplusplus /*如果是c++ 模式*/ 
+#ifdef __cplusplus  
 extern "C" {  
 #endif  
   
@@ -28,5 +28,4 @@ UINT32 appMcuStatRecv(char *recvDataPointer, UINT32 recvDataLength);
 #ifdef __cplusplus  
 }  
 #endif
-
 

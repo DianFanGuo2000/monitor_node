@@ -48,6 +48,7 @@ struct interface_info {
     char *linked_interface_name;  
     char *linked_interface_type;  
     char *center_interface_name;  
+	char *status_chooser;  
 
     struct eth_info eth_info;
 	struct eth_info linked_eth_info;
@@ -84,6 +85,7 @@ time_t test_begin_time;
 
 
 time_t get_test_begin_time();
+char* get_interface_status_by_index(int i);
 
 int update_interface_cnt(const char *filename);
 void start_and_load_info(const char *filename);
@@ -170,6 +172,7 @@ char* get_center_interface_name(int i);
 
 void print_communication_info(const struct communication_info*info);
 
+char* get_status_chooser_by_index(int i);
 
 
 void print_communication_info_array(const struct communication_info *array, int size);

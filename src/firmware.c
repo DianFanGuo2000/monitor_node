@@ -383,10 +383,10 @@ int set_status(const char *source_interface, const char *status)
 
     if (strcmp(interface_type, "eth") == 0) {  
         // Compare the status string correctly using strcmp  
-        if (strcmp(status, "sending") == 0 || strcmp(status, "receiving") == 0) {  
+       /* if (strcmp(status, "sending") == 0 || strcmp(status, "receiving") == 0) {  
             printf("eth cannot be set as 'sending' or 'receiving'\n");  
             return _ERROR;  
-        }  
+        }  */
 		
   		// Attempt to set the interface status  
 	    if (set_interface_status(source_interface, status) < 0) {  

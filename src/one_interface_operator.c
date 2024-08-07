@@ -14,10 +14,13 @@ void set_res_file_name(char *file_name)
 
 
 
-void update_status_in_current_round(const char *updated_interface, status_chooser choose,int current_round) {  
+void update_status_in_current_round(const char *updated_interface,const char *mode,int current_round) {  
     // 调用choose函数获取状态索引，并更新状态  
-    char* status_res = choose(updated_interface,current_round);  
-    set_status(updated_interface, status_res); 
+    int index = get_interface_index(updated_interface);
+	char *status_chooser_name_for_updated_interface = get_status_chooser_by_index(index);
+    char* status_res = status_chooser_transfer(status_chooser_name_for_updated_interface,updated_interface,mode,current_round);  
+    set_status(updated_interface,status_res); 
+	//printf("now %s 's status is %s\n",updated_interface,status_res);
 }  
 
 
@@ -247,10 +250,10 @@ void deal_with_mnt(const char* linked_node,const char* listened_interface, const
 
 
 
-void listen_upon_one_interface_in_one_time(char *linked_node, char *listened_interface, status_chooser choose) {  
+void listen_upon_one_interface_in_one_time(char *linked_node, char *listened_interface) {  
     time_t current_time = time(NULL);  
     int current_round = (current_time - get_test_begin_time()) / MAX_WAITING_TIME_IN_ONE_ROUND;  
-    update_status_in_current_round(listened_interface, choose, current_round);  
+    update_status_in_current_round(listened_interface,"listen", current_round);  
 
 	receive_message(linked_node,listened_interface, deal_with_mnt, MAX_WAITING_TIME_IN_ONE_ROUND); 
 
@@ -268,7 +271,7 @@ void *test_thread_function(void *arg) {
 
 
 
-void test_upon_one_interface_in_one_time(const char *test_interface,const char *message,int packages_num,status_chooser choose)
+void test_upon_one_interface_in_one_time(const char *test_interface,const char *message,int packages_num)
 {  
 
 	time_t current_time = time(NULL);  
@@ -285,7 +288,7 @@ void test_upon_one_interface_in_one_time(const char *test_interface,const char *
 
 	if (current_round > round_array[ind]) { 
 		printf("current round is %d\n",current_round);
-		update_status_in_current_round(test_interface,choose,current_round);
+		update_status_in_current_round(test_interface,"test",current_round);
 		
 		pthread_t threads[packages_num];  
 	    ThreadArgs args[packages_num];  
@@ -303,7 +306,7 @@ void test_upon_one_interface_in_one_time(const char *test_interface,const char *
 			nanosleep(&delay, NULL);
 	        pthread_create(&threads[i], NULL, test_thread_function, &args[i]);  
 
-			char *interface_status = choose(test_interface,current_round);
+			char *interface_status = get_interface_status(test_interface);
 			if(strcmp(interface_status, "receiving") == 0 || strcmp(interface_status, "closed") == 0 )
 			{
 				continue;
