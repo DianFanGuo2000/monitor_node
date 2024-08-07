@@ -401,7 +401,7 @@ void listen_upon_interface_group() {
 */
 
 
-#if 1
+#if 0
 
 
 /*型式试验入口*/
@@ -635,24 +635,33 @@ int main(int argc, char *argv[]) {
 
 
 
-#if 0
+#if 1
 
 /*can自收自发测试*/
 
 
-int main(int argc, char *argv[]) {  
-	char res[10];
-	comCanSTDCfgInit(1,500);
-	comCanSTDCfgInit(2,500);
-	send_packet_can(1,"hello",5);
-	TASK_DELAY();
-	receive_packet_can(2,res,5,1);
 
-	printf("%s\n",res);
+#include <string.h> // 为了使用 memcpy  
+#include <stdio.h>  // 为了使用 printf  
+  
+int main(int argc, char *argv[]) {  
+    char *package_content = "hello";  
+    char send[10];  
+    char recv[10] = {0}; // 初始化为0，确保是null结尾的字符串  
+    memcpy(send, package_content, strlen(package_content) + 1); // +1 是为了复制 null 结尾符  
+  
+    comCfgInit(1, 1, 1000);  
+    comCfgInit(2, 1, 1000);  
+    appCanDataSend(1, 1, send, strlen(package_content) + 1); // +1 是为了发送 null 结尾符  
+  
+    // 假设有一个合适的延迟函数，比如 TASK_DELAY();  
+    // TASK_DELAY(); // 如果这个函数是必要的，请提供它的实现或声明  
+  
+    appCanDataRecv(1, recv, sizeof(recv), -1); // 删除了多余的参数  
+    printf("%s\n", recv);  
   
     return 0;  
 }
-
 
 #endif
 
