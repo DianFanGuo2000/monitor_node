@@ -23,9 +23,9 @@ extern INT32 TASK_DELAY();
 
 
 
-int receive_packet_can(UINT32 can_channel_id, char *msg, UINT32 length, int wait_time);
+int receive_packet_can_fpu(UINT32 can_channel_id, char *msg, UINT32 length, int wait_time);
 
-int send_packet_can(UINT32 can_channel_id, const char *msg, UINT32 length);
+int send_packet_can_fpu(UINT32 can_channel_id, const char *msg, UINT32 length);
 
 
 #endif

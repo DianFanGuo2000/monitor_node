@@ -68,7 +68,7 @@ int init_basic_interface(int i)
 		//set_interface_status(interface_name,"receiving");
     }  
 
-    if (strcmp(base_send_func, "send_packet_can") == 0 && strcmp(base_receive_func, "receive_packet_can") == 0)  
+    if (strcmp(base_send_func, "send_packet_can_fpu") == 0 && strcmp(base_receive_func, "receive_packet_can_fpu") == 0)  
     {  
         int channel_id = get_channel_id_by_index(i);  
 		int baud_rate = get_baud_rate_by_index(i);
@@ -116,7 +116,7 @@ int close_basic_interface(int i)
         close_port(fd);
     }  
   
-    if (strcmp(base_send_func, "send_packet_can") == 0 && strcmp(base_receive_func, "receive_packet_can") == 0)  
+    if (strcmp(base_send_func, "send_packet_can_fpu") == 0 && strcmp(base_receive_func, "receive_packet_can_fpu") == 0)  
     {  
         // Currently no action is taken for can type, but you might want to reset the CAN  
         // controller or close the CAN channel  
@@ -181,7 +181,7 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 	    return _SUCCESS;    
     }
 
-    if (strcmp(base_receive_func, "receive_packet_can") == 0) { 
+    if (strcmp(base_receive_func, "receive_packet_can_fpu") == 0) { 
 		DealData data;
 		data.deal_func = deal; // 将 deal 函数指针保存到结构体中
 		data.linked_node = linked_node;
@@ -192,7 +192,7 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 		int can_id = get_channel_id_by_index(i);
 	    // Attempt to receive a packet from the source interface    
 		char TEMP_MSG[MAX_MSG_LEN+1];
-		if (receive_packet_can(can_id,TEMP_MSG,MAX_MSG_LEN,max_waiting_time)<0) {  
+		if (receive_packet_can_fpu(can_id,TEMP_MSG,MAX_MSG_LEN,max_waiting_time)<0) {  
 			// If receiving the message fails, return an error and don't reply
 			//usleep(3000000);
 			return _ERROR;	  
@@ -314,7 +314,7 @@ int send_message(const char *source_interface,const char *message)
 
 
     // Check if the interface type is "can" (could be removed if not needed)    
-    if (strcmp(base_send_func, "send_packet_can") == 0) {    
+    if (strcmp(base_send_func, "send_packet_can_fpu") == 0) {    
 		int i = get_interface_index(source_interface);
 		int can_id = get_channel_id_by_index(i);
 
@@ -322,7 +322,7 @@ int send_message(const char *source_interface,const char *message)
 		char CANMSG[MAX_MSG_LEN + 1];
 		fillMessageToMaxMsgLen(message,CANMSG,MAX_MSG_LEN);
 		
-        if (send_packet_can(can_id,CANMSG,MAX_MSG_LEN)< 0) {    
+        if (send_packet_can_fpu(can_id,CANMSG,MAX_MSG_LEN)< 0) {    
         	printf("send failed!\n");
         	return _ERROR; // Retry sending    
         }    
@@ -423,7 +423,7 @@ int set_status(const char *source_interface, const char *status)
 
     }  
 
-      if (strcmp(base_send_func, "send_packet_can") == 0 && strcmp(base_receive_func, "receive_packet_can") == 0) {  
+      if (strcmp(base_send_func, "send_packet_can_fpu") == 0 && strcmp(base_receive_func, "receive_packet_can_fpu") == 0) {  
         // Compare the status string correctly using strcmp  
         if (strcmp(status, "sending_and_receiving") == 0) {  
             printf("can cannot be set as 'sending_and_receiving'\n");  

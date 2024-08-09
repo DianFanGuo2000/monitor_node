@@ -27,7 +27,7 @@ int get_cpu_freq_mhz_linux() {
 }  
 
 
-int receive_packet_can(UINT32 can_channel_id, char *msg, UINT32 length, int wait_time)
+int receive_packet_can_fpu(UINT32 can_channel_id, char *msg, UINT32 length, int wait_time)
 {
 	int ticks_spec = get_cpu_freq_mhz_linux()* 1000000 * wait_time;
 	int ret = appCanDataRecv(can_channel_id,msg,length,ticks_spec); // 注意，这里的时间间隔只有在vxworks系统中才会生效
@@ -36,7 +36,7 @@ int receive_packet_can(UINT32 can_channel_id, char *msg, UINT32 length, int wait
 	return _SUCCESS;
 }
 
-int send_packet_can(UINT32 can_channel_id, const char *msg, UINT32 length)
+int send_packet_can_fpu(UINT32 can_channel_id, const char *msg, UINT32 length)
 {
 	int ret = appCanDataSendFunc(can_channel_id,msg,length);
 	if(ret<0)
