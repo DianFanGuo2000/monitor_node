@@ -49,6 +49,9 @@ struct interface_info {
     char *linked_interface_type;  
     char *center_interface_name;  
 	char *status_chooser;  
+	char *base_send_func;  
+	char *base_receive_func;  
+
 
     struct eth_info eth_info;
 	struct eth_info linked_eth_info;
@@ -138,6 +141,9 @@ int get_interface_index(const char* interface_name);
 
 char* get_interface_status(const char* interface_name);
 char* get_interface_mode(const char* interface_name);
+char* get_base_send_func_by_index(int i);
+
+char* get_base_receive_func_by_index(int i);
 
 
 

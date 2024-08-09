@@ -6,16 +6,18 @@
 int init_basic_interface(int i)  
 {  
     char *interface_name = get_interface_name_by_index(i);  
-    char *interface_type = get_interface_type_by_index(i); 
+    //char *interface_type = get_interface_type_by_index(i); 
+	char *base_send_func = get_base_send_func_by_index(i);
+	char *base_receive_func = get_base_receive_func_by_index(i);
 
 	printf("%s being initialized\n",interface_name);
   
-    if (interface_name == NULL || interface_type == NULL) {  
+    if (base_send_func == NULL || base_receive_func == NULL) {  
         // Handle NULL pointers appropriately  
         return _ERROR; // Or some other error code  
     }  
   
-    if (strcmp(interface_type, "eth") == 0)  
+    if (strcmp(base_send_func, "send_packet") == 0 && strcmp(base_receive_func, "receive_packet") == 0)  
     {  
         char* ip_addr = get_ip_addr_by_index(i);  
         char* mask = get_net_mask_by_index(i);  
@@ -40,7 +42,7 @@ int init_basic_interface(int i)
 		printf("interface_name:%s, ip_addr:%s, mask:%s\n",interface_name,ip_addr,mask);
     }  
   
-    if (strcmp(interface_type, "rs485") == 0)  
+    if (strcmp(base_send_func, "send_packet_rs485") == 0 && strcmp(base_receive_func, "receive_packet_rs485") == 0)  
     {  
 		SerialPortParams params;
 		params.baudrate = get_baud_rate_by_index(i);
@@ -66,7 +68,7 @@ int init_basic_interface(int i)
 		//set_interface_status(interface_name,"receiving");
     }  
 
-    if (strcmp(interface_type, "can") == 0)  
+    if (strcmp(base_send_func, "send_packet_can") == 0 && strcmp(base_receive_func, "receive_packet_can") == 0)  
     {  
         int channel_id = get_channel_id_by_index(i);  
 		int baud_rate = get_baud_rate_by_index(i);
@@ -88,15 +90,17 @@ int init_basic_interface(int i)
 int close_basic_interface(int i)  
 {  
     char *interface_name = get_interface_name_by_index(i);  
-    char *interface_type = get_interface_type_by_index(i);  
-  
-    if (interface_name == NULL || interface_type == NULL) {  
+    //char *interface_type = get_interface_type_by_index(i); 
+	char *base_send_func = get_base_send_func_by_index(i);
+	char *base_receive_func = get_base_receive_func_by_index(i);
+
+    if (base_send_func == NULL || base_receive_func == NULL) {  
         // Handle NULL pointers appropriately  
         printf("Error: Interface name or type is NULL\n");  
         return _ERROR; // Return an error code  
     }  
   
-    if (strcmp(interface_type, "eth") == 0)  
+    if (strcmp(base_send_func, "send_packet") == 0 && strcmp(base_receive_func, "receive_packet") == 0)  
     {  
         // Correctly use the interface_name variable in the system call  
         char cmd[256];  
@@ -104,7 +108,7 @@ int close_basic_interface(int i)
         system(cmd);  
     }  
   
-    if (strcmp(interface_type, "rs485") == 0)  
+    if (strcmp(base_send_func, "send_packet_rs485") == 0 && strcmp(base_receive_func, "receive_packet_rs485") == 0)  
     {  
         // Currently no action is taken for rs485 type, but you might want to add some  
         // For example, unexport the GPIO pin or disable the serial communication  
@@ -112,7 +116,7 @@ int close_basic_interface(int i)
         close_port(fd);
     }  
   
-    if (strcmp(interface_type, "can") == 0)  
+    if (strcmp(base_send_func, "send_packet_can") == 0 && strcmp(base_receive_func, "receive_packet_can") == 0)  
     {  
         // Currently no action is taken for can type, but you might want to reset the CAN  
         // controller or close the CAN channel  
@@ -139,19 +143,19 @@ void* deal_async(void* arg) {
 //DealData data;	/*千万注意，这是一个全局变量，所以一定要加锁来访问，不然可能会引发奇奇怪怪的错误*/
 int receive_message(const char *linked_node,const char *source_interface,Dealer deal,long max_waiting_time)    
 {
-
-	char *interface_status = get_interface_status(source_interface);
+	int index = get_interface_index(source_interface);
+	char *interface_status = get_interface_status_by_index(index);
 	if(strcmp(interface_status, "sending") == 0 || strcmp(interface_status, "closed") == 0 )
 	{
 		return _ERROR; /*如果是单纯sending或closed，那么不做任何接收*/
 	}
 
-
-	char *interface_type = get_interface_type(source_interface);
+	
+	char *base_receive_func = get_base_receive_func_by_index(index);
 	time_t begin_time = time(NULL); // Initialize start time  
 
     // Check if the interface type is "eth"  
-    if (strcmp(interface_type, "eth") == 0) {   
+    if (strcmp(base_receive_func, "receive_packet") == 0) {   
 		DealData data;
 		data.deal_func = deal; // 将 deal 函数指针保存到结构体中
 		data.linked_node = linked_node;
@@ -177,7 +181,7 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 	    return _SUCCESS;    
     }
 
-    if (strcmp(interface_type, "can") == 0) { 
+    if (strcmp(base_receive_func, "receive_packet_can") == 0) { 
 		DealData data;
 		data.deal_func = deal; // 将 deal 函数指针保存到结构体中
 		data.linked_node = linked_node;
@@ -206,7 +210,7 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
     }
 
 	
-	if (strcmp(interface_type, "rs485") == 0) {	 
+	if (strcmp(base_receive_func, "receive_packet_rs485") == 0) {	 
 			DealData data;
 			data.deal_func = deal; // 将 deal 函数指针保存到结构体中
 			data.linked_node = linked_node;
@@ -268,17 +272,16 @@ void fillMessageToMaxMsgLen(const char *message, char *res_msg, int max_message_
 
 int send_message(const char *source_interface,const char *message)
 {   
-
-	char *interface_status = get_interface_status(source_interface);
+	int index = get_interface_index(source_interface);
+	char *interface_status = get_interface_status_by_index(index);
 	if(strcmp(interface_status, "receiving") == 0 || strcmp(interface_status, "closed") == 0 )
 	{
 		return _ERROR; /*如果是单纯receiving或closed，那么不做任何发送*/
 	}
 
-	char *interface_type = get_interface_type(source_interface);
-
+	char *base_send_func = get_base_send_func_by_index(index);
     // Check if the interface type is "eth" (could be removed if not needed)    
-    if (strcmp(interface_type, "eth") == 0) {    
+    if (strcmp(base_send_func, "send_packet") == 0) {    
         // Retrieve the MAC addresses    
         const char *src_mac = get_mac_addr(source_interface);    
         const char *dest_mac = get_linked_mac_addr(source_interface);  
@@ -292,7 +295,7 @@ int send_message(const char *source_interface,const char *message)
 
 
     // Check if the interface type is "rs485" (could be removed if not needed)    
-    if (strcmp(interface_type, "rs485") == 0) {  
+    if (strcmp(base_send_func, "send_packet_rs485") == 0) {  
 
 		// 填充至MAX_MSG_LEN，以保证发送长度一定是MAX_MSG_LEN个字节
 		char RS485MSG[MAX_MSG_LEN + 1];
@@ -311,7 +314,7 @@ int send_message(const char *source_interface,const char *message)
 
 
     // Check if the interface type is "can" (could be removed if not needed)    
-    if (strcmp(interface_type, "can") == 0) {    
+    if (strcmp(base_send_func, "send_packet_can") == 0) {    
 		int i = get_interface_index(source_interface);
 		int can_id = get_channel_id_by_index(i);
 
@@ -332,6 +335,12 @@ int send_message(const char *source_interface,const char *message)
 
 
 
+// 函数用于检查接口状态  
+int is_interface_up(const char* interface) {  
+    char cmd[256];  
+    snprintf(cmd, sizeof(cmd), "ifconfig %s | grep -q 'inet'", interface);  
+    return system(cmd) == 0;  
+}  
 
 
 int set_status(const char *source_interface, const char *status)  
@@ -343,11 +352,14 @@ int set_status(const char *source_interface, const char *status)
  
   
     // Get the interface type  
-    char *interface_type = get_interface_type(source_interface);  
+    //char *interface_type = get_interface_type(source_interface);  
 	int i = get_interface_index(source_interface);
-  
+  	char *base_send_func = get_base_send_func_by_index(i);
+	char *base_receive_func = get_base_receive_func_by_index(i);
+
+	
     // Check if the interface is of type 'rs485'  
-    if (strcmp(interface_type, "rs485") == 0) {  
+    if (strcmp(base_send_func, "send_packet_rs485") == 0 && strcmp(base_receive_func, "receive_packet_rs485") == 0) {  
         // Compare the status string correctly using strcmp  
         if (strcmp(status, "sending_and_receiving") == 0) {  
             printf("rs485 cannot be set as 'sending_and_receiving'\n");  
@@ -381,7 +393,7 @@ int set_status(const char *source_interface, const char *status)
     }  
 
 
-    if (strcmp(interface_type, "eth") == 0) {  
+    if (strcmp(base_send_func, "send_packet") == 0 && strcmp(base_receive_func, "receive_packet") == 0) {  
         // Compare the status string correctly using strcmp  
        /* if (strcmp(status, "sending") == 0 || strcmp(status, "receiving") == 0) {  
             printf("eth cannot be set as 'sending' or 'receiving'\n");  
@@ -395,14 +407,14 @@ int set_status(const char *source_interface, const char *status)
 	        return _ERROR;  
 	    } 
 		
-        if (strcmp(status, "sending_and_receiving") == 0) {  
-            // Use snprintf or similar to safely format strings for system call  
-	        char cmd_up[256];  
-	        snprintf(cmd_up, sizeof(cmd_up), "ifconfig %s up", source_interface);  
-	        system(cmd_up);  
+        if (strcmp(status, "sending_and_receiving") == 0 && !is_interface_up(source_interface)) {  
+            char cmd_up[256];  
+            snprintf(cmd_up, sizeof(cmd_up), "ifconfig %s up", source_interface);  
+            system(cmd_up);  
         }  
+
   
-        if (strcmp(status, "closed") == 0) {  
+        if (strcmp(status, "closed") == 0 && is_interface_up(source_interface)) {  
 	        char cmd_up[256];  
 	        snprintf(cmd_up, sizeof(cmd_up), "ifconfig %s down", source_interface);  
 	        system(cmd_up);
@@ -411,7 +423,7 @@ int set_status(const char *source_interface, const char *status)
 
     }  
 
-      if (strcmp(interface_type, "can") == 0) {  
+      if (strcmp(base_send_func, "send_packet_can") == 0 && strcmp(base_receive_func, "receive_packet_can") == 0) {  
         // Compare the status string correctly using strcmp  
         if (strcmp(status, "sending_and_receiving") == 0) {  
             printf("can cannot be set as 'sending_and_receiving'\n");  

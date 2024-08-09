@@ -264,7 +264,9 @@ void write_interface_info_array_to_json(const char *filename, struct interface_i
         cJSON_AddStringToObject(interface, "linked_interface_type", array[i].linked_interface_type);  
 		cJSON_AddStringToObject(interface, "center_interface_name", array[i].center_interface_name);  
 		cJSON_AddStringToObject(interface, "status_chooser", array[i].status_chooser);  
-		
+		cJSON_AddStringToObject(interface, "base_send_func", array[i].base_send_func);  
+		cJSON_AddStringToObject(interface, "base_receive_func", array[i].base_receive_func);  
+
 
 
 		cJSON *eth_info = cJSON_CreateObject();  
@@ -440,8 +442,9 @@ void read_interface_info_array_from_json(const char *filename, struct interface_
         array[i].linked_interface_type = strdup(cJSON_GetObjectItem(interface, "linked_interface_type")->valuestring);
 		array[i].center_interface_name = strdup(cJSON_GetObjectItem(interface, "center_interface_name")->valuestring);
 		array[i].status_chooser = strdup(cJSON_GetObjectItem(interface, "status_chooser")->valuestring);
-
-		
+		array[i].base_send_func = strdup(cJSON_GetObjectItem(interface, "base_send_func")->valuestring);
+		array[i].base_receive_func = strdup(cJSON_GetObjectItem(interface, "base_receive_func")->valuestring);
+ 
 
         array[i].status = strdup(cJSON_GetObjectItem(interface, "status")->valuestring);
 		array[i].mode = strdup(cJSON_GetObjectItem(interface, "mode")->valuestring);
@@ -663,7 +666,9 @@ void free_interface_info_array()
 		free(interface_info_array[i].linked_interface_type);
 		free(interface_info_array[i].center_interface_name);
 		free(interface_info_array[i].status_chooser);
-		
+		free(interface_info_array[i].base_send_func);
+		free(interface_info_array[i].base_receive_func);
+
 
 		free(interface_info_array[i].eth_info.ip_addr);
 		free(interface_info_array[i].eth_info.net_mask);
@@ -755,6 +760,16 @@ char *get_linked_node(int i)
 	return interface_info_array[i].linked_node;
 }
 
+
+char* get_base_send_func_by_index(int i)
+{
+	return interface_info_array[i].base_send_func;
+}
+
+char* get_base_receive_func_by_index(int i)
+{
+	return interface_info_array[i].base_receive_func;
+}
 
 
 char* get_interface_name_by_index(int i)

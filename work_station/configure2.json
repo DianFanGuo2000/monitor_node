@@ -7,6 +7,8 @@
 	"linked_interface_type":        "eth",
 	"center_interface_name":        "ens33",
 	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
 	"eth_info":     {
 		"ip_addr":     "192.168.1.10",
 		"net_mask":     "255.255.255.0",
@@ -48,6 +50,8 @@
 	"linked_interface_type":        "rs485",
 	"center_interface_name":        "ens33",
 	"status_chooser":        "only_work_at_odd_round",
+	"base_send_func":        "send_packet_rs485",
+	"base_receive_func":        "receive_packet_rs485",
 	"eth_info":     {
 		"ip_addr":     "192.168.1.10",
 		"net_mask":     "255.255.255.0",
