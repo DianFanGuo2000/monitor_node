@@ -405,13 +405,13 @@ STATUS udp_ClientProcessSendMain ( void )
 		{
 			
 			//g_udpSendCount.udpQrecvRightNum++;
-                         printf("send start ok \r\n");
-                         printf("recvDataLengthValue is %d \r\n",recvDataLengthValue);
+                         //printf("send start ok \r\n");
+                         //printf("recvDataLengthValue is %d \r\n",recvDataLengthValue);
                          //printf("sizeof(long) is %d \r\n",sizeof(long));
 
                           //printf("sizeof(CAN_PROCESS) is %d == 78",sizeof(CAN_PROCESS));
 
-						  printf("sended data: ");
+						  /*printf("sended data: ");
 
                           for(i=0;i<recvDataLengthValue;i++)
 {
@@ -421,7 +421,7 @@ STATUS udp_ClientProcessSendMain ( void )
 
 
 }
-printf("\r\n");
+printf("\r\n");*/
 
               
 			

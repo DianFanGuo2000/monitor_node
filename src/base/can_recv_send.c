@@ -27,12 +27,14 @@ int receive_packet_can_fpu(UINT32 can_channel_id, char *msg, UINT32 length, int 
     while (time(NULL) - now < wait_time) // 这里单位为秒  
     {  
         int ret = appCanDataRecv(can_channel_id, data_frame, RECEIVED_CAN_DATA_PACKAGE_SIZE, -1); //这里78是发送数据时，包装数据所得帧的字节大小 
-        if (isAllZeros(data_frame,RECEIVED_CAN_DATA_PACKAGE_SIZE))  
+        if (isAllZeros(data_frame,RECEIVED_CAN_DATA_PACKAGE_SIZE)) { 
             continue;  
-        else  
+        }else{  
 			memcpy(msg, data_frame + OFFSET_OF_TARGET_DATA_IN_RECEIVED_CAN_DATA_PACKAGE, len);
             return _SUCCESS;  
+        }
     }  
+	printf("Can Recv Timeout\n");
     return _ERROR;  
 }
 

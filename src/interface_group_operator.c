@@ -162,7 +162,7 @@ void listen_upon_interface_group() {
 */
 
 
-
+/*
 // 线程函数  
 void* test_interface_thread(void* arg) {  
     int index = *(int*)arg;  
@@ -236,7 +236,62 @@ void listen_upon_interface_group() {
   
     // 注意：在实际应用中，你可能不会这样等待无限循环的线程  
 }  
+
+*/
+
+
+
+
+// 线程函数  
+void* interface_thread(void* arg) {  
+    int index = *(int*)arg;  
+    initializer_transfer(get_initializer_name_by_index(index),get_interface_name_by_index(index));  
+    while (1) {  
+		if(strcmp(get_interface_mode_by_index(index),"test")==0)
+		{
+			test_upon_one_interface_in_one_time(get_interface_name_by_index(index), PAKCAGES_NUM_ONE_TIME); 
+		}
+		if(strcmp(get_interface_mode_by_index(index),"listen")==0)
+		{
+			listen_upon_one_interface_in_one_time(get_linked_node(index),get_interface_name_by_index(index));
+		} 
+    }  
+	closer_transfer(get_closer_name_by_index(index),get_interface_name_by_index(index));
+    // 注意：实际使用中，你可能需要一个机制来优雅地退出这个循环  
+    return NULL;  
+}  
+
+void test_or_listen_upon_interface_group() {  
+    int cnt = get_interface_cnt();  
+    pthread_t threads[cnt];  
+    int indexes[cnt];  
+    int i;  
+
+	initialize_lock();
   
+    // 为每个接口创建一个线程  
+    for (i = 0; i < cnt; i++) {  
+        indexes[i] = i;  
+        if (pthread_create(&threads[i], NULL, interface_thread, &indexes[i]) != 0) {  
+            perror("pthread_create failed");  
+            exit(EXIT_FAILURE);  
+        }  
+    }  
+  
+    // 等待所有线程完成  
+    // 注意：由于我们的线程是无限循环的，这里实际上不会执行到这一行  
+    // 除非你有其他机制来停止线程（如信号、条件变量等）  
+    for (i = 0; i < cnt; i++) {  
+        pthread_join(threads[i], NULL);  
+    }  
+
+  	destroy_lock();
+    // 注意：在实际应用中，你可能不会这样等待无限循环的线程  
+}  
+  
+
+
+
 
 
 /*
@@ -365,15 +420,9 @@ void listen_upon_interface_group() {
 int is_valid_filename(const char *filename) {  
     // 首先检查指针是否为空和字符串是否为空  
     if (filename == NULL || *filename == '\0') {  
-        // 这里的逻辑取决于你的定义：“空”或“空字符串”的 filename 是否被认为是“有效”的  
-        // 在这个例子中，我们假设它们不是有效的  
         return 0;  
     }  
-  
-    // 使用 access 函数检查文件是否存在且可访问  
-    // F_OK 检查文件是否存在  
-    // 注意：这里的 R_OK, W_OK, X_OK 需要根据你的实际需求来选择或组合  
-    // 但为了简单起见，这里只检查文件是否存在  
+
     if (access(filename, F_OK) == -1) {  
         // 如果 access 返回 -1，表示出现错误（文件不存在或没有权限等）  
         // 注意：在多线程或多进程环境中，文件可能在 access 调用之后立即被删除或修改  
@@ -391,95 +440,42 @@ int main(int argc, char *argv[]) {
 	// 检查参数数量  
 	if (argc < 3) {  
 		// 参数不足  
-		fprintf(stderr, "Usage: %s <config_file> test\n", argv[0]);  
-		fprintf(stderr, "Or:	 %s <config_file> listen <res_file_name>\n", argv[0]);  
 		fprintf(stderr, "Not enough arguments.\n");  
+		fprintf(stderr, "Usage: %s <config_file> <res_file_name>\n", argv[0]);   
 		return 1; // 表示程序因为错误的参数而退出  
 	} else if (argc == 3) {  
-		// 3个参数，检查模式是否为 'test'	
-		if (strcmp(argv[2], "test") != 0) {  
-			fprintf(stderr, "Invalid mode '%s'. Mode should be 'test' for 4 arguments.\n", argv[2]); 
-			fprintf(stderr, "Usage: %s <config_file> test\n", argv[0]);  
-			fprintf(stderr, "Or:	 %s <config_file> listen <res_file_name>\n", argv[0]); 
-
-			return 1;  
-		}  
+		// 3个参数
 		if (!is_valid_filename(argv[1])) {	
 			fprintf(stderr, "Invalid round parameter '%s'. It should be a file path.\n", argv[1]);	
-			fprintf(stderr, "Usage: %s <config_file> test\n", argv[0]);  
-			fprintf(stderr, "Or:	 %s <config_file> listen <res_file_name>\n", argv[0]); 
+			fprintf(stderr, "Usage: %s <config_file> <res_file_name>\n", argv[0]); 
 
 			return 1;  
 		}  
-
-	} else if (argc == 4) {  
-		// 4个参数，检查模式是否为 'listen'  
-		if (strcmp(argv[2], "listen") != 0) {  
-			fprintf(stderr, "Invalid mode '%s'. Mode should be 'listen' for 5 arguments.\n", argv[2]);	
-			fprintf(stderr, "Usage: %s <config_file> test\n", argv[0]);  
-			fprintf(stderr, "Or:	 %s <config_file> listen <res_file_name>\n", argv[0]); 
+		if (!is_valid_filename(argv[2])) {	
+			fprintf(stderr, "Invalid round parameter '%s'. It should be a file path.\n", argv[2]);	
+			fprintf(stderr, "Usage: %s <config_file> <res_file_name>\n", argv[0]); 
 
 			return 1;  
 		}  
-		if (!is_valid_filename(argv[1])) {	
-			fprintf(stderr, "Invalid round parameter '%s'. It should be a file path.\n", argv[1]);	
-			fprintf(stderr, "Usage: %s <config_file> test\n", argv[0]);  
-			fprintf(stderr, "Or:	 %s <config_file> listen <res_file_name>\n", argv[0]); 
-
-			return 1;  
-		}  
-
-		if (!is_valid_filename(argv[3])) {	
-			fprintf(stderr, "Invalid round parameter '%s'. It should be a file path.\n", argv[3]);	
-			fprintf(stderr, "Usage: %s <config_file> test\n", argv[0]);  
-			fprintf(stderr, "Or:	 %s <config_file> listen <res_file_name>\n", argv[0]);  
-			return 1;  
-		}  
-
-	} else {  
+	}else {  
 		// 参数过多  
 		fprintf(stderr, "Too many arguments.\n");  
-		fprintf(stderr, "Usage: %s <config_file> test\n", argv[0]);  
-		fprintf(stderr, "Or:	 %s <config_file> listen <res_file_name>\n", argv[0]); 
-
+		fprintf(stderr, "Usage: %s <config_file> <res_file_name>\n", argv[0]);  
 		return 1;  
 	}  
 	  
-
-  
-
-  
-    // 如果是监听模式且参数数量不足  
-
-
-  
     const char* config_file = argv[1];  
-    const char* mode = argv[2];
+    set_res_file_name(argv[2]);
 
-
-    if (strcmp(mode, "test") == 0) {  
-        start_and_load_info(config_file); 
+    start_and_load_info(config_file); 
 		
-		init_test_or_listen_record_arrays();
+	init_test_or_listen_record_arrays();
 		
 		// 下面开始循环测试各个配置好的物理通信接口
-		test_upon_interface_group();
+	test_or_listen_upon_interface_group();
 		
-		free_test_or_listen_record_arrays();		
-		
-    } else if (strcmp(mode, "listen") == 0) {
-        start_and_load_info(config_file);
-		set_res_file_name(argv[3]);
-		init_test_or_listen_record_arrays();
+	free_test_or_listen_record_arrays();		
 
-		// 下面开始循环监听各个配置好的物理通信接口
-		listen_upon_interface_group();
-
-		free_test_or_listen_record_arrays();
-    } else {  
-        fprintf(stderr, "Invalid mode '%s'. Valid modes are 'test' 'listen'.\n", mode);  
-        return 1; // 表示程序因为无效的模式而退出  
-    }
 		
     return 0; // 表示程序正常退出  
 }

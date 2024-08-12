@@ -19,6 +19,7 @@
 
 
 struct eth_info { 
+	char* ip_name;
 	char *ip_addr;  
 	char *net_mask;  
 
@@ -27,9 +28,11 @@ struct eth_info {
   
 struct can_info {  
     int can_id;  
+	int baud_rate; 
 };  
   
 struct rs485_info { 
+	char* rs485_dev_path;
 	int rs485_gpio_number;
 	
 	int databits;
@@ -41,6 +44,7 @@ struct rs485_info {
 };
 
 struct interface_info {
+	char *mode;
 	char *located_node;
     char *interface_name;  
     char *interface_type;  
@@ -52,7 +56,8 @@ struct interface_info {
 	char *base_send_func;  
 	char *base_receive_func;  
 	char *msg_generator_of_sender;
-
+	char *initializer_name;
+	char *closer_name;
 
     struct eth_info eth_info;
 	struct eth_info linked_eth_info;
@@ -61,9 +66,9 @@ struct interface_info {
     struct rs485_info rs485_info;
 	struct rs485_info linked_rs485_info;
 
-
-	char *mode;
 	char *status;
+	char *duplex;
+	int initialized_flag; //表示还未初始化
 };
 
 
@@ -88,6 +93,10 @@ int interface_cnt;
 time_t test_begin_time; 
 
 
+int get_initialized_flag_by_index(int i);
+void set_initialized_flag_by_index(int i,int flag);
+
+
 time_t get_test_begin_time();
 char* get_interface_status_by_index(int i);
 
@@ -103,6 +112,7 @@ int time_t_to_string(time_t time_val, char* buffer, size_t buffer_size);
 
 char* get_interface_type_by_index(int i);
 
+int get_can_baud_rate_by_index(int i);
 
 char *get_linked_node(int i);
 
@@ -110,6 +120,13 @@ int get_interface_cnt();
 char* get_interface_name_by_index(int i);
 char* get_linked_interface_name_by_index(int i);
 
+
+char* get_initializer_name_by_index(int i);
+char* get_closer_name_by_index(int i);
+
+
+char* get_rs485_dev_path_by_index(int i);
+char* get_ip_name_by_index(int i);
 
 char* get_mac_addr(const char *interface_name);
 char* get_linked_mac_addr(const char *interface_name);
@@ -142,13 +159,16 @@ int get_interface_index(const char* interface_name);
 
 char* get_interface_status(const char* interface_name);
 char* get_interface_mode(const char* interface_name);
+char* get_interface_duplex_by_index(int i);
+
 char* get_base_send_func_by_index(int i);
 
 char* get_base_receive_func_by_index(int i);
 
 
+char* get_interface_mode_by_index(int i);
 
-int  get_baud_rate_by_index(int i);
+int  get_rs485_baud_rate_by_index(int i);
 
 
 int  get_databits_by_index(int i);
@@ -180,7 +200,7 @@ char* get_center_interface_name(int i);
 void print_communication_info(const struct communication_info*info);
 
 char* get_status_chooser_by_index(int i);
-int  get_msg_generator_of_sender_by_index(int i);
+char*  get_msg_generator_of_sender_by_index(int i);
 
 void print_communication_info_array(const struct communication_info *array, int size);
 

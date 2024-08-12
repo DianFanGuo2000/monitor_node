@@ -1,4 +1,5 @@
 [{
+	"mode":       "test",
 	"located_node": "fpu",
 	"interface_name":       "enp3s0",
 	"interface_type":       "eth",
@@ -9,6 +10,7 @@
 	"status_chooser":        "work_at_each_round",
 	"base_send_func":        "send_packet",
 	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
 	"eth_info":     {
 		"ip_addr":     "192.168.1.10",
 		"net_mask":     "255.255.255.0",
@@ -19,29 +21,35 @@
 		"net_mask":     "255.255.255.0",
 		"mac_addr":     "00:0c:29:8e:5f:92"
 	},
-	"can_info":     {
-			"can_id":       -1
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex"
+},{
+	"mode":       "listen",
+	"located_node": "fpu",
+	"interface_name":       "enp3s0",
+	"interface_type":       "eth",
+	"linked_node":  "virtual_machine",
+	"linked_interface_name":        "ens33",
+	"linked_interface_type":        "eth",
+	"center_interface_name":        "ens33",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"eth_info":     {
+		"ip_addr":     "192.168.1.10",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:77:40:12"
 	},
-	"linked_can_info":     {
-		"can_id":       -1
-	},
-	"rs485_info":     {
-		"rs485_gpio_number":    482,
-		"baud_rate":    500,
-		"databits":    8,
-		"stopbits":    1,
-		"paritybits":    78
-	},
-	"linked_rs485_info":   {
-		"rs485_gpio_number":    482,
-		"baud_rate":    500,
-		"databits":    8,
-		"stopbits":    1,
-		"paritybits":    78
+	"linked_eth_info":     {
+		"ip_addr":     "192.168.1.51",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:0c:29:8e:5f:92"
 	},
 	"status":       "sending_and_receiving",
-	"mode":       "full-duplex"
+	"duplex":       "full-duplex"
 },{
+	"mode":       "test",
 	"located_node": "fpu",
 	"interface_name":       "/dev/ttyS4",
 	"interface_type":       "rs485",
@@ -52,22 +60,7 @@
 	"status_chooser":        "only_work_at_odd_round",
 	"base_send_func":        "send_packet_rs485",
 	"base_receive_func":        "receive_packet_rs485",
-	"eth_info":     {
-		"ip_addr":     "192.168.1.10",
-		"net_mask":     "255.255.255.0",
-		"mac_addr":     "00:80:0f:77:40:12"
-	},
-	"linked_eth_info":     {
-		"ip_addr":     "192.168.1.51",
-		"net_mask":     "255.255.255.0",
-		"mac_addr":     "00:0c:29:8e:5f:92"
-	},
-	"can_info":     {
-			"can_id":       -1
-	},
-	"linked_can_info":     {
-		"can_id":       -1
-	},
+	"msg_generator_of_sender":        "generate_rs485_test_msg",
 	"rs485_info":   {
 			"rs485_gpio_number":    482,
 			"baud_rate":    115200,
@@ -83,5 +76,118 @@
 		"paritybits":    78
 	},
 	"status":       "receiving",
-	"mode":       "full-duplex"
+	"duplex":       "half-duplex"
+},{
+	"mode":       "listen",
+	"located_node": "fpu",
+	"interface_name":       "/dev/ttyS4",
+	"interface_type":       "rs485",
+	"linked_node":  "virtual_machine",
+	"linked_interface_name":        "/dev/ttyS1",
+	"linked_interface_type":        "rs485",
+	"center_interface_name":        "ens33",
+	"status_chooser":        "only_work_at_even_round",
+	"base_send_func":        "send_packet_rs485",
+	"base_receive_func":        "receive_packet_rs485",
+	"msg_generator_of_sender":        "generate_rs485_test_msg",
+	"rs485_info":   {
+			"rs485_gpio_number":    482,
+			"baud_rate":    115200,
+			"databits":    8,
+			"stopbits":    1,
+			"paritybits":    78
+	},
+	"linked_rs485_info":     {
+		"rs485_gpio_number":    482,
+		"baud_rate":    115200,
+		"databits":    8,
+		"stopbits":    1,
+		"paritybits":    78
+	},
+	"status":       "receiving",
+	"duplex":       "half-duplex"
+},{
+	"mode":       "test",
+	"located_node": "fpu",
+	"interface_name":       "can1",
+	"interface_type":       "can",
+	"linked_node":  "fpu",
+	"linked_interface_name":        "can4",
+	"linked_interface_type":        "can",
+	"center_interface_name":        "ens33",
+	"status_chooser":        "only_work_at_odd_round",
+	"base_send_func":        "send_packet_can_fpu",
+	"base_receive_func":        "receive_packet_can_fpu",
+	"msg_generator_of_sender":        "generate_fpu_can_test_msg",
+	"can_info":     {
+			"can_id":       1
+	},
+	"linked_can_info":     {
+		"can_id":       4
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "half-duplex"
+},{
+	"mode":       "listen",
+	"located_node": "fpu",
+	"interface_name":       "can1",
+	"interface_type":       "can",
+	"linked_node":  "fpu",
+	"linked_interface_name":        "can4",
+	"linked_interface_type":        "can",
+	"center_interface_name":        "ens33",
+	"status_chooser":        "only_work_at_even_round",
+	"base_send_func":        "send_packet_can_fpu",
+	"base_receive_func":        "receive_packet_can_fpu",
+	"msg_generator_of_sender":        "generate_fpu_can_test_msg",
+	"can_info":     {
+			"can_id":       1
+	},
+	"linked_can_info":     {
+		"can_id":       4
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "half-duplex"
+},{
+	"mode":       "listen",
+	"located_node": "fpu",
+	"interface_name":       "can4",
+	"interface_type":       "can",
+	"linked_node":  "fpu",
+	"linked_interface_name":        "can1",
+	"linked_interface_type":        "can",
+	"center_interface_name":        "ens33",
+	"status_chooser":        "only_work_at_odd_round",
+	"base_send_func":        "send_packet_can_fpu",
+	"base_receive_func":        "receive_packet_can_fpu",
+	"msg_generator_of_sender":        "generate_fpu_can_test_msg",
+	"can_info":     {
+			"can_id":       4
+	},
+	"linked_can_info":     {
+		"can_id":       1
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "half-duplex"
+},{
+	"mode":       "test",
+	"located_node": "fpu",
+	"interface_name":       "can4",
+	"interface_type":       "can",
+	"linked_node":  "fpu",
+	"linked_interface_name":        "can1",
+	"linked_interface_type":        "can",
+	"center_interface_name":        "ens33",
+	"status_chooser":        "only_work_at_even_round",
+	"base_send_func":        "send_packet_can_fpu",
+	"base_receive_func":        "receive_packet_can_fpu",
+	"msg_generator_of_sender":        "generate_fpu_can_test_msg",
+	"can_info":     {
+			"can_id":       4
+	},
+	"linked_can_info":     {
+		"can_id":       1
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "half-duplex"
 }]

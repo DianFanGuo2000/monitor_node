@@ -7,7 +7,14 @@
 #include "firmware.h"
 
 extern char *status_chooser_transfer(char *status_chooser_name, const char *interface_name, const char *mode, const int current_round);
-extern char *msg_generator_transfer(char *status_chooser_name, const char *interface_name, const char *mode, const int current_round,char *msg);
+extern int msg_generator_transfer(char *msg_generator_name, const char *interface_name, const char *mode, const int current_round,char *msg);
+extern int initializer_transfer(char *initializer_name, const char *interface_name);
+extern int closer_transfer(char *closer_name, const char *interface_name);
+
+
+extern void initialize_lock();
+
+extern void destroy_lock();
 
 
 typedef struct {  

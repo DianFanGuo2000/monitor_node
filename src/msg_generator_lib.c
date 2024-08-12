@@ -46,13 +46,13 @@ int generate_rs485_test_msg(const char *interface_name, const char *mode, const 
   
 int generate_fpu_can_test_msg(const char *interface_name, const char *mode, const int current_round, char *msg) {    
 	int index = get_interface_index(interface_name);
-    sprintf(msg, "can%dtest", get_channel_id_by_index(index));
+    sprintf(msg, "can%d", get_channel_id_by_index(index));
 	return _SUCCESS;
 }  
   
 int generate_gpu_can_test_msg(const char *interface_name, const char *mode, const int current_round, char *msg) {    
 	int index = get_interface_index(interface_name);
-    sprintf(msg, "can%dtest", get_channel_id_by_index(index));  
+    sprintf(msg, "can%d", get_channel_id_by_index(index));  
 	return _SUCCESS;
 }
 

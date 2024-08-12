@@ -172,7 +172,8 @@ void deal_with_mnt(const char* linked_node,const char* listened_interface, const
 
 	/*复原一下发送方发送的字符串*/
 	char expect_msg[MAX_MSG_LEN];
-	int ret = msg_generator_transfer(get_msg_generator_of_sender_by_index(ind),get_linked_interface_name_by_index(ind),"test",current_round,expect_msg);
+	int ret = msg_generator_transfer(get_msg_generator_of_sender_by_index(ind),get_linked_interface_name_by_index(ind),\
+		get_interface_mode_by_index(ind),current_round,expect_msg);
 	if(ret<0)
 	{
 		printf("cannot recover the sended msg for listened_interface: %s!\n",listened_interface);
