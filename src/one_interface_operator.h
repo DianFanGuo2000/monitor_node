@@ -7,6 +7,7 @@
 #include "firmware.h"
 
 extern char *status_chooser_transfer(char *status_chooser_name, const char *interface_name, const char *mode, const int current_round);
+extern char *msg_generator_transfer(char *status_chooser_name, const char *interface_name, const char *mode, const int current_round,char *msg);
 
 
 typedef struct {  
@@ -31,7 +32,7 @@ void listen_upon_one_interface_in_one_time(char *linked_node, char *listened_int
 
 
 
-void test_upon_one_interface_in_one_time(const char *test_interface,const char *message,int packages_num);
+void test_upon_one_interface_in_one_time(const char *test_interface,int packages_num);
 
 void init_test_or_listen_record_arrays();
 void free_test_or_listen_record_arrays();

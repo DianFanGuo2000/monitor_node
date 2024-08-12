@@ -51,6 +51,7 @@ struct interface_info {
 	char *status_chooser;  
 	char *base_send_func;  
 	char *base_receive_func;  
+	char *msg_generator_of_sender;
 
 
     struct eth_info eth_info;
@@ -179,7 +180,7 @@ char* get_center_interface_name(int i);
 void print_communication_info(const struct communication_info*info);
 
 char* get_status_chooser_by_index(int i);
-
+int  get_msg_generator_of_sender_by_index(int i);
 
 void print_communication_info_array(const struct communication_info *array, int size);
 

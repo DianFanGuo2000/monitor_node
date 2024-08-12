@@ -265,7 +265,9 @@ void write_interface_info_array_to_json(const char *filename, struct interface_i
 		cJSON_AddStringToObject(interface, "center_interface_name", array[i].center_interface_name);  
 		cJSON_AddStringToObject(interface, "status_chooser", array[i].status_chooser);  
 		cJSON_AddStringToObject(interface, "base_send_func", array[i].base_send_func);  
-		cJSON_AddStringToObject(interface, "base_receive_func", array[i].base_receive_func);  
+		cJSON_AddStringToObject(interface, "base_receive_func", array[i].base_receive_func); 
+		cJSON_AddStringToObject(interface, "msg_generator_of_sender", array[i].msg_generator_of_sender);
+
 
 
 
@@ -444,7 +446,9 @@ void read_interface_info_array_from_json(const char *filename, struct interface_
 		array[i].status_chooser = strdup(cJSON_GetObjectItem(interface, "status_chooser")->valuestring);
 		array[i].base_send_func = strdup(cJSON_GetObjectItem(interface, "base_send_func")->valuestring);
 		array[i].base_receive_func = strdup(cJSON_GetObjectItem(interface, "base_receive_func")->valuestring);
+		array[i].msg_generator_of_sender = strdup(cJSON_GetObjectItem(interface, "msg_generator_of_sender")->valuestring);
  
+
 
         array[i].status = strdup(cJSON_GetObjectItem(interface, "status")->valuestring);
 		array[i].mode = strdup(cJSON_GetObjectItem(interface, "mode")->valuestring);
@@ -668,6 +672,8 @@ void free_interface_info_array()
 		free(interface_info_array[i].status_chooser);
 		free(interface_info_array[i].base_send_func);
 		free(interface_info_array[i].base_receive_func);
+		free(interface_info_array[i].msg_generator_of_sender);
+
 
 
 		free(interface_info_array[i].eth_info.ip_addr);
@@ -793,6 +799,13 @@ int get_interface_index(const char* interface_name)
     return -1;
 
 }
+
+int  get_msg_generator_of_sender_by_index(int i)
+{
+	return interface_info_array[i].msg_generator_of_sender;
+}
+
+
 
 int  get_baud_rate_by_index(int i)
 {

@@ -168,7 +168,7 @@ void* test_interface_thread(void* arg) {
     int index = *(int*)arg;  
     init_basic_interface(index);  
     while (1) {  
-        test_upon_one_interface_in_one_time(get_interface_name_by_index(index), "hello, are you here?", PAKCAGES_NUM_ONE_TIME);  
+        test_upon_one_interface_in_one_time(get_interface_name_by_index(index), PAKCAGES_NUM_ONE_TIME);  
     }  
     // 注意：实际使用中，你可能需要一个机制来优雅地退出这个循环  
     return NULL;  
@@ -570,26 +570,65 @@ int main(int argc, char *argv[]) {
 /*can自收自发测试*/
 
 
-
 #include <string.h> // 为了使用 memcpy  
 #include <stdio.h>  // 为了使用 printf  
   
 int main(int argc, char *argv[]) {  
-    char *package_content = "hello";  
-    char send[10];  
-    char recv[10] = {0}; // 初始化为0，确保是null结尾的字符串  
-    memcpy(send, package_content, strlen(package_content) + 1); // +1 是为了复制 null 结尾符  
+    char *package_content = "HELLO CAN";  
+    char send[16];  
+    char recv[8]; // 初始化为0，确保是null结尾的字符串  
+    int com1=1;
+    int com2=4;
+
+    memcpy(send, package_content, strlen(package_content)); // +1 是为了复制 null 结尾符  
+
+    //udpCanStart();
   
-    comCfgInit(1, 1, 1000);  
-    comCfgInit(2, 1, 1000);  
-    appCanDataSend(1, 1, send, strlen(package_content) + 1); // +1 是为了发送 null 结尾符  
-  
+    comCfgInit(com1, 1, 1000);  
+    comCfgInit(com2, 1, 1000);  
+
+    //sleep(1);
+    //appCanDataRecv(com2, recv, sizeof(recv), -1); // 删除了多余的参数 
+    //printf("recveived:"); 
+    //for(int i=0;i<sizeof(recv);i++)
+	//printf("%x ", recv[i]);  
+    //printf("\n");  
+
+
+    printf("sended data content: %s,com: %d\n", send,com1); 
+
+    send_packet_can_fpu(com1,send, strlen(package_content)+1);
+    //appCanDataSend(com1, 0x2ff, send, 8); // +1 是为了发送 null 结尾符 
+
     // 假设有一个合适的延迟函数，比如 TASK_DELAY();  
-    // TASK_DELAY(); // 如果这个函数是必要的，请提供它的实现或声明  
-  
-    appCanDataRecv(2, recv, sizeof(recv), -1); // 删除了多余的参数  
-    printf("%s\n", recv);  
-  
+    //TASK_DELAY(); // 如果这个函数是必要的，请提供它的实现或声明  
+    //usleep(200000);  
+
+
+     
+
+    receive_packet_can_fpu(com2, recv, 8, 2);
+    printf("\nrecveived:"); 
+    for(int i=0;i<sizeof(recv);i++)
+	printf("%x ", recv[i]);  
+    printf("\n");
+
+    /*appCanDataRecv(com2, recv, 78, -1); // 删除了多余的参数  
+    printf("recveived:"); 
+    for(int i=0;i<sizeof(recv);i++)
+	printf("%x ", recv[i]);  
+    printf("\n");  
+
+
+    appCanDataSendFunc(com1, send, 8); // +1 是为了发送 null 结尾符 
+    usleep(200000);  
+
+    appCanDataRecv(com2, recv, 78, -1); // 删除了多余的参数  
+    printf("recveived:"); 
+    for(int i=0;i<sizeof(recv);i++)
+	printf("%x ", recv[i]);  
+    printf("\n");*/
+
     return 0;  
 }
 

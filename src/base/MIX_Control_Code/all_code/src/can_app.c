@@ -1208,7 +1208,7 @@ STATUS appCanDataSend(UINT32 com,UINT32 canId,UINT8 *dataPointer,UINT32 comDataL
 	channel.processData.reserver = 0x0;/*0 standard ID ;1 extended ID*/
         channel.processData.reserver1 = 0x0;
 	memcpy(channel.processData.dataArray,dataPointer,comDataLength);
-	
+	//printf("sizeof(CAN_PROCESS_DATA): %d\n",sizeof(CAN_PROCESS_DATA));
 	retValue = appCanDataSendFunc(com,(char *)&channel,sizeof(CAN_PROCESS_DATA));
 
 	if(retValue == 0)

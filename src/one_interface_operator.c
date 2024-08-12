@@ -169,7 +169,17 @@ void deal_with_mnt(const char* linked_node,const char* listened_interface, const
     int current_round = (current_time - get_test_begin_time()) / MAX_WAITING_TIME_IN_ONE_ROUND;
 
 	pthread_mutex_lock(&cnt_mutex_array[ind]);
-    if(strcmp(msg, "hello, are you here?") == 0)
+
+	/*复原一下发送方发送的字符串*/
+	char expect_msg[MAX_MSG_LEN];
+	int ret = msg_generator_transfer(get_msg_generator_of_sender_by_index(ind),get_linked_interface_name_by_index(ind),"test",current_round,expect_msg);
+	if(ret<0)
+	{
+		printf("cannot recover the sended msg for listened_interface: %s!\n",listened_interface);
+		return;
+	}
+	
+	if(strcmp(msg, expect_msg) == 0)
     {
 
 		//printf("current_time: %d\n",current_time);
@@ -271,7 +281,7 @@ void *test_thread_function(void *arg) {
 
 
 
-void test_upon_one_interface_in_one_time(const char *test_interface,const char *message,int packages_num)
+void test_upon_one_interface_in_one_time(const char *test_interface,int packages_num)
 {  
 
 	time_t current_time = time(NULL);  
@@ -280,6 +290,16 @@ void test_upon_one_interface_in_one_time(const char *test_interface,const char *
 	//printf("test_begin_time: %d\n",get_test_begin_time());
 
 	int ind = get_interface_index(test_interface);
+
+	char message[MAX_MSG_LEN];
+	int ret = msg_generator_transfer(get_msg_generator_of_sender_by_index(ind),get_interface_name_by_index(ind),"test",current_round,message);
+	if(ret<0)
+	{
+		printf("cannot generate the sended msg for test_interface: %s!\n",test_interface);
+		return ;
+	}
+
+	
 	if(round_array[ind] == 0)
 	{
 		round_array[ind] = current_round;

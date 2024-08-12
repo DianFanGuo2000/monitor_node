@@ -138,14 +138,14 @@ INT32 recvUdpCan1DataFunc(char *data,UINT32 dataLength)
 	
 	vos_EdrSemWait(&g_udpRecvCan1DataSem_ID, WAIT_FOREVER);
 	memcpy(g_recvCan1DataArray,data,dataLength);
-printf("can1 recv data is : \r\n");
+/*printf("can1 recv data is : \r\n");
 for(i=0;i<dataLength;i++)
 {
 
 printf("%x ",g_recvCan1DataArray[i]);
 
 }
-printf("\r\n");
+printf("\r\n");*/
 	vos_EdrSemPost(&g_udpRecvCan1DataSem_ID);
 	
 	
@@ -160,14 +160,14 @@ INT32 recvUdpCan2DataFunc(char *data,UINT32 dataLength)
 	
 	vos_EdrSemWait(&g_udpRecvCan2DataSem_ID, WAIT_FOREVER);
 	memcpy(g_recvCan2DataArray,data,dataLength);
-printf("can2 recv data is : \r\n");
+/*printf("can2 recv data is : \r\n");
 for(i=0;i<dataLength;i++)
 {
 
 printf("%x ",g_recvCan2DataArray[i]);
 
 }
-printf("\r\n");
+printf("\r\n");*/
 	vos_EdrSemPost(&g_udpRecvCan2DataSem_ID);
 	
 	
@@ -183,14 +183,14 @@ INT32 recvUdpCan3DataFunc(char *data,UINT32 dataLength)
 	
 	vos_EdrSemWait(&g_udpRecvCan3DataSem_ID, WAIT_FOREVER);
 	memcpy(g_recvCan3DataArray,data,dataLength);
-printf("can3 recv data is : \r\n");
+/*printf("can3 recv data is : \r\n");
 for(i=0;i<dataLength;i++)
 {
 
 printf("%x ",g_recvCan3DataArray[i]);
 
 }
-printf("\r\n");
+printf("\r\n");*/
 	vos_EdrSemPost(&g_udpRecvCan3DataSem_ID);
 	
 	
@@ -205,14 +205,14 @@ INT32 recvUdpCan4DataFunc(char *data,UINT32 dataLength)
 	
 	vos_EdrSemWait(&g_udpRecvCan4DataSem_ID, WAIT_FOREVER);
 	memcpy(g_recvCan4DataArray,data,dataLength);
-printf("can4 recv data is : \r\n");
+/*printf("can4 recv data is : \r\n");
 for(i=0;i<dataLength;i++)
 {
 
 printf("%x ",g_recvCan4DataArray[i]);
 
 }
-printf("\r\n");
+printf("\r\n");*/
 	vos_EdrSemPost(&g_udpRecvCan4DataSem_ID);
 	
 	
@@ -227,14 +227,14 @@ INT32 recvUdpCan5DataFunc(char *data,UINT32 dataLength)
 	
 	vos_EdrSemWait(&g_udpRecvCan5DataSem_ID, WAIT_FOREVER);
 	memcpy(g_recvCan5DataArray,data,dataLength);
-printf("can5 recv data is : \r\n");
+/*printf("can5 recv data is : \r\n");
 for(i=0;i<dataLength;i++)
 {
 
 printf("%x ",g_recvCan5DataArray[i]);
 
 }
-printf("\r\n");
+printf("\r\n");*/
 	vos_EdrSemPost(&g_udpRecvCan5DataSem_ID);
 	
 	
@@ -254,14 +254,14 @@ INT32 recvUdpCanFd1DataFunc(char *data,UINT32 dataLength)
 	
 	vos_EdrSemWait(&g_udpRecvCanFd1DataSem_ID, WAIT_FOREVER);
 	memcpy(g_recvCanFd1DataArray,data,dataLength);
-printf("canfd1 recv data is : \r\n");
+/*printf("canfd1 recv data is : \r\n");
 for(i=0;i<dataLength;i++)
 {
 
 printf("%x ",g_recvCanFd1DataArray[i]);
 
 }
-printf("\r\n");
+printf("\r\n");*/
 	vos_EdrSemPost(&g_udpRecvCanFd1DataSem_ID);
 	
 	
@@ -279,14 +279,14 @@ INT32 recvUdpCanFd2DataFunc(char *data,UINT32 dataLength)
 	
 	vos_EdrSemWait(&g_udpRecvCanFd2DataSem_ID, WAIT_FOREVER);
 	memcpy(g_recvCanFd2DataArray,data,dataLength);
-printf("canfd2 recv data is : \r\n");
+/*printf("canfd2 recv data is : \r\n");
 for(i=0;i<dataLength;i++)
 {
 
 printf("%x ",g_recvCanFd2DataArray[i]);
 
 }
-printf("\r\n");
+printf("\r\n");*/
 	vos_EdrSemPost(&g_udpRecvCanFd2DataSem_ID);
 	
 	
@@ -303,14 +303,14 @@ INT32 recvUdpCanFd3DataFunc(char *data,UINT32 dataLength)
 	
 	vos_EdrSemWait(&g_udpRecvCanFd3DataSem_ID, WAIT_FOREVER);
 	memcpy(g_recvCanFd3DataArray,data,dataLength);
-printf("canfd3 recv data is : \r\n");
+/*printf("canfd3 recv data is : \r\n");
 for(i=0;i<dataLength;i++)
 {
 
 printf("%x ",g_recvCanFd3DataArray[i]);
 
 }
-printf("\r\n");
+printf("\r\n");*/
 	vos_EdrSemPost(&g_udpRecvCanFd3DataSem_ID);
 	
 	return 0;

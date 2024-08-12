@@ -1,44 +1,51 @@
 
 #include "can_recv_send.h"
 
-
-
-int get_cpu_freq_mhz_linux() {  
-    char buffer[1024];  
-    FILE *fp = popen("cat /proc/cpuinfo | grep 'cpu MHz' | head -n 1", "r");  
-    if (fp == NULL) {  
-        printf("Failed to run command\n");  
-        exit(1);  
-    }  
-  
-    if (fgets(buffer, sizeof(buffer), fp) != NULL) {  
-        // 假设格式总是 "cpu MHz : XXXX.XXX\n"，并解析出 XXXX 部分  
-        char *end;  
-        long freq_mhz = strtol(strchr(buffer, ':') + 2, &end, 10);  
-        if (end != buffer + strlen(buffer) - 1 && *end == '\n') {  
-            // 如果解析成功并且字符串以换行符结尾，则返回频率  
-            pclose(fp);  
-            return (int)freq_mhz;  
+int isAllZeros(char arr[], int size) {  
+    for (int i = 0; i < size; i++) {  
+        if (arr[i] != 0) {  
+            return 0;  
         }  
     }  
-  
-    pclose(fp);  
-    return -1; // 如果解析失败，则返回 -1  
+    return 1;  
 }  
+  
 
 
-int receive_packet_can_fpu(UINT32 can_channel_id, char *msg, UINT32 length, int wait_time)
-{
-	int ticks_spec = get_cpu_freq_mhz_linux()* 1000000 * wait_time;
-	int ret = appCanDataRecv(can_channel_id,msg,length,ticks_spec); // 注意，这里的时间间隔只有在vxworks系统中才会生效
-	if(ret<0)
-		return _ERROR;
-	return _SUCCESS;
+int receive_packet_can_fpu(UINT32 can_channel_id, char *msg, UINT32 length, int wait_time)  
+{  
+
+	int len=-1;
+	if(length>MAX_CAN_DATA_LENGTH)
+		len = MAX_CAN_DATA_LENGTH;
+	else
+		len = length;
+
+
+    time_t now = time(NULL); 
+	char data_frame[RECEIVED_CAN_DATA_PACKAGE_SIZE];
+    while (time(NULL) - now < wait_time) // 这里单位为秒  
+    {  
+        int ret = appCanDataRecv(can_channel_id, data_frame, RECEIVED_CAN_DATA_PACKAGE_SIZE, -1); //这里78是发送数据时，包装数据所得帧的字节大小 
+        if (isAllZeros(data_frame,RECEIVED_CAN_DATA_PACKAGE_SIZE))  
+            continue;  
+        else  
+			memcpy(msg, data_frame + OFFSET_OF_TARGET_DATA_IN_RECEIVED_CAN_DATA_PACKAGE, len);
+            return _SUCCESS;  
+    }  
+    return _ERROR;  
 }
 
-int send_packet_can_fpu(UINT32 can_channel_id, const char *msg, UINT32 length)
+
+int send_packet_can_fpu(UINT32 can_channel_id, const char *msg, UINT32 length) //此处len不允许超过8，超过会截断
 {
-	int ret = appCanDataSendFunc(can_channel_id,msg,length);
+	int len=-1;
+	if(length>MAX_CAN_DATA_LENGTH)
+		len = MAX_CAN_DATA_LENGTH;
+	else
+		len = length;
+	
+	int ret = appCanDataSend(can_channel_id,0x1ff,msg,len);// appCanDataSendFunc不能用，MCU会报错，帧序号找不到之类的 //此处len不允许超过8
 	if(ret<0)
 		return _ERROR;
 	return _SUCCESS;

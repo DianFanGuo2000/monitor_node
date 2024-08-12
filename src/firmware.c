@@ -17,7 +17,7 @@ int init_basic_interface(int i)
         return _ERROR; // Or some other error code  
     }  
   
-    if (strcmp(base_send_func, "send_packet") == 0 && strcmp(base_receive_func, "receive_packet") == 0)  
+    if (strcmp(base_send_func, "send_packet") == 0 || strcmp(base_receive_func, "receive_packet") == 0)  
     {  
         char* ip_addr = get_ip_addr_by_index(i);  
         char* mask = get_net_mask_by_index(i);  
@@ -42,7 +42,7 @@ int init_basic_interface(int i)
 		printf("interface_name:%s, ip_addr:%s, mask:%s\n",interface_name,ip_addr,mask);
     }  
   
-    if (strcmp(base_send_func, "send_packet_rs485") == 0 && strcmp(base_receive_func, "receive_packet_rs485") == 0)  
+    if (strcmp(base_send_func, "send_packet_rs485") == 0 || strcmp(base_receive_func, "receive_packet_rs485") == 0)  
     {  
 		SerialPortParams params;
 		params.baudrate = get_baud_rate_by_index(i);
@@ -68,7 +68,7 @@ int init_basic_interface(int i)
 		//set_interface_status(interface_name,"receiving");
     }  
 
-    if (strcmp(base_send_func, "send_packet_can_fpu") == 0 && strcmp(base_receive_func, "receive_packet_can_fpu") == 0)  
+    if (strcmp(base_send_func, "send_packet_can_fpu") == 0 || strcmp(base_receive_func, "receive_packet_can_fpu") == 0)  
     {  
         int channel_id = get_channel_id_by_index(i);  
 		int baud_rate = get_baud_rate_by_index(i);
@@ -100,7 +100,7 @@ int close_basic_interface(int i)
         return _ERROR; // Return an error code  
     }  
   
-    if (strcmp(base_send_func, "send_packet") == 0 && strcmp(base_receive_func, "receive_packet") == 0)  
+    if (strcmp(base_send_func, "send_packet") == 0 || strcmp(base_receive_func, "receive_packet") == 0)  
     {  
         // Correctly use the interface_name variable in the system call  
         char cmd[256];  
@@ -108,7 +108,7 @@ int close_basic_interface(int i)
         system(cmd);  
     }  
   
-    if (strcmp(base_send_func, "send_packet_rs485") == 0 && strcmp(base_receive_func, "receive_packet_rs485") == 0)  
+    if (strcmp(base_send_func, "send_packet_rs485") == 0 || strcmp(base_receive_func, "receive_packet_rs485") == 0)  
     {  
         // Currently no action is taken for rs485 type, but you might want to add some  
         // For example, unexport the GPIO pin or disable the serial communication  
@@ -116,7 +116,7 @@ int close_basic_interface(int i)
         close_port(fd);
     }  
   
-    if (strcmp(base_send_func, "send_packet_can_fpu") == 0 && strcmp(base_receive_func, "receive_packet_can_fpu") == 0)  
+    if (strcmp(base_send_func, "send_packet_can_fpu") == 0 || strcmp(base_receive_func, "receive_packet_can_fpu") == 0)  
     {  
         // Currently no action is taken for can type, but you might want to reset the CAN  
         // controller or close the CAN channel  
@@ -162,13 +162,13 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 		data.listened_interface = source_interface;
 		
 	    // Attempt to receive a packet from the source interface  
-		char TEMP_MSG[MAX_MSG_LEN+1];
+		char TEMP_MSG[MAX_MSG_LEN];
 		if (receive_packet(source_interface,TEMP_MSG,max_waiting_time)<0) {  
 			// If receiving the message fails, return an error and don't reply
 			//usleep(3000000);
 			return _ERROR;	  
 		}	 
-		strncpy(data.msg, TEMP_MSG, MAX_MSG_LEN + 1); // 不直接拿data.msg作为形参，防止其随着原函数声明周期结束而被析构
+		strncpy(data.msg, TEMP_MSG, MAX_MSG_LEN); // 不直接拿data.msg作为形参，防止其随着原函数声明周期结束而被析构
 
 
 
@@ -191,13 +191,13 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 		int i = get_interface_index(source_interface);
 		int can_id = get_channel_id_by_index(i);
 	    // Attempt to receive a packet from the source interface    
-		char TEMP_MSG[MAX_MSG_LEN+1];
-		if (receive_packet_can_fpu(can_id,TEMP_MSG,MAX_MSG_LEN,max_waiting_time)<0) {  
+		char TEMP_MSG[MAX_CAN_DATA_LENGTH];
+		if (receive_packet_can_fpu(can_id,TEMP_MSG,MAX_CAN_DATA_LENGTH,max_waiting_time)<0) {  
 			// If receiving the message fails, return an error and don't reply
 			//usleep(3000000);
 			return _ERROR;	  
 		}	 
-		strncpy(data.msg, TEMP_MSG, MAX_MSG_LEN + 1); // 不直接拿data.msg作为形参，防止其随着原函数声明周期结束而被析构
+		strncpy(data.msg, TEMP_MSG, MAX_CAN_DATA_LENGTH); // 不直接拿data.msg作为形参，防止其随着原函数声明周期结束而被析构
 
 
         pthread_t thread_id;  
@@ -222,14 +222,14 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 
 			//printAllInfo();
 
-			char TEMP_MSG[MAX_MSG_LEN+1];
+			char TEMP_MSG[MAX_MSG_LEN];
 			// Attempt to receive a packet from the source interface  
 			if (receive_packet_rs485(fd,TEMP_MSG,MAX_MSG_LEN,max_waiting_time)<0) {	 
 				// If receiving the message fails, return an error and don't reply
 				//usleep(3000000);
 				return _ERROR;	  
 			}	 
-			strncpy(data.msg, TEMP_MSG, MAX_MSG_LEN + 1); // 不直接拿data.msg作为形参，防止其随着原函数声明周期结束而被析构
+			strncpy(data.msg, TEMP_MSG, MAX_MSG_LEN); // 不直接拿data.msg作为形参，防止其随着原函数声明周期结束而被析构
 
 			
 			//printAllInfo();
@@ -298,8 +298,8 @@ int send_message(const char *source_interface,const char *message)
     if (strcmp(base_send_func, "send_packet_rs485") == 0) {  
 
 		// 填充至MAX_MSG_LEN，以保证发送长度一定是MAX_MSG_LEN个字节
-		char RS485MSG[MAX_MSG_LEN + 1];
-		fillMessageToMaxMsgLen(message,RS485MSG,MAX_MSG_LEN);
+		char RS485MSG[MAX_MSG_LEN];
+		fillMessageToMaxMsgLen(message,RS485MSG,MAX_MSG_LEN-1);// 确保最后一位RS485MSG[MAX_MSG_LEN-1]一定是'\0'
 
 		
 		int index = get_interface_index(source_interface);
@@ -319,10 +319,10 @@ int send_message(const char *source_interface,const char *message)
 		int can_id = get_channel_id_by_index(i);
 
 		// 填充至MAX_MSG_LEN，以保证发送长度一定是MAX_MSG_LEN个字节
-		char CANMSG[MAX_MSG_LEN + 1];
-		fillMessageToMaxMsgLen(message,CANMSG,MAX_MSG_LEN);
+		char CANMSG[MAX_CAN_DATA_LENGTH];
+		fillMessageToMaxMsgLen(message,CANMSG,MAX_CAN_DATA_LENGTH-1);// 确保最后一位CANMSG[MAX_CAN_DATA_LENGTH -1]一定是'\0'
 		
-        if (send_packet_can_fpu(can_id,CANMSG,MAX_MSG_LEN)< 0) {    
+        if (send_packet_can_fpu(can_id,CANMSG,MAX_CAN_DATA_LENGTH)< 0) {    
         	printf("send failed!\n");
         	return _ERROR; // Retry sending    
         }    
