@@ -149,8 +149,10 @@ int rs485_initializer_normal(const char *interface_name)
 	params.databits = get_databits_by_index(i);
 	params.stopbits = get_stopbits_by_index(i);
 	params.paritybits = get_paritybits_by_index(i);
-				
-	int fd = open_port(interface_name, 0, params);
+
+
+	char *rs485_dev_path = get_rs485_dev_path_by_index(i);	
+	int fd = open_port(rs485_dev_path, 0, params);
 	if(fd < 0)
 	{
 		printf("Open port failed!\n");
@@ -161,7 +163,7 @@ int rs485_initializer_normal(const char *interface_name)
 	printf("interface_name:%s, fd:%d, baudrate:%d, databits:%d, stopbits:%d, paritybits:%c\n",interface_name,fd,
 				params.baudrate,params.databits,params.stopbits,params.paritybits);
 
-	char *rs485_dev_path = get_rs485_dev_path_by_index(i);
+
 	for(int j=0;j<get_interface_cnt();j++)
 	{
 		if(strcmp(get_interface_type_by_index(j),"rs485")==0 && strcmp(rs485_dev_path,get_rs485_dev_path_by_index(j))==0)

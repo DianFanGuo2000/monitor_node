@@ -30,7 +30,8 @@ void update_status_in_current_round(const char *updated_interface,const char *mo
 
 
 void set_res_file_name(char *file_name);
-int sync_communication_info(const char* center_interface_name);
+
+int sync_communication_info(const char* listened_interface, const char* center_interface_name);
 
 
 char* generate_eth_reply(const char* msg);

@@ -95,6 +95,7 @@ time_t test_begin_time;
 
 int get_initialized_flag_by_index(int i);
 void set_initialized_flag_by_index(int i,int flag);
+char* parse_communication_info_array_with_certain_listen_interface_to_json(const char *certain_listen_interface);
 
 
 time_t get_test_begin_time();

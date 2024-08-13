@@ -24,8 +24,8 @@ void update_status_in_current_round(const char *updated_interface,const char *mo
 }  
 
 
-
-int sync_communication_info(const char* center_interface_name)
+/*遵循一个原则，只发送自己所监听的部分，而不是所有部分*/
+int sync_communication_info(const char* listened_interface, const char* center_interface_name)
 {
 	if(is_this_interface_in_current_node(center_interface_name))
 	{
@@ -40,7 +40,8 @@ int sync_communication_info(const char* center_interface_name)
 			return _ERROR;
 		}else
 		{
-			char* communication_info_array_json_str = parse_communication_info_array_to_json();
+			char* communication_info_array_json_str = parse_communication_info_array_with_certain_listen_interface_to_json(listened_interface);
+			//printf("communication_info_array_json_str:%s\n",communication_info_array_json_str);
 			if(_ERROR == send_message(the_interface_linked_with_center_interface,communication_info_array_json_str))
 			{
 				printf("sync failed because of sending failing!\n");
@@ -232,7 +233,7 @@ void deal_with_mnt(const char* linked_node,const char* listened_interface, const
 			//printf("listened_interface get_interface_status(listened_interface) current_round: %s %s %d\n",listened_interface,get_interface_status(listened_interface),current_round);
 
 
-			sync_communication_info(get_center_interface_name(ind));
+			sync_communication_info(listened_interface,get_center_interface_name(ind));
 
 
             cnt_array[ind] = 1; // 重置计数器  
@@ -254,7 +255,7 @@ void deal_with_mnt(const char* linked_node,const char* listened_interface, const
     }
 	pthread_mutex_unlock(&cnt_mutex_array[ind]);   
 	printf("msg is wrong!\n");
-	printf("msg: %s\n",msg);
+	printf("msg: %s  expect_msg:%s \n",msg,expect_msg);
 }  
 
 

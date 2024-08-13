@@ -14,13 +14,11 @@
 #include <string.h>
 #include <sys/ioctl.h>
 #include <errno.h>
-
+#include "../configures.h"
 
 #define TIOCSRS485START	0x5430
 #define TIOCSRS485STOP 	0x5431
 
-#define _ERROR -1
-#define _SUCCESS 0
 
 typedef struct _SerialPortParams
 {

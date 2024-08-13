@@ -118,6 +118,37 @@ char* parse_communication_info_array_to_json() {
 
 
 
+// Function to convert communication_info_array to JSON string  
+char* parse_communication_info_array_with_certain_listen_interface_to_json(const char *certain_listen_interface) {  
+    cJSON *json_array = cJSON_CreateArray();  
+    for (int i = 0; i < communication_info_cnt; i++) {  
+		if(strcmp(certain_listen_interface,communication_info_array[i].interface_name)!=0)
+			continue;
+		
+        cJSON *json_obj = cJSON_CreateObject();  
+		cJSON_AddStringToObject(json_obj, "linked_node", communication_info_array[i].linked_node);  
+        cJSON_AddStringToObject(json_obj, "interface_name", communication_info_array[i].interface_name);  
+        char time_buffer[80]; // Assuming enough space for ctime(3) format  
+        time_t_to_string(communication_info_array[i].updated_time,time_buffer,sizeof(time_buffer));
+        cJSON_AddStringToObject(json_obj, "updated_time", time_buffer);  
+
+		// 将 tx 和 rx 转换为字符串并添加到 JSON 对象中  
+		char tx_str[32]; // 假设 tx 的值不会超过 10^9，因此 32 个字符足够  
+		char rx_str[32]; // 同上  
+		snprintf(tx_str, sizeof(tx_str), "%lu", communication_info_array[i].tx);  
+		snprintf(rx_str, sizeof(rx_str), "%lu", communication_info_array[i].rx);  
+			  
+		cJSON_AddStringToObject(json_obj, "tx", tx_str);  
+		cJSON_AddStringToObject(json_obj, "rx", rx_str);  
+
+        //cJSON_AddStringToObject(json_obj, "error_ratio_value", communication_info_array[i].error_ratio_value);  
+        cJSON_AddItemToArray(json_array, json_obj);  
+    }  
+    char *json_string = cJSON_Print(json_array);  
+    cJSON_Delete(json_array);  
+    return json_string;  
+}  
+
 
 int update_communication_info_array(char* linked_node,char* interface_name,time_t updated_time,unsigned long tx,unsigned long rx) //,char* error_ratio_value
 {
@@ -146,6 +177,8 @@ void string_to_unsigned_long(const char* str, unsigned long* result) {
   
 // Function to update the communication_info_array from a JSON string  
 int update_communication_info_array_from_json(char* communication_info_array_json_str) {
+	printf("\nUpdate communication info array from json now!\n");
+
     cJSON *json, *communication_info_item;
     json = cJSON_Parse(communication_info_array_json_str);
     if (!json) {
@@ -169,8 +202,11 @@ int update_communication_info_array_from_json(char* communication_info_array_jso
         if (!communication_info_item) continue;
 
         int found = 0;
-        for (int j = 0; j < communication_info_cnt; j++) {
-            if (strcmp(communication_info_array[j].interface_name, cJSON_GetObjectItem(communication_info_item, "interface_name")->valuestring) == 0) {
+        for (int j = 0; j < communication_info_cnt; j++) 
+		{
+            if (strcmp(communication_info_array[j].interface_name, cJSON_GetObjectItem(communication_info_item, "interface_name")->valuestring) == 0) 
+			{
+
                 //free(communication_info_array[j].error_ratio_value);
                 free(communication_info_array[j].linked_node);
 
@@ -180,17 +216,19 @@ int update_communication_info_array_from_json(char* communication_info_array_jso
 				string_to_time_t(cJSON_GetObjectItem(communication_info_item, "updated_time")->valuestring, &updated_t);
                 communication_info_array[j].updated_time = updated_t;
 
-				unsigned long tx_;
 				unsigned long rx_;
-				// 转换并存储tx和rx  
-				string_to_unsigned_long(cJSON_GetObjectItem(communication_info_item, "tx")->valuestring, &tx_);	
-				communication_info_array[j].tx = tx_;  
 				string_to_unsigned_long(cJSON_GetObjectItem(communication_info_item, "rx")->valuestring, &rx_);	
 				communication_info_array[j].rx = rx_;  
 
+
+				unsigned long tx_;
+				string_to_unsigned_long(cJSON_GetObjectItem(communication_info_item, "tx")->valuestring, &tx_);	
+				communication_info_array[j].tx = tx_; 
 				
                 //communication_info_array[j].error_ratio_value = strdup(cJSON_GetObjectItem(communication_info_item, "error_ratio_value")->valuestring);
                 found = 1;
+				printf("Communication info exist!\n");
+				print_communication_info(&communication_info_array[j]);
                 break;
             }
         }
@@ -215,14 +253,15 @@ int update_communication_info_array_from_json(char* communication_info_array_jso
 			string_to_unsigned_long(cJSON_GetObjectItem(communication_info_item, "rx")->valuestring, &rx_); 
 			communication_info_array[communication_info_cnt - 1].rx = rx_;  
 
-
+			printf("Communication info added!\n");
+			print_communication_info(&communication_info_array[communication_info_cnt-1]);
 			//communication_info_array[communication_info_cnt - 1].error_ratio_value = strdup(cJSON_GetObjectItem(communication_info_item, "error_ratio_value")->valuestring);
         }
     }
-
+	//printf("xsasxas\n");
     cJSON_Delete(json);
     // 清理通信信息数组中未使用的条目
-
+	
 	return  _SUCCESS;
 }
 
@@ -409,7 +448,7 @@ int update_interface_cnt(const char *filename)
 
 
 
-void read_interface_info_array_from_json(const char *filename, struct interface_info *array,size_t size) {
+void    read_interface_info_array_from_json(const char *filename, struct interface_info *array,size_t size) {
 	cJSON *json, *interfaces, *interface, *tmp; 
 	char buffer[BUFFER_SIZE];
 	FILE *file = fopen(filename, "r");  
@@ -425,6 +464,8 @@ void read_interface_info_array_from_json(const char *filename, struct interface_
 		buffer[i] = '\0';  
     }  
 	fclose(file);
+
+	//printf("%d      %d      %s\n",i,BUFFER_SIZE,buffer);
 
     json = cJSON_Parse(buffer);  
     if (!json) {
@@ -804,16 +845,33 @@ void start_and_load_info(const char *filename)
 	
 	malloc_interface_info_array(size);
 	read_interface_info_array_from_json(filename,interface_info_array,interface_cnt);
+
+
+	int count=0;
+	for(int i=0;i<size;i++)
+	{
+		if(strcmp(interface_info_array[i].mode,"listen")==0)
+			count++;
+	}
+
+	communication_info_cnt = count;
+	malloc_communication_info_array(count);
+
+
+	int c_i=0;
 	
-	malloc_communication_info_array(size);
 	for (int i = 0; i < size; i++) {
-		communication_info_array[i].linked_node = strdup(interface_info_array[i].linked_node);
-		communication_info_array[i].interface_name = strdup(interface_info_array[i].interface_name);
-		time_t now = time(NULL); 
-		communication_info_array[i].updated_time = time(NULL);
-		communication_info_array[i].tx = PAKCAGES_NUM_ONE_TIME;
-		communication_info_array[i].rx = 0;
-		//communication_info_array[i].error_ratio_value = "0";
+		if(strcmp(interface_info_array[i].mode,"listen")==0)
+		{
+			communication_info_array[c_i].linked_node = strdup(interface_info_array[i].linked_node);
+			communication_info_array[c_i].interface_name = strdup(interface_info_array[i].interface_name);
+			time_t now = time(NULL); 
+			communication_info_array[c_i].updated_time = time(NULL);
+			communication_info_array[c_i].tx = PAKCAGES_NUM_ONE_TIME;
+			communication_info_array[c_i].rx = 0;
+			//communication_info_array[i].error_ratio_value = "0";
+			c_i++;
+		}
 	}
 
 	printf("loaded\n");
@@ -1113,8 +1171,8 @@ char* get_center_interface_name(int i)
 
 void print_communication_info(const struct communication_info*info)
 {
-    printf("Located Node: %s\n", info->linked_node);  
-    printf("Interface Name: %s\n", info->interface_name);  
+    printf("Linked Node: %s\n", info->linked_node);  
+    printf("Listened Interface Name: %s\n", info->interface_name);  
 	char time_buffer[80]; // Assuming enough space for ctime(3) format  
     time_t_to_string(info->updated_time,time_buffer,sizeof(time_buffer));
     printf("Updated Time: %s\n", time_buffer);  
@@ -1130,9 +1188,8 @@ void print_communication_info_array(const struct communication_info *array, int 
         printf("communication info array is NULL or size is invalid\n");  
         return;  
     }  
-  
-    for (int i = 0; i < size; i++) {  
-        printf("Interface %d:\n", i + 1);  
+  	printf("\n");
+    for (int i = 0; i < size; i++) {    
         print_communication_info(&array[i]);  
         printf("\n"); // 添加空行以分隔不同的接口信息  
     }  
@@ -1214,7 +1271,7 @@ void print_interface_info_array(const struct interface_info *array, int size) {
     }  
   
     for (int i = 0; i < size; i++) {  
-        printf("Interface %d:\n", i + 1);  
+        printf("Interface ID: %d\n", i + 1);  
         print_interface_info(&array[i]);  
         printf("\n"); // 添加空行以分隔不同的接口信息  
     }  

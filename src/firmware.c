@@ -35,10 +35,11 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 		data.listened_interface = source_interface;
 		
 	    // Attempt to receive a packet from the source interface  
-		char TEMP_MSG[MAX_MSG_LEN];
+		char TEMP_MSG[MAX_MSG_LEN]={0};
 		if (receive_packet(get_ip_name_by_index(index),TEMP_MSG,max_waiting_time)<0) {  
-			// If receiving the message fails, return an error and don't reply
 			//usleep(3000000);
+			printf("failed to got message from \"%s\"!\n",get_ip_name_by_index(index));
+			printf("TEMP_MSG:%s\n",TEMP_MSG);
 			return _ERROR;	  
 		}	 
 		strncpy(data.msg, TEMP_MSG, MAX_MSG_LEN); // 不直接拿data.msg作为形参，防止其随着原函数声明周期结束而被析构
@@ -65,8 +66,8 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 	    // Attempt to receive a packet from the source interface    
 		char TEMP_MSG[MAX_CAN_DATA_LENGTH];
 		if (receive_packet_can_fpu(can_id,TEMP_MSG,MAX_CAN_DATA_LENGTH,max_waiting_time)<0) {  
-			// If receiving the message fails, return an error and don't reply
-			//usleep(3000000);
+			printf("failed to got message from \"%s\"!\n",get_ip_name_by_index(index));
+			printf("TEMP_MSG:%s\n",TEMP_MSG);
 			return _ERROR;	  
 		}	 
 		strncpy(data.msg, TEMP_MSG, MAX_CAN_DATA_LENGTH); // 不直接拿data.msg作为形参，防止其随着原函数声明周期结束而被析构
@@ -94,8 +95,8 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 			char TEMP_MSG[MAX_MSG_LEN];
 			// Attempt to receive a packet from the source interface  
 			if (receive_packet_rs485(fd,TEMP_MSG,MAX_MSG_LEN,max_waiting_time)<0) {	 
-				// If receiving the message fails, return an error and don't reply
-				//usleep(3000000);
+				printf("failed to got message from \"%s\"!\n",get_ip_name_by_index(index));
+				printf("TEMP_MSG:%s\n",TEMP_MSG);
 				return _ERROR;	  
 			}	 
 			strncpy(data.msg, TEMP_MSG, MAX_MSG_LEN); // 不直接拿data.msg作为形参，防止其随着原函数声明周期结束而被析构

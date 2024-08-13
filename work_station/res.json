@@ -1,7 +1,13 @@
 [{
 		"linked_node":	"fpu",
-		"interface_name":	"/dev/ttyS1",
-		"updated_time":	"Fri Aug  2 16:40:27 2024",
+		"interface_name":	"ens33-listen",
+		"updated_time":	"Tue Aug 13 11:15:55 2024",
+		"tx":	"20",
+		"rx":	"20"
+	}, {
+		"linked_node":	"virtual_machine",
+		"interface_name":	"enp3s0-listen",
+		"updated_time":	"Tue Aug 13 11:14:19 2024",
 		"tx":	"20",
 		"rx":	"20"
 	}]
