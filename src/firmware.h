@@ -16,7 +16,7 @@
 
 
 
-typedef void (*Dealer)(const char* located_node,const char* listened_interface, const char* msg);  
+typedef void (*Dealer)(const char* located_node,const char* listened_interface, const char* msg);   
 
 typedef struct {  
     Dealer deal_func;  

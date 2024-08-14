@@ -22,7 +22,7 @@
 
 
 int send_packet_can_gpu(int can_id, const char *msg, int len);
-int receive_packet_can_gpu(int can_id, unsigned char *msg, int length, long wait_time);
+int receive_packet_can_gpu(int can_id, unsigned char *msg, int length, long wait_time); 
 int can0Recv(int len, long wait_time);
 int can1Recv(int len, long wait_time);
 int isAllZero(char arr[], int size);

@@ -17,7 +17,7 @@
 
 
 #define _ERROR -1
-#define _SUCCESS 1
+#define _SUCCESS 0
 
 #define MAX_MSG_LEN 512
 #define MAX_IF_LEN 64

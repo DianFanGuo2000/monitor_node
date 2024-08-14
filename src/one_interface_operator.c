@@ -180,7 +180,8 @@ void deal_with_mnt(const char* linked_node,const char* listened_interface, const
 		printf("cannot recover the sended msg for listened_interface: %s!\n",listened_interface);
 		return;
 	}
-	
+
+	printf("msg: %s \n",msg);
 	if(strcmp(msg, expect_msg) == 0)
     {
 

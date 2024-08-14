@@ -54,7 +54,7 @@ int send_packet_can_gpu(int can_id, const char *msg, int len)
 
     if (write(sockfd, &frame, sizeof(struct can_frame)) != sizeof(struct can_frame)) 
     {
-        perror("Write failed");
+        perror("Write failed"); 
         return _ERROR;
     }
     close(sockfd);

@@ -24,7 +24,7 @@ int receive_packet_can_fpu(UINT32 can_channel_id, char *msg, UINT32 length, int 
 	if(length>MAX_CAN_DATA_LENGTH)
 		len = MAX_CAN_DATA_LENGTH;
 	else
-		len = length;
+		len = length; 
 
 
     time_t now = time(NULL); 

@@ -189,7 +189,7 @@ int update_communication_info_array_from_json(char* communication_info_array_jso
         return _ERROR;
     }
 
-    if (!cJSON_IsArray(json)) {
+    if (!cJSON_IsArray(json)) { 
         printf("Error: JSON is not an array\n");
         cJSON_Delete(json);
         return _ERROR;
