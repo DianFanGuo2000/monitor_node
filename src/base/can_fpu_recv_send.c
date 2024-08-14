@@ -1,5 +1,5 @@
 
-#include "can_recv_send.h"
+#include "can_fpu_recv_send.h"
 
 int isAllZeros(char arr[], int size) {  
     for (int i = 0; i < size; i++) {  
@@ -14,6 +14,11 @@ int isAllZeros(char arr[], int size) {
 
 int receive_packet_can_fpu(UINT32 can_channel_id, char *msg, UINT32 length, int wait_time)  
 {  
+	if(msg==NULL)
+	{
+		printf("[ERROR] receive_packet_can_fpu got a NULL msg!\n");
+		return _ERROR;
+	}
 
 	int len=-1;
 	if(length>MAX_CAN_DATA_LENGTH)
@@ -41,6 +46,14 @@ int receive_packet_can_fpu(UINT32 can_channel_id, char *msg, UINT32 length, int 
 
 int send_packet_can_fpu(UINT32 can_channel_id, const char *msg, UINT32 length) //此处len不允许超过8，超过会截断
 {
+
+	if(msg==NULL)
+	{
+		printf("[ERROR] send_packet_can_fpu got a NULL msg!\n");
+		return _ERROR;
+	}
+
+
 	int len=-1;
 	if(length>MAX_CAN_DATA_LENGTH)
 		len = MAX_CAN_DATA_LENGTH;

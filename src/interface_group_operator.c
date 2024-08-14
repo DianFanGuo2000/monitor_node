@@ -470,9 +470,13 @@ int main(int argc, char *argv[]) {
     start_and_load_info(config_file); 
 		
 	init_test_or_listen_record_arrays();
+
+	initialize_assigned_flag_lock();
 		
 		// 下面开始循环测试各个配置好的物理通信接口
 	test_or_listen_upon_interface_group();
+
+	destroy_assigned_flag_lock();
 		
 	free_test_or_listen_record_arrays();		
 

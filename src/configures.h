@@ -20,6 +20,8 @@
 #define _SUCCESS 1
 
 #define MAX_MSG_LEN 512
+#define MAX_IF_LEN 64
+
 #define MAX_CAN_ID_STR_LEN 32
 #define MAX_BAUD_RATE_STR_LEN 32
 #define MAX_INTERFACES 100

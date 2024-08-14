@@ -2,12 +2,59 @@
 #include "firmware.h"
 
 
+int assigned_flag = 0;
+pthread_mutex_t assigned_flag_lock;
+
+
+// 在程序初始化时创建锁  
+void initialize_assigned_flag_lock() {  
+    pthread_mutex_init(&assigned_flag_lock, NULL);  
+}  
+  
+// 在程序结束时销毁锁  
+void destroy_assigned_flag_lock() {  
+    pthread_mutex_destroy(&assigned_flag_lock, NULL);  
+}
+
+
+
+
 
 // 线程函数，用于异步处理消息  
 void* deal_async(void* arg) {  
+
+	pthread_mutex_lock(&assigned_flag_lock);  
+
     DealData* data = (DealData*)arg;  
 	//printf("data->msg:%s \n",data->msg);
-    data->deal_func(data->linked_node,data->listened_interface,data->msg); // 调用 deal 函数处理消息  
+
+	if(data->linked_node==NULL)
+	{
+		printf("[ERROR] deal_async got a NULL data->linked_node!\n");
+		return ;
+	}
+	
+	if(data->listened_interface==NULL)
+	{
+		printf("[ERROR] deal_async got a NULL data->listened_interface!\n");
+		return ;
+	}
+
+	if(data->msg==NULL)
+	{
+		printf("[ERROR] deal_async got a NULL data->msg!\n");
+		return ;
+	}
+	char TEMP_NODE[MAX_IF_LEN];
+	char TEMP_INF[MAX_IF_LEN];
+	char TEMP_MSG[MAX_MSG_LEN];
+
+	strncpy(TEMP_NODE,data->linked_node , MAX_MSG_LEN); 
+	strncpy(TEMP_INF, data->listened_interface, MAX_MSG_LEN); 
+	strncpy(TEMP_MSG, data->msg, MAX_MSG_LEN); 
+
+    assigned_flag = 1; // 发送信号通知父线程已结束赋值了
+    data->deal_func(TEMP_NODE,TEMP_INF,TEMP_MSG); // 调用 deal 函数处理消息  
 }  
 
 
@@ -16,6 +63,18 @@ void* deal_async(void* arg) {
 //DealData data;	/*千万注意，这是一个全局变量，所以一定要加锁来访问，不然可能会引发奇奇怪怪的错误*/
 int receive_message(const char *linked_node,const char *source_interface,Dealer deal,long max_waiting_time)    
 {
+	if(linked_node==NULL)
+	{
+		printf("[ERROR] receive_message got a NULL linked_node!\n");
+		return _ERROR;
+	}
+	
+	if(source_interface==NULL)
+	{
+		printf("[ERROR] receive_message got a NULL source_interface!\n");
+		return _ERROR;
+	}
+
 	int index = get_interface_index(source_interface);
 	char *interface_status = get_interface_status_by_index(index);
 	if(strcmp(interface_status, "sending") == 0 || strcmp(interface_status, "closed") == 0 )
@@ -38,7 +97,7 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 		char TEMP_MSG[MAX_MSG_LEN]={0};
 		if (receive_packet(get_ip_name_by_index(index),TEMP_MSG,max_waiting_time)<0) {  
 			//usleep(3000000);
-			printf("failed to got message from \"%s\"!\n",get_ip_name_by_index(index));
+			printf("failed to got message from \"%s\"!\n",source_interface);
 			printf("TEMP_MSG:%s\n",TEMP_MSG);
 			return _ERROR;	  
 		}	 
@@ -51,6 +110,10 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
             // 线程创建失败处理，返回错误  
             return _ERROR;  
         }  
+		
+		while(!assigned_flag);
+		assigned_flag = 0;	
+		pthread_mutex_unlock(&assigned_flag_lock);	
 
 	    return _SUCCESS;    
     }
@@ -66,7 +129,7 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 	    // Attempt to receive a packet from the source interface    
 		char TEMP_MSG[MAX_CAN_DATA_LENGTH];
 		if (receive_packet_can_fpu(can_id,TEMP_MSG,MAX_CAN_DATA_LENGTH,max_waiting_time)<0) {  
-			printf("failed to got message from \"%s\"!\n",get_ip_name_by_index(index));
+			printf("failed to got message from \"%s\"!\n",source_interface);
 			printf("TEMP_MSG:%s\n",TEMP_MSG);
 			return _ERROR;	  
 		}	 
@@ -79,8 +142,49 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
             return _ERROR;  
         }  
 
+		
+		while(!assigned_flag);
+		assigned_flag = 0;	
+		pthread_mutex_unlock(&assigned_flag_lock);	
+
+
 	    return _SUCCESS;    
     }
+
+
+	if (strcmp(base_receive_func, "receive_packet_can_gpu") == 0) {
+		DealData data;
+		data.deal_func = deal; // 将 deal 函数指针保存到结构体中
+		data.linked_node = linked_node;
+		data.listened_interface = source_interface;
+    //printf("date_node: %s, data_listened:%s\n", data.linked_node, data.listened_interface);
+		
+		int can_id = get_channel_id_by_index(index);
+	    // Attempt to receive a packet from the source interface    
+		char TEMP_MSG[MAX_CAN_DATA_LENGTH];
+		if (receive_packet_can_gpu(can_id,TEMP_MSG,MAX_CAN_DATA_LENGTH,max_waiting_time)<0) {  
+			printf("failed to got message from \"%s\"!\n",source_interface);
+			printf("TEMP_MSG:%s\n",TEMP_MSG);
+			return _ERROR;	  
+		}	 
+		strncpy(data.msg, TEMP_MSG, MAX_CAN_DATA_LENGTH); // 不直接拿data.msg作为形参，防止其随着原函数声明周期结束而被析构
+
+
+        pthread_t thread_id;  
+        if (pthread_create(&thread_id, NULL, deal_async, &data) != 0) {  
+            // 线程创建失败处理，返回错误  
+            return _ERROR;  
+        }  
+
+		
+		while(!assigned_flag);
+		assigned_flag = 0;	
+		pthread_mutex_unlock(&assigned_flag_lock);	
+
+
+	    return _SUCCESS;    
+    }
+
 
 	
 	if (strcmp(base_receive_func, "receive_packet_rs485") == 0) {	 
@@ -95,7 +199,7 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 			char TEMP_MSG[MAX_MSG_LEN];
 			// Attempt to receive a packet from the source interface  
 			if (receive_packet_rs485(fd,TEMP_MSG,MAX_MSG_LEN,max_waiting_time)<0) {	 
-				printf("failed to got message from \"%s\"!\n",get_ip_name_by_index(index));
+				printf("failed to got message from \"%s\"!\n",source_interface);
 				printf("TEMP_MSG:%s\n",TEMP_MSG);
 				return _ERROR;	  
 			}	 
@@ -111,6 +215,10 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 				// 线程创建失败处理，返回错误  
 				return _ERROR;	
 			}  
+			
+			while(!assigned_flag);
+			assigned_flag = 0;  
+			pthread_mutex_unlock(&assigned_flag_lock);  
 
 			return _SUCCESS;	
 	}	 
@@ -120,6 +228,23 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 
 /*res_msg长度需要为max_message_len+1，这样字符串长度才是max_message_len*/
 void fillMessageToMaxMsgLen(const char *message, char *res_msg, int max_message_len) {  
+
+
+	if(res_msg==NULL)
+	{
+		printf("[ERROR] fillMessageToMaxMsgLen got a NULL res_msg!\n");
+		return _ERROR;
+	}
+	
+	if(message==NULL)
+	{
+		printf("[ERROR] fillMessageToMaxMsgLen got a NULL message!\n");
+		return _ERROR;
+	}
+
+	
+
+
     // 首先，将原始消息复制到 RS485MSG  
     strncpy(res_msg, message, max_message_len);  
 	
@@ -142,6 +267,20 @@ void fillMessageToMaxMsgLen(const char *message, char *res_msg, int max_message_
 
 int send_message(const char *source_interface,const char *message)
 {   
+
+	if(source_interface==NULL)
+	{
+		printf("[ERROR] send_message got a NULL source_interface!\n");
+		return _ERROR;
+	}
+	
+	if(message==NULL)
+	{
+		printf("[ERROR] send_message got a NULL message!\n");
+		return _ERROR;
+	}
+
+
 	int index = get_interface_index(source_interface);
 	char *interface_status = get_interface_status_by_index(index);
 	if(strcmp(interface_status, "receiving") == 0 || strcmp(interface_status, "closed") == 0 )
@@ -194,7 +333,23 @@ int send_message(const char *source_interface,const char *message)
         }    
 		return _SUCCESS;
     }  	
-  
+
+
+	if (strcmp(base_send_func, "send_packet_can_gpu") == 0) {    
+		int can_id = get_channel_id_by_index(index);
+
+		// 填充至MAX_MSG_LEN，以保证发送长度一定是MAX_MSG_LEN个字节
+		char CANMSG[MAX_CAN_DATA_LENGTH];
+		fillMessageToMaxMsgLen(message,CANMSG,MAX_CAN_DATA_LENGTH-1);// 确保最后一位CANMSG[MAX_CAN_DATA_LENGTH -1]一定是'\0'
+		
+        if (send_packet_can_gpu(can_id,CANMSG,MAX_CAN_DATA_LENGTH)< 0) {    
+        	printf("send failed!\n");
+        	return _ERROR; // Retry sending    
+        }    
+		return _SUCCESS;
+    }  	
+
+
     // This point should not be reached due to the infinite loop, but for completeness    
     return _ERROR; // In case of unexpected termination    
 }
@@ -211,6 +366,20 @@ int is_interface_up(const char* interface) {
 
 int set_status(const char *source_interface, const char *status)  
 {  
+
+	if(source_interface==NULL)
+	{
+		printf("[ERROR] set_status got a NULL source_interface!\n");
+		return _ERROR;
+	}
+	
+	if(status==NULL)
+	{
+		printf("[ERROR] set_status got a NULL status!\n");
+		return _ERROR;
+	}
+
+
 	char *current_status = get_interface_status(source_interface);
 	if (strcmp(current_status, status) == 0) {
 		return _SUCCESS;
@@ -312,7 +481,35 @@ int set_status(const char *source_interface, const char *status)
             // Just return success  
         }  
 
-    }  
+    }
+
+
+	if (strcmp(base_send_func, "send_packet_can_gpu") == 0 && strcmp(base_receive_func, "receive_packet_can_gpu") == 0) {  
+			// Compare the status string correctly using strcmp  
+			if (strcmp(status, "sending_and_receiving") == 0) {  
+				printf("can cannot be set as 'sending_and_receiving'\n");  
+				return _ERROR;	
+			}  
+			
+			// Attempt to set the interface status	
+			if (set_interface_status(source_interface, status) < 0) {  
+				// Print an error message (assuming a function or macro for it)  
+				printf("Failed to set interface status\n");  
+				return _ERROR;	
+			} 
+			
+			if (strcmp(status, "sending") == 0 || strcmp(status, "receiving") == 0) {  
+			}  
+	
+	 
+			if (strcmp(status, "closed") == 0) {  
+				// For 'closed' status, assuming no special action is needed  
+				// Just return success	
+			}  
+	
+	}  
+
+	  
     // If we reach here, either the interface type is not 'rs485' or the status is unrecognized  
     // but we're returning success as per the original function logic  
     return _SUCCESS;  

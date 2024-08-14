@@ -16,6 +16,19 @@
  */  
 int receive_packet(const char *interface_name, unsigned char *msg,long max_waiting_time)  
 {  
+	if(interface_name==NULL)
+	{
+		printf("[ERROR] receive_packet got a NULL interface_name!\n");
+		return _ERROR;
+	}
+
+	if(msg==NULL)
+	{
+		printf("[ERROR] receive_packet got a NULL msg!\n");
+		return _ERROR;
+	}
+
+
 	//printf("source_interface: %s\n",interface_name);
     // Create a raw socket for packet capturing  
     int sockfd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_SNMP));  
@@ -160,6 +173,29 @@ int stringToMacAddress(const char* macStr, unsigned char* macAddr) {
  */  
 int send_packet(const char *interface_name, const char *message, const char *ether_shost, const char *ether_dhost)  
 {  
+
+	if(interface_name==NULL)
+	{
+		printf("[ERROR] receive_packet got a NULL interface_name!\n");
+		return _ERROR;
+	}
+
+	if(message==NULL)
+	{
+		printf("[ERROR] receive_packet got a NULL msg!\n");
+		return _ERROR;
+	}
+
+	if(!ether_shost)
+	{
+		printf("[ERROR] receive_packet got a NULL ether_shost!");
+		return _ERROR;
+	}else if(!ether_dhost)
+	{
+		printf("[ERROR] receive_packet got a NULL ether_dhost!");
+		return _ERROR;
+	}
+
 	/*if(!ether_shost)
 	{
 		printf("ether_shost is NULL!");
