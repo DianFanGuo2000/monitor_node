@@ -308,7 +308,7 @@ int send_packet_rs485(int fd, const char *msg, unsigned int length)
     /* check length is 0 or not */
     if (length == 0) {
         printf("INFO: Length of data to write is 0.\n");
-        return 0;
+        return _ERROR;
     }
 
     int bytesWrittenTotal = 0;  //total bytes

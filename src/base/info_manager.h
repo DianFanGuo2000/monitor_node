@@ -1,35 +1,30 @@
 #ifndef INFO_MANAGER_MANAGER_H  
 #define INFO_MANAGER_MANAGER_H  
 
-
-#include "../configures.h"
-
-
-#include <time.h> // For time functions 
-
-
 #include <stdio.h>  
 #include <stdlib.h>  
 #include <string.h>  
-#include <cjson/cJSON.h> /*ï¿½ï¿½Òªï¿½ï¿½×°cJSON */
-#include <stdbool.h>  
-
-
-
+#include <time.h>
+#include <cjson/cJSON.h> 
+#include <stdbool.h> 
+#include "../configures.h"
 
 
 struct eth_info { 
+	char* ip_name;
 	char *ip_addr;  
-	char *net_mask;  
+	char *net_mask;
 
     char *mac_addr;  
 };  
   
 struct can_info {  
     int can_id;  
+	int baud_rate; 
 };  
   
 struct rs485_info { 
+	char* rs485_dev_path;
 	int rs485_gpio_number;
 	
 	int databits;
@@ -41,6 +36,7 @@ struct rs485_info {
 };
 
 struct interface_info {
+	char *mode;
 	char *located_node;
     char *interface_name;  
     char *interface_type;  
@@ -51,7 +47,9 @@ struct interface_info {
 	char *status_chooser;  
 	char *base_send_func;  
 	char *base_receive_func;  
-
+	char *msg_generator_of_sender;
+	char *initializer_name;
+	char *closer_name;
 
     struct eth_info eth_info;
 	struct eth_info linked_eth_info;
@@ -60,9 +58,9 @@ struct interface_info {
     struct rs485_info rs485_info;
 	struct rs485_info linked_rs485_info;
 
-
-	char *mode;
 	char *status;
+	char *duplex;
+	int initialized_flag; //¡À¨ª¨º??1?¡ä3?¨º??¡¥
 };
 
 
@@ -87,6 +85,11 @@ int interface_cnt;
 time_t test_begin_time; 
 
 
+int get_initialized_flag_by_index(int i);
+void set_initialized_flag_by_index(int i,int flag);
+char* parse_communication_info_array_with_certain_listen_interface_to_json(const char *certain_listen_interface);
+
+
 time_t get_test_begin_time();
 char* get_interface_status_by_index(int i);
 
@@ -102,6 +105,7 @@ int time_t_to_string(time_t time_val, char* buffer, size_t buffer_size);
 
 char* get_interface_type_by_index(int i);
 
+int get_can_baud_rate_by_index(int i);
 
 char *get_linked_node(int i);
 
@@ -109,6 +113,13 @@ int get_interface_cnt();
 char* get_interface_name_by_index(int i);
 char* get_linked_interface_name_by_index(int i);
 
+
+char* get_initializer_name_by_index(int i);
+char* get_closer_name_by_index(int i);
+
+
+char* get_rs485_dev_path_by_index(int i);
+char* get_ip_name_by_index(int i);
 
 char* get_mac_addr(const char *interface_name);
 char* get_linked_mac_addr(const char *interface_name);
@@ -123,31 +134,33 @@ char *get_located_node(int i);
 
 int is_this_interface_in_current_node(const char* interface_name);
 
-char* get_interface_name_by_linked_interface_name(char* linked_interface_name);
+char* get_interface_name_by_linked_interface_name(const char* linked_interface_name);
 
 void malloc_communication_info_array(int size);
 void free_communication_info_array();
 
 char* parse_communication_info_array_to_json();
 
-int update_communication_info_array_from_json(char* communication_info_array_json_str);
+int update_communication_info_array_from_json(const char* communication_info_array_json_str);
 
 
-int update_communication_info_array(char* linked_node,char* interface_name,time_t updated_time,unsigned long tx,unsigned long rx); //,char* error_ratio_value
+int update_communication_info_array(const char* linked_node,const char* interface_name,time_t updated_time,unsigned long tx,unsigned long rx); //,char* error_ratio_value
 void string_to_unsigned_long(const char* str, unsigned long* result);
 
 int get_interface_index(const char* interface_name);
 
-
 char* get_interface_status(const char* interface_name);
 char* get_interface_mode(const char* interface_name);
+char* get_interface_duplex_by_index(int i);
+
 char* get_base_send_func_by_index(int i);
 
 char* get_base_receive_func_by_index(int i);
 
 
+char* get_interface_mode_by_index(int i);
 
-int  get_baud_rate_by_index(int i);
+int  get_rs485_baud_rate_by_index(int i);
 
 
 int  get_databits_by_index(int i);
@@ -179,12 +192,16 @@ char* get_center_interface_name(int i);
 void print_communication_info(const struct communication_info*info);
 
 char* get_status_chooser_by_index(int i);
-
+char*  get_msg_generator_of_sender_by_index(int i);
 
 void print_communication_info_array(const struct communication_info *array, int size);
+int read_communication_info_array_from_json(const char *filename);
+void write_communication_info_array_to_json(const char* filename);
 
 void printAllCommucationInfo();
-int read_communication_info_array_from_json(const char *filename);
+
+
+
 
 
 #endif

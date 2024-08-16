@@ -16,6 +16,19 @@
  */  
 int receive_packet(const char *interface_name, unsigned char *msg,long max_waiting_time)  
 {  
+	if(interface_name==NULL)
+	{
+		printf("[ERROR] receive_packet got a NULL interface_name!\n");
+		return _ERROR;
+	}
+
+	if(msg==NULL)
+	{
+		printf("[ERROR] receive_packet got a NULL msg!\n");
+		return _ERROR;
+	}
+
+
 	//printf("source_interface: %s\n",interface_name);
     // Create a raw socket for packet capturing  
     int sockfd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_SNMP));  
@@ -94,7 +107,7 @@ int receive_packet(const char *interface_name, unsigned char *msg,long max_waiti
 	                // It's safer to use a fixed size or ensure msg is null-terminated and use strncpy with a safe length.  
 	                // For simplicity, assuming msg is large enough and null-terminated.  
 					//printf("%s %d\n",payload,strlen(payload)); 
-					strncpy(msg, payload, strlen(payload) + 1);  
+					strncpy((char *)msg, payload, strlen(payload) + 1);  
 					//printf("%s %d\n",msg,strlen(msg));
 	            }
 	        }
@@ -106,47 +119,43 @@ int receive_packet(const char *interface_name, unsigned char *msg,long max_waiti
 }
 
 
-
-
-
 unsigned char srcmac[6];
 unsigned char dstmac[6];
 
 
 int stringToMacAddress(const char* macStr, unsigned char* macAddr) {  
     if (macStr == NULL || macAddr == NULL) {  
-        return -1; // ÎŞĞ§µÄÊäÈë²ÎÊı  
+        return -1; 
     }  
   
     int i = 0;  
-    char hexByte[3]; // ÁÙÊ±´æ´¢Á½¸öÊ®Áù½øÖÆ×Ö·û  
+    char hexByte[3]; // ä¸´æ—¶å­˜å‚¨ä¸¤ä¸ªåå…­è¿›åˆ¶å­—ç¬¦ 
   
-    // ±éÀú×Ö·û´®£¬Ã¿´Î´¦ÀíÁ½¸öÊ®Áù½øÖÆ×Ö·û  
+    // éå†å­—ç¬¦ä¸²ï¼Œæ¯æ¬¡å¤„ç†ä¸¤ä¸ªåå…­è¿›åˆ¶å­—ç¬¦
     for (int j = 0; i < 6 && macStr[j] != '\0'; j += 3) {  
-        // Ìø¹ı':'×Ö·û£¨Èç¹û´æÔÚ£©  
+        // è·³è¿‡':'å­—ç¬¦ï¼ˆå¦‚æœå­˜åœ¨ï¼‰ 
         if (macStr[j] == ':')  
             j++;  
   
-        // ¸´ÖÆÁ½¸öÊ®Áù½øÖÆ×Ö·ûµ½ÁÙÊ±Êı×é  
+        // å¤åˆ¶ä¸¤ä¸ªåå…­è¿›åˆ¶å­—ç¬¦åˆ°ä¸´æ—¶æ•°ç»„
         strncpy(hexByte, macStr + j, 2);  
-        hexByte[2] = '\0'; // È·±£×Ö·û´®ÒÔnull½áÎ²  
+        hexByte[2] = '\0';
   
-        // ½«Ê®Áù½øÖÆ×Ö·û´®×ª»»ÎªÕûÊı£¬²¢´æ´¢ÔÚmacAddrÊı×éÖĞ  
+        // å°†åå…­è¿›åˆ¶å­—ç¬¦ä¸²è½¬æ¢ä¸ºæ•´æ•°ï¼Œå¹¶å­˜å‚¨åœ¨macAddræ•°ç»„ä¸­ 
         char* end;  
         long int hexValue = strtol(hexByte, &end, 16);  
         if (hexValue < 0 || hexValue > 0xFF || end != hexByte + 2) {  
-            // ×ª»»Ê§°Ü»ò³¬³ö·¶Î§  
             return -1;  
         }  
         macAddr[i++] = (unsigned char)hexValue;  
     }  
   
-    // Èç¹ûÎ´´¦Àí×ã¹»µÄ×Ö½Ú£¬Ôò·µ»Ø´íÎó  
+    // å¦‚æœæœªå¤„ç†è¶³å¤Ÿçš„å­—èŠ‚ï¼Œåˆ™è¿”å›é”™è¯¯  
     if (i != 6) {  
         return -1;  
     }  
   
-    return 0; // ×ª»»³É¹¦  
+    return 0;
 }
 
 
@@ -160,6 +169,28 @@ int stringToMacAddress(const char* macStr, unsigned char* macAddr) {
  */  
 int send_packet(const char *interface_name, const char *message, const char *ether_shost, const char *ether_dhost)  
 {  
+	if(interface_name==NULL)
+	{
+		printf("[ERROR] receive_packet got a NULL interface_name!\n");
+		return _ERROR;
+	}
+
+	if(message==NULL)
+	{
+		printf("[ERROR] receive_packet got a NULL msg!\n");
+		return _ERROR;
+	}
+
+	if(!ether_shost)
+	{
+		printf("[ERROR] receive_packet got a NULL ether_shost!");
+		return _ERROR;
+	}else if(!ether_dhost)
+	{
+		printf("[ERROR] receive_packet got a NULL ether_dhost!");
+		return _ERROR;
+	}
+
 	/*if(!ether_shost)
 	{
 		printf("ether_shost is NULL!");

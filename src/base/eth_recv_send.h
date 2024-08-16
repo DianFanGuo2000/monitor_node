@@ -5,6 +5,7 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/socket.h>
@@ -16,12 +17,8 @@
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
-
-
 int receive_packet(const char *interface_name, unsigned char *msg,long max_waiting_time);
 int send_packet(const char *interface_name, const char *message, const char *ether_shost, const char *ether_dhost);
-
-
 
 #endif
 
