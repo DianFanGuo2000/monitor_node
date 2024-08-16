@@ -12,15 +12,15 @@ extern int initializer_transfer(char *initializer_name, const char *interface_na
 extern int closer_transfer(char *closer_name, const char *interface_name);
 
 
-extern void initialize_lock();
+extern void initialize_initializer_lock();
 
-extern void destroy_lock();
+extern void destroy_initializer_lock();
 
 
 typedef struct {  
     const char *interface_name;  
     const char *message;
-} ThreadArgs;  
+} test_thread_args;  
 
 char *res_file_name;
 

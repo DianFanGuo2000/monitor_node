@@ -239,23 +239,67 @@ void listen_upon_interface_group() {
 
 */
 
+void test_upon_one_interface_in_one_test_case(const char *test_interface,int packages_num)
+{
+	while (1) {  
+		test_upon_one_interface_in_one_time(test_interface, packages_num);
+	}
+}
+
+
+typedef struct {  
+    const char *linked_node;  
+    const char *listened_interface;
+} listen_thread_args;  
+
+
+
+void *listen_thread_function(void *arg) {  
+    listen_thread_args *ta = (listen_thread_args *)arg;  
+	while(1)
+	{
+		listen_upon_one_interface_in_one_time(ta->linked_node, ta->listened_interface);
+	}
+    return NULL;  
+}  
+
+
+
+void listen_upon_one_interface_in_test_case(char *linked_node, char *listened_interface)
+{
+	pthread_t threads[LISTENING_THREAD_NUM];  
+	listen_thread_args args[LISTENING_THREAD_NUM];  
+
+	for (int i = 0; i < LISTENING_THREAD_NUM; i++) {  
+	        args[i].linked_node = linked_node;  
+	        args[i].listened_interface = listened_interface;  
+			printf("Listen thread %d for linked_node \"%s\" started!\n",i,linked_node);
+	        pthread_create(&threads[i], NULL, listen_thread_function, &args[i]);  
+	}  
+	  
+	for (int i = 0; i < LISTENING_THREAD_NUM; i++) {  
+	    pthread_join(threads[i], NULL);  
+	}  
+}
+
+
 
 
 
 // 线程函数  
 void* interface_thread(void* arg) {  
     int index = *(int*)arg;  
-    initializer_transfer(get_initializer_name_by_index(index),get_interface_name_by_index(index));  
-    while (1) {  
-		if(strcmp(get_interface_mode_by_index(index),"test")==0)
-		{
-			test_upon_one_interface_in_one_time(get_interface_name_by_index(index), PAKCAGES_NUM_ONE_TIME); 
-		}
-		if(strcmp(get_interface_mode_by_index(index),"listen")==0)
-		{
-			listen_upon_one_interface_in_one_time(get_linked_node(index),get_interface_name_by_index(index));
-		} 
-    }  
+    initializer_transfer(get_initializer_name_by_index(index),get_interface_name_by_index(index)); 
+	
+	if(strcmp(get_interface_mode_by_index(index),"test")==0)
+	{
+		test_upon_one_interface_in_one_test_case(get_interface_name_by_index(index), PAKCAGES_NUM_ONE_TIME);
+	}
+	if(strcmp(get_interface_mode_by_index(index),"listen")==0)
+	{
+		listen_upon_one_interface_in_test_case(get_linked_node(index),get_interface_name_by_index(index));
+	} 
+
 	closer_transfer(get_closer_name_by_index(index),get_interface_name_by_index(index));
     // 注意：实际使用中，你可能需要一个机制来优雅地退出这个循环  
     return NULL;  
@@ -267,7 +311,7 @@ void test_or_listen_upon_interface_group() {
     int indexes[cnt];  
     int i;  
 
-	initialize_lock();
+	initialize_initializer_lock();
   
     // 为每个接口创建一个线程  
     for (i = 0; i < cnt; i++) {  
@@ -285,7 +329,7 @@ void test_or_listen_upon_interface_group() {
         pthread_join(threads[i], NULL);  
     }  
 
-  	destroy_lock();
+  	destroy_initializer_lock();
     // 注意：在实际应用中，你可能不会这样等待无限循环的线程  
 }  
   

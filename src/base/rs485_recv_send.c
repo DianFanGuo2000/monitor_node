@@ -3,6 +3,20 @@
 #include "rs485_recv_send.h"
 
 
+// 在程序初始化时创建锁  
+void initialize_rs485_lock() {  
+    pthread_mutex_init(&rs485_lock, NULL);  
+}  
+  
+// 在程序结束时销毁锁  
+void destroy_rs485_lock() {  
+    pthread_mutex_destroy(&rs485_lock);  
+}
+
+
+
+
+
 int speed_arr[] = {B921600, B460800, B230400, B115200, B38400, B19200, B9600, B4800, B2400, B1200, B300};
 int name_arr[] = {921600, 460800, 230400, 115200, 38400, 19200, 9600, 4800, 2400, 1200, 300};
 
@@ -365,7 +379,7 @@ int receive_packet_rs485(int fd, unsigned char *msg, unsigned int length, int wa
     timeout.tv_usec = 0;
 
 	//printf("fd:%d msg_len:%d msg:%s wait_time:%d\n",fd,length,msg,wait_time);
-
+	pthread_mutex_lock(&rs485_lock); 
     while (bytesReadTotal < length) {
         /* Try to read data. */
         int retval = select(fd + 1, &readfds, NULL, NULL, &timeout);
@@ -375,13 +389,16 @@ int receive_packet_rs485(int fd, unsigned char *msg, unsigned int length, int wa
         }
         /* If select() encounters an error, print an error message and return. */
         if (retval == -1) {
+			pthread_mutex_unlock(&rs485_lock); 
             perror("ERROR: select() failed");
             return _ERROR;
         }
+		
         bytesReadNow = read(fd, msg + bytesReadTotal, length - bytesReadTotal);
 
         /* if error */
         if (bytesReadNow < 0) {
+			pthread_mutex_unlock(&rs485_lock); 
             perror("ERROR: Failed to read data from serial port");
             return _ERROR;
         }
@@ -400,6 +417,7 @@ int receive_packet_rs485(int fd, unsigned char *msg, unsigned int length, int wa
         /* Update the total number of bytes read so far. */
         bytesReadTotal += bytesReadNow;
     }
+	pthread_mutex_unlock(&rs485_lock); 
 	if(bytesReadTotal==0) /*if timeout with retval==0*/
 	{
 		printf("Timeout!\n");

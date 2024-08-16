@@ -277,7 +277,7 @@ void listen_upon_one_interface_in_one_time(char *linked_node, char *listened_int
 
 
 void *test_thread_function(void *arg) {  
-    ThreadArgs *ta = (ThreadArgs *)arg;  
+    test_thread_args*ta = (test_thread_args *)arg;  
 	send_message(ta->interface_name, ta->message);
     return NULL;  
 }  
@@ -314,7 +314,7 @@ void test_upon_one_interface_in_one_time(const char *test_interface,int packages
 		update_status_in_current_round(test_interface,"test",current_round);
 		
 		pthread_t threads[packages_num];  
-	    ThreadArgs args[packages_num];  
+	    test_thread_args args[packages_num];  
 		struct timespec delay;
 		delay.tv_sec = 0;  // 취      
 		delay.tv_nsec = WAITING_TIME_FOR_SENDING_AFTER_ONE_ROUND_CHANGING_POINT;  // 100봐취 = 100,000,000케취  

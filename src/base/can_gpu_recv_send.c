@@ -2,6 +2,22 @@
 unsigned char can0RecvArray[1024]={0};
 unsigned char can1RecvArray[1024]={0};
 
+
+// 在程序初始化时创建锁  
+void initialize_can_gpu_lock() {  
+    pthread_mutex_init(&can_gpu_lock, NULL);  
+}  
+  
+// 在程序结束时销毁锁  
+void destroy_can_gpu_lock() {  
+    pthread_mutex_destroy(&can_gpu_lock);  
+}
+
+
+
+
+
+
 int isAllZero(char arr[], int size) {  
     for (int i = 0; i < size; i++) {  
         if (arr[i] != 0) {  
@@ -53,7 +69,7 @@ int send_packet_can_gpu(int can_id, const char *msg, int len)
     memcpy(frame.data, msg, frame.can_dlc);
 
     if (write(sockfd, &frame, sizeof(struct can_frame)) != sizeof(struct can_frame)) 
-    {
+    { 
         perror("Write failed"); 
         return _ERROR;
     }
@@ -70,18 +86,21 @@ int receive_packet_can_gpu(int can_id, unsigned char *msg, int length, long wait
 		return _ERROR;
 	}
 
-
+	 
     int len=-1;
 	if(length > MAX_CAN_DATA_LENGTH)
 		len = MAX_CAN_DATA_LENGTH;
 	else
 		len = length;
-    
+
+
+	pthread_mutex_lock(&can_gpu_lock); 
 	char data_frame[RECEIVED_CAN_DATA_PACKAGE_SIZE];
     if (can_id == 0)
     {
         if (can0Recv(len, wait_time))
         {
+        	pthread_mutex_unlock(&can_gpu_lock); 
             perror("Receive can0 failed");
             return _ERROR;
         }
@@ -92,12 +111,14 @@ int receive_packet_can_gpu(int can_id, unsigned char *msg, int length, long wait
     {
         if (can1Recv(len, wait_time))
         {
+        	pthread_mutex_unlock(&can_gpu_lock); 
             perror("Receive can1 failed");
             return _ERROR;
         }
         memcpy(data_frame, can1RecvArray, len);
         memset(can1RecvArray, 0x0, sizeof(can1RecvArray));
     }
+	pthread_mutex_unlock(&can_gpu_lock); 
 
     if (isAllZero(data_frame,RECEIVED_CAN_DATA_PACKAGE_SIZE)) 
     { 

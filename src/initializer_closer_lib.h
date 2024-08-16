@@ -14,7 +14,7 @@ char *closer_name_array[] = {"eth_closer_normal", "rs485_closer_normal", "can_fp
 int closer_num = 3;
 
 
-int initializer_transfer(char *initializer_name, const char *interface_name);
+int initializer_transfer(char *initializer_name, const char *interface_name); 
 int closer_transfer(char *closer_name, const char *interface_name);
 
 

@@ -18,6 +18,16 @@
 
 #define TIOCSRS485START	0x5430
 #define TIOCSRS485STOP 	0x5431
+#include <pthread.h>  
+
+
+pthread_mutex_t rs485_lock;
+// 在程序初始化时创建锁  
+void initialize_rs485_lock();
+// 在程序结束时销毁锁  
+void destroy_rs485_lock();
+
+
 
 
 typedef struct _SerialPortParams

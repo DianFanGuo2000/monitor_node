@@ -3,6 +3,17 @@
 
 
 
+// 在程序初始化时创建锁  
+void initialize_eth_lock() {  
+    pthread_mutex_init(&eth_lock, NULL);  
+}  
+  
+// 在程序结束时销毁锁  
+void destroy_eth_lock() {  
+    pthread_mutex_destroy(&eth_lock);  
+}
+
+
 
 /**  
  * Function to receive a packet from a specified network interface_name and process it.  
@@ -28,7 +39,7 @@ int receive_packet(const char *interface_name, unsigned char *msg,long max_waiti
 		return _ERROR;
 	}
 
-
+	
 	//printf("source_interface: %s\n",interface_name);
     // Create a raw socket for packet capturing  
     int sockfd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_SNMP));  
@@ -73,7 +84,9 @@ int receive_packet(const char *interface_name, unsigned char *msg,long max_waiti
     // Wait some secs to receive packets
     FD_ZERO(&readfd); 
     FD_SET(sockfd, &readfd);
+	pthread_mutex_lock(&eth_lock);  
     ret = select(sockfd + 1, &readfd, NULL, NULL, &timeout);
+	pthread_mutex_unlock(&eth_lock);  
     if (ret == -1)
     {
         perror("select");

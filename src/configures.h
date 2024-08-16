@@ -12,13 +12,18 @@
 
 #define PAKCAGES_NUM_ONE_TIME 20 // 20 pakcages one time
 
+
+
+#define LISTENING_THREAD_NUM 4 // 20 pakcages one time
+
+
 #define SENDING_TIME_SPEC 200000000 //ns
 #define WAITING_TIME_FOR_SENDING_AFTER_ONE_ROUND_CHANGING_POINT 1000000000 //ns
 
 
 #define _ERROR -1
 #define _SUCCESS 0
-
+ 
 #define MAX_MSG_LEN 512
 #define MAX_IF_LEN 64
 

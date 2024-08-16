@@ -22,7 +22,7 @@ all: $(TARGET)
   
 # 编译每个源文件（包括base/目录下的、base/MIX_Control_Code目录下的）  
 %.o: %.c  
-	$(CC) $(CFLAGS) -c $< -o $@  
+	$(CC) $(CFLAGS) -c $< -o $@ $(LIBS)
   
 # 主目标，依赖于所有.o文件  
 $(TARGET): $(OBJS) $(BASE_OBJS) $(CAN_OBJS)

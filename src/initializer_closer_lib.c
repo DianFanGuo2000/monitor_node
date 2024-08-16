@@ -1,23 +1,23 @@
 
 #include "initializer_closer_lib.h"
 
-pthread_mutex_t lock;
+pthread_mutex_t initializer_lock;
 
 // 在程序初始化时创建锁  
-void initialize_lock() {  
-    pthread_mutex_init(&lock, NULL);  
+void initialize_initializer_lock() {  
+    pthread_mutex_init(&initializer_lock, NULL);  
 }  
   
 // 在程序结束时销毁锁  
-void destroy_lock() {  
-    pthread_mutex_destroy(&lock);  
+void destroy_initializer_lock() {  
+    pthread_mutex_destroy(&initializer_lock);  
 }
 
+ 
 
-
-int initializer_transfer(char *initializer_name, const char *interface_name)
+int initializer_transfer(char *initializer_name, const char *interface_name) 
 {
-	pthread_mutex_lock(&lock); // 在函数开始时加锁
+	pthread_mutex_lock(&initializer_lock); // 在函数开始时加锁
 
 	int i;  
     int found = 0;  
@@ -28,33 +28,38 @@ int initializer_transfer(char *initializer_name, const char *interface_name)
         }  
     }  
     if (!found) {  
-		pthread_mutex_unlock(&lock); // 在返回前解锁  
+		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
         return _ERROR;  
     }  
   
     if (strcmp(initializer_name, "eth_initializer_normal") == 0) {
 		int ret = eth_initializer_normal(interface_name);
-		pthread_mutex_unlock(&lock); // 在返回前解锁  
+		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
         return ret;  
     }  
     if (strcmp(initializer_name, "rs485_initializer_normal") == 0) { 
 		int ret = rs485_initializer_normal(interface_name);
-		pthread_mutex_unlock(&lock); // 在返回前解锁  
+		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
         return ret;  
     }  
     if (strcmp(initializer_name, "can_fpu_initializer_normal") == 0) { 
 		int ret = can_fpu_initializer_normal(interface_name);  
-		pthread_mutex_unlock(&lock); // 在返回前解锁  
+		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
         return ret;  
     }  
-  	pthread_mutex_unlock(&lock); // 在返回前解锁  
+	if (strcmp(initializer_name, "can_gpu_initializer_normal") == 0) { 
+		int ret = can_gpu_initializer_normal(interface_name);  
+		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
+        return ret;  
+    }  
+  	pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
     return _ERROR; // This should never be reached, but kept for safety.  
 }
 
 
 int closer_transfer(char *closer_name, const char *interface_name)
 {
-	pthread_mutex_lock(&lock); // 在函数开始时加锁
+	pthread_mutex_lock(&initializer_lock); // 在函数开始时加锁
 
 	int i;  
     int found = 0;  
@@ -65,32 +70,40 @@ int closer_transfer(char *closer_name, const char *interface_name)
         }  
     }  
     if (!found) {  
-		pthread_mutex_unlock(&lock); // 在返回前解锁  
+		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
         return _ERROR;  
     }  
   
     if (strcmp(closer_name, "eth_closer_normal") == 0) {
 		int ret = eth_closer_normal(interface_name);
-		pthread_mutex_unlock(&lock); // 在返回前解锁  
+		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
         return ret;  
     }  
     if (strcmp(closer_name, "rs485_closer_normal") == 0) {  
 		int ret = rs485_closer_normal(interface_name); 
-		pthread_mutex_unlock(&lock); // 在返回前解锁  
+		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
         return ret;  
     }  
     if (strcmp(closer_name, "can_fpu_closer_normal") == 0) {
 		int ret = can_fpu_closer_normal(interface_name); 
-		pthread_mutex_unlock(&lock); // 在返回前解锁  
+		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
         return ret;  
     }  
-  	pthread_mutex_unlock(&lock); // 在返回前解锁  
+    if (strcmp(closer_name, "can_gpu_closer_normal") == 0) {
+		int ret = can_gpu_closer_normal(interface_name); 
+		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
+        return ret;  
+    }  
+
+  	pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
     return _ERROR; // This should never be reached, but kept for safety.  
 }
 
 
 int eth_initializer_normal(const char *interface_name)
 {
+	initialize_eth_lock();
+
 	int i = get_interface_index(interface_name);
 	int initialized_flag = get_initialized_flag_by_index(i);
 	if(initialized_flag>0)
@@ -137,6 +150,9 @@ int eth_initializer_normal(const char *interface_name)
 
 int rs485_initializer_normal(const char *interface_name)
 {
+
+	initialize_rs485_lock();
+
 	int i = get_interface_index(interface_name);
 	int initialized_flag = get_initialized_flag_by_index(i);
 	if(initialized_flag>0)
@@ -177,6 +193,9 @@ int rs485_initializer_normal(const char *interface_name)
 
 int can_fpu_initializer_normal(const char *interface_name)
 {
+
+	initialize_can_fpu_lock();
+
 	int i = get_interface_index(interface_name);
 	int initialized_flag = get_initialized_flag_by_index(i);
 	if(initialized_flag>0)
@@ -205,8 +224,22 @@ int can_fpu_initializer_normal(const char *interface_name)
 	return _SUCCESS;
 }
 
+
+int can_gpu_initializer_normal(const char *interface_name)
+{
+	initialize_can_gpu_lock();
+	return _SUCCESS;
+}
+
+
+
+
+
 int eth_closer_normal(const char *interface_name)
 {
+
+	destroy_eth_lock();
+
 	int i = get_interface_index(interface_name);
 	int initialized_flag = get_initialized_flag_by_index(i);
 	if(initialized_flag<0)
@@ -235,6 +268,9 @@ int eth_closer_normal(const char *interface_name)
 
 int rs485_closer_normal(const char *interface_name)
 {
+
+	destroy_rs485_lock();
+
 	int i = get_interface_index(interface_name);
 	int initialized_flag = get_initialized_flag_by_index(i);
 	if(initialized_flag<0)
@@ -260,6 +296,9 @@ int rs485_closer_normal(const char *interface_name)
 
 int can_fpu_closer_normal(const char *interface_name)
 {
+
+	destroy_can_fpu_lock();
+
 	int i = get_interface_index(interface_name);
 	int initialized_flag = get_initialized_flag_by_index(i);
 	if(initialized_flag<0)
@@ -279,6 +318,11 @@ int can_fpu_closer_normal(const char *interface_name)
 	return _SUCCESS;
 }
 
+int can_gpu_closer_normal(const char *interface_name)
+{
+	destroy_can_gpu_lock();
+	return _SUCCESS;
+}
 
 
 

@@ -181,7 +181,7 @@ int update_communication_info_array_from_json(char* communication_info_array_jso
 
     cJSON *json, *communication_info_item;
     json = cJSON_Parse(communication_info_array_json_str);
-    if (!json) {
+    if (!json) { 
         const char *error_ptr = cJSON_GetErrorPtr();
         if (error_ptr != NULL) {
             printf("Error before: %s\n", error_ptr);

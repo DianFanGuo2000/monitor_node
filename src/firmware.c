@@ -2,6 +2,7 @@
 #include "firmware.h"
 
 
+
 int assigned_flag = 0;
 pthread_mutex_t assigned_flag_lock;
 
@@ -13,18 +14,14 @@ void initialize_assigned_flag_lock() {
   
 // 在程序结束时销毁锁  
 void destroy_assigned_flag_lock() {  
-    pthread_mutex_destroy(&assigned_flag_lock, NULL);  
+    pthread_mutex_destroy(&assigned_flag_lock);  
 }
-
 
 
 
 
 // 线程函数，用于异步处理消息  
 void* deal_async(void* arg) {  
-
-	pthread_mutex_lock(&assigned_flag_lock);  
-
     DealData* data = (DealData*)arg;  
 	//printf("data->msg:%s \n",data->msg);
 
@@ -104,7 +101,7 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 		strncpy(data.msg, TEMP_MSG, MAX_MSG_LEN); // 不直接拿data.msg作为形参，防止其随着原函数声明周期结束而被析构
 
 
-
+		pthread_mutex_lock(&assigned_flag_lock);  
         pthread_t thread_id;  
         if (pthread_create(&thread_id, NULL, deal_async, &data) != 0) {  
             // 线程创建失败处理，返回错误  
@@ -135,7 +132,7 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 		}	 
 		strncpy(data.msg, TEMP_MSG, MAX_CAN_DATA_LENGTH); // 不直接拿data.msg作为形参，防止其随着原函数声明周期结束而被析构
 
-
+		pthread_mutex_lock(&assigned_flag_lock);  
         pthread_t thread_id;  
         if (pthread_create(&thread_id, NULL, deal_async, &data) != 0) {  
             // 线程创建失败处理，返回错误  
@@ -169,7 +166,7 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 		}	 
 		strncpy(data.msg, TEMP_MSG, MAX_CAN_DATA_LENGTH); // 不直接拿data.msg作为形参，防止其随着原函数声明周期结束而被析构
 
-
+		pthread_mutex_lock(&assigned_flag_lock);  
         pthread_t thread_id;  
         if (pthread_create(&thread_id, NULL, deal_async, &data) != 0) {  
             // 线程创建失败处理，返回错误  
@@ -209,7 +206,7 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 			//printAllInfo();
 
 			//printf("%s\n",data.msg);
-
+			pthread_mutex_lock(&assigned_flag_lock);  
 			pthread_t thread_id;  
 			if (pthread_create(&thread_id, NULL, deal_async, &data) != 0) {  
 				// 线程创建失败处理，返回错误  

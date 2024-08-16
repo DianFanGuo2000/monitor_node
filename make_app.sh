@@ -3,10 +3,13 @@
 cd ./src/base/MIX_Control_Code
 make all
 
-echo "Entering 'src' directory..."  
-cd ../../  
+echo "Entering 'base' directory..."
+cd ../
+make all
 
-  
+
+echo "Entering 'src' directory..."  
+cd ../ 
 echo "Executing 'make' command to compile sources..."  
 make all
 
@@ -18,8 +21,9 @@ echo "Executing 'make clean' command to clean up build artifacts..."
 make clean  
   
 
-echo "Exiting 'communication_monitor' directory and returning to the parent directory..."  
-cd ..
+# echo "Exiting 'communication_monitor' directory and returning to the parent directory..."  
+cd base
+make clean
 
-cd ./src/base/MIX_Control_Code
+cd MIX_Control_Code
 make clean

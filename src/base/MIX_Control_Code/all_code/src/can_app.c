@@ -1204,7 +1204,7 @@ STATUS appCanDataSend(UINT32 com,UINT32 canId,UINT8 *dataPointer,UINT32 comDataL
 	channel.processData.portId = (UINT8)com;
     //printf("send com is %d \r\n",com);
 	channel.processData.canId = canId; /*canId*/
-	channel.processData.frameDataLength = (UINT8)comDataLength;
+	channel.processData.frameDataLength = (UINT8)comDataLength; 
 	channel.processData.reserver = 0x0;/*0 standard ID ;1 extended ID*/ 
         channel.processData.reserver1 = 0x0;
 	memcpy(channel.processData.dataArray,dataPointer,comDataLength);

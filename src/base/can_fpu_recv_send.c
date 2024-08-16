@@ -1,6 +1,19 @@
 
 #include "can_fpu_recv_send.h"
 
+
+// 在程序初始化时创建锁  
+void initialize_can_fpu_lock() {  
+    pthread_mutex_init(&can_fpu_lock, NULL);  
+}  
+  
+// 在程序结束时销毁锁  
+void destroy_can_fpu_lock() {  
+    pthread_mutex_destroy(&can_fpu_lock);  
+}
+
+
+
 int isAllZeros(char arr[], int size) {  
     for (int i = 0; i < size; i++) {  
         if (arr[i] != 0) {  
@@ -13,12 +26,12 @@ int isAllZeros(char arr[], int size) {
 
 
 int receive_packet_can_fpu(UINT32 can_channel_id, char *msg, UINT32 length, int wait_time)  
-{  
+{   
 	if(msg==NULL)
 	{
 		printf("[ERROR] receive_packet_can_fpu got a NULL msg!\n");
 		return _ERROR;
-	}
+	} 
 
 	int len=-1;
 	if(length>MAX_CAN_DATA_LENGTH)
@@ -31,7 +44,9 @@ int receive_packet_can_fpu(UINT32 can_channel_id, char *msg, UINT32 length, int 
 	char data_frame[RECEIVED_CAN_DATA_PACKAGE_SIZE];
     while (time(NULL) - now < wait_time) // 这里单位为秒  
     {  
+    	pthread_mutex_lock(&can_fpu_lock);  
         int ret = appCanDataRecv(can_channel_id, data_frame, RECEIVED_CAN_DATA_PACKAGE_SIZE, -1); //这里78是发送数据时，包装数据所得帧的字节大小 
+        pthread_mutex_unlock(&can_fpu_lock);  
         if (isAllZeros(data_frame,RECEIVED_CAN_DATA_PACKAGE_SIZE)) { 
             continue;  
         }else{  
