@@ -2,209 +2,183 @@
 #include "firmware.h"
 
 
+int assigned_flag = 0;
+pthread_mutex_t assigned_flag_lock;
 
-int init_basic_interface(int i)  
-{  
-    char *interface_name = get_interface_name_by_index(i);  
-    //char *interface_type = get_interface_type_by_index(i); 
-	char *base_send_func = get_base_send_func_by_index(i);
-	char *base_receive_func = get_base_receive_func_by_index(i);
 
-	printf("%s being initialized\n",interface_name);
-  
-    if (base_send_func == NULL || base_receive_func == NULL) {  
-        // Handle NULL pointers appropriately  
-        return _ERROR; // Or some other error code  
-    }  
-  
-    if (strcmp(base_send_func, "send_packet") == 0 && strcmp(base_receive_func, "receive_packet") == 0)  
-    {  
-        char* ip_addr = get_ip_addr_by_index(i);  
-        char* mask = get_net_mask_by_index(i);  
-          
-        if (ip_addr == NULL || mask == NULL) {  
-            // Handle NULL pointers appropriately  
-            return _ERROR; // Or some other error code  
-        }  
-
-		set_interface_status(interface_name,"sending_and_receiving");
-  
-        // Use snprintf or similar to safely format strings for system call  
-        char cmd_up[256];  
-        snprintf(cmd_up, sizeof(cmd_up), "ifconfig %s up", interface_name);  
-        system(cmd_up); 
-		
-  
-        char cmd_addr[256];  
-        snprintf(cmd_addr, sizeof(cmd_addr), "ifconfig %s %s netmask %s", interface_name, ip_addr, mask);  
-        system(cmd_addr);  
-
-		printf("interface_name:%s, ip_addr:%s, mask:%s\n",interface_name,ip_addr,mask);
-    }  
-  
-    if (strcmp(base_send_func, "send_packet_rs485") == 0 && strcmp(base_receive_func, "receive_packet_rs485") == 0)  
-    {  
-		SerialPortParams params;
-		params.baudrate = get_baud_rate_by_index(i);
-		params.databits = get_databits_by_index(i);
-		params.stopbits = get_stopbits_by_index(i);
-		params.paritybits = get_paritybits_by_index(i);
-			
-		int fd = open_port(interface_name, 0, params);
-		if(fd < 0)
-	    {
-	        printf("Open port failed!\n");
-	        return _ERROR;
-	    }
-		set_temporary_fd(i,fd);
-
-		printf("interface_name:%s, fd:%d, baudrate:%d, databits:%d, stopbits:%d, paritybits:%c\n",interface_name,fd,
-			params.baudrate,params.databits,params.stopbits,params.paritybits);
-
-	
-        //int rs485_gpio_number = get_rs485_gpio_number_by_index(i);  
-        //exportGPIO(rs485_gpio_number); // Assuming exportGPIO is defined elsewhere  
-		//set485RX();
-		//set_interface_status(interface_name,"receiving");
-    }  
-
-    if (strcmp(base_send_func, "send_packet_can_fpu") == 0 && strcmp(base_receive_func, "receive_packet_can_fpu") == 0)  
-    {  
-        int channel_id = get_channel_id_by_index(i);  
-		int baud_rate = get_baud_rate_by_index(i);
-		if(comCanSTDCfgInit(channel_id,baud_rate)<0)
-		{
-			set_interface_status(interface_name,"closed");
-			return _ERROR;
-		}
-		set_interface_status(interface_name,"receiving");
-    }  
-  
-    // Free dynamically allocated strings if necessary (not shown here)  
-  
-    return _SUCCESS; // Success  
+// åœ¨ç¨‹åºåˆå§‹åŒ–æ—¶åˆ›å»ºé”
+void initialize_assigned_flag_lock() {  
+    pthread_mutex_init(&assigned_flag_lock, NULL);  
 }  
-
-
-// Function to close a basic interface based on its type  
-int close_basic_interface(int i)  
-{  
-    char *interface_name = get_interface_name_by_index(i);  
-    //char *interface_type = get_interface_type_by_index(i); 
-	char *base_send_func = get_base_send_func_by_index(i);
-	char *base_receive_func = get_base_receive_func_by_index(i);
-
-    if (base_send_func == NULL || base_receive_func == NULL) {  
-        // Handle NULL pointers appropriately  
-        printf("Error: Interface name or type is NULL\n");  
-        return _ERROR; // Return an error code  
-    }  
   
-    if (strcmp(base_send_func, "send_packet") == 0 && strcmp(base_receive_func, "receive_packet") == 0)  
-    {  
-        // Correctly use the interface_name variable in the system call  
-        char cmd[256];  
-        snprintf(cmd, sizeof(cmd), "ifconfig %s down", interface_name);  
-        system(cmd);  
-    }  
-  
-    if (strcmp(base_send_func, "send_packet_rs485") == 0 && strcmp(base_receive_func, "receive_packet_rs485") == 0)  
-    {  
-        // Currently no action is taken for rs485 type, but you might want to add some  
-        // For example, unexport the GPIO pin or disable the serial communication  
-        int fd = get_temporary_fd(i);
-        close_port(fd);
-    }  
-  
-    if (strcmp(base_send_func, "send_packet_can_fpu") == 0 && strcmp(base_receive_func, "receive_packet_can_fpu") == 0)  
-    {  
-        // Currently no action is taken for can type, but you might want to reset the CAN  
-        // controller or close the CAN channel  
-    }  
-  
-    // If needed, free dynamically allocated memory for interface_name and interface_type  
-    // (assuming they are dynamically allocated, which is not shown in the context)  
-  
-    return _SUCCESS; // Return success  
-}  
+// åœ¨ç¨‹åºç»“æŸæ—¶é”€æ¯é”  
+void destroy_assigned_flag_lock() {  
+    pthread_mutex_destroy(&assigned_flag_lock);  
+}
 
 
 
-// Ïß³Ìº¯Êı£¬ÓÃÓÚÒì²½´¦ÀíÏûÏ¢  
+// çº¿ç¨‹å‡½æ•°ï¼Œç”¨äºå¼‚æ­¥å¤„ç†æ¶ˆæ¯
 void* deal_async(void* arg) {  
+	pthread_mutex_lock(&assigned_flag_lock);
     DealData* data = (DealData*)arg;  
 	//printf("data->msg:%s \n",data->msg);
-    data->deal_func(data->linked_node,data->listened_interface,data->msg); // µ÷ÓÃ deal º¯Êı´¦ÀíÏûÏ¢  
+
+	if(data->linked_node==NULL)
+	{
+		printf("[ERROR] deal_async got a NULL data->linked_node!\n");
+		return ;
+	}
+	
+	if(data->listened_interface==NULL)
+	{
+		printf("[ERROR] deal_async got a NULL data->listened_interface!\n");
+		return ;
+	}
+
+	if(data->msg==NULL)
+	{
+		printf("[ERROR] deal_async got a NULL data->msg!\n");
+		return ;
+	}
+	char TEMP_NODE[MAX_IF_LEN];
+	char TEMP_INF[MAX_IF_LEN];
+	char TEMP_MSG[MAX_MSG_LEN];
+
+	strncpy(TEMP_NODE,data->linked_node , MAX_MSG_LEN); 
+	strncpy(TEMP_INF, data->listened_interface, MAX_MSG_LEN); 
+	strncpy(TEMP_MSG, data->msg, MAX_MSG_LEN); 
+
+    assigned_flag = 1; // å‘é€ä¿¡å·é€šçŸ¥çˆ¶çº¿ç¨‹å·²ç»“æŸèµ‹å€¼äº†
+    data->deal_func(TEMP_NODE,TEMP_INF,TEMP_MSG); // è°ƒç”¨ deal å‡½æ•°å¤„ç†æ¶ˆæ¯
 }  
 
 
 
 // Declare a buffer for the received message, assuming it might be longer  
-//DealData data;	/*Ç§Íò×¢Òâ£¬ÕâÊÇÒ»¸öÈ«¾Ö±äÁ¿£¬ËùÒÔÒ»¶¨Òª¼ÓËøÀ´·ÃÎÊ£¬²»È»¿ÉÄÜ»áÒı·¢ÆæÆæ¹Ö¹ÖµÄ´íÎó*/
+//DealData data;	/* å…¨å±€å˜é‡ï¼ŒåŠ é”æ¥è®¿é—® */
 int receive_message(const char *linked_node,const char *source_interface,Dealer deal,long max_waiting_time)    
 {
+    if(linked_node==NULL)
+	{
+		printf("[ERROR] receive_message got a NULL linked_node!\n");
+		return _ERROR;
+	}
+	
+	if(source_interface==NULL)
+	{
+		printf("[ERROR] receive_message got a NULL source_interface!\n");
+		return _ERROR;
+	}
+
 	int index = get_interface_index(source_interface);
 	char *interface_status = get_interface_status_by_index(index);
 	if(strcmp(interface_status, "sending") == 0 || strcmp(interface_status, "closed") == 0 )
 	{
-		return _ERROR; /*Èç¹ûÊÇµ¥´¿sending»òclosed£¬ÄÇÃ´²»×öÈÎºÎ½ÓÊÕ*/
+		return _ERROR; /* å•çº¯sendingæˆ–closedï¼Œé‚£ä¹ˆä¸åšä»»ä½•æ¥æ”¶ */
 	}
 
 	
 	char *base_receive_func = get_base_receive_func_by_index(index);
-	time_t begin_time = time(NULL); // Initialize start time  
+	//time_t begin_time = time(NULL); // Initialize start time  
 
     // Check if the interface type is "eth"  
     if (strcmp(base_receive_func, "receive_packet") == 0) {   
 		DealData data;
-		data.deal_func = deal; // ½« deal º¯ÊıÖ¸Õë±£´æµ½½á¹¹ÌåÖĞ
+		data.deal_func = deal; // å°† deal å‡½æ•°æŒ‡é’ˆä¿å­˜åˆ°ç»“æ„ä½“ä¸­
 		data.linked_node = linked_node;
 		data.listened_interface = source_interface;
 		
 	    // Attempt to receive a packet from the source interface  
-		char TEMP_MSG[MAX_MSG_LEN+1];
-		if (receive_packet(source_interface,TEMP_MSG,max_waiting_time)<0) {  
-			// If receiving the message fails, return an error and don't reply
+		unsigned char TEMP_MSG[MAX_MSG_LEN]={0};
+		if (receive_packet(get_ip_name_by_index(index),TEMP_MSG,max_waiting_time)<0) {  
 			//usleep(3000000);
+			printf("failed to got message from \"%s\"!\n",source_interface);
+			printf("TEMP_MSG:%s\n",TEMP_MSG);
 			return _ERROR;	  
 		}	 
-		strncpy(data.msg, TEMP_MSG, MAX_MSG_LEN + 1); // ²»Ö±½ÓÄÃdata.msg×÷ÎªĞÎ²Î£¬·ÀÖ¹ÆäËæ×ÅÔ­º¯ÊıÉùÃ÷ÖÜÆÚ½áÊø¶ø±»Îö¹¹
+		strncpy(data.msg, (const char*)TEMP_MSG, MAX_MSG_LEN); // ä¸ç›´æ¥æ‹¿data.msgä½œä¸ºå½¢å‚ï¼Œé˜²æ­¢å…¶éšç€åŸå‡½æ•°å£°æ˜å‘¨æœŸç»“æŸè€Œè¢«ææ„
 
 
 
         pthread_t thread_id;  
         if (pthread_create(&thread_id, NULL, deal_async, &data) != 0) {  
-            // Ïß³Ì´´½¨Ê§°Ü´¦Àí£¬·µ»Ø´íÎó  
+            // çº¿ç¨‹åˆ›å»ºå¤±è´¥å¤„ç†ï¼Œè¿”å›é”™è¯¯  
             return _ERROR;  
         }  
+		
+		while(!assigned_flag);
+		assigned_flag = 0;	
+		pthread_mutex_unlock(&assigned_flag_lock);	
 
 	    return _SUCCESS;    
     }
 
     if (strcmp(base_receive_func, "receive_packet_can_fpu") == 0) { 
 		DealData data;
-		data.deal_func = deal; // ½« deal º¯ÊıÖ¸Õë±£´æµ½½á¹¹ÌåÖĞ
+		data.deal_func = deal; // å°† deal å‡½æ•°æŒ‡é’ˆä¿å­˜åˆ°ç»“æ„ä½“ä¸­
 		data.linked_node = linked_node;
 		data.listened_interface = source_interface;
 
-		
-		int i = get_interface_index(source_interface);
-		int can_id = get_channel_id_by_index(i);
+		int can_id = get_channel_id_by_index(index);
 	    // Attempt to receive a packet from the source interface    
-		char TEMP_MSG[MAX_MSG_LEN+1];
-		if (receive_packet_can_fpu(can_id,TEMP_MSG,MAX_MSG_LEN,max_waiting_time)<0) {  
-			// If receiving the message fails, return an error and don't reply
-			//usleep(3000000);
+		char TEMP_MSG[MAX_CAN_DATA_LENGTH];
+		if (receive_packet_can_fpu(can_id,TEMP_MSG,MAX_CAN_DATA_LENGTH,max_waiting_time)<0) {  
+			printf("failed to got message from \"%s\"!\n",source_interface);
+			printf("TEMP_MSG:%s\n",TEMP_MSG);
 			return _ERROR;	  
 		}	 
-		strncpy(data.msg, TEMP_MSG, MAX_MSG_LEN + 1); // ²»Ö±½ÓÄÃdata.msg×÷ÎªĞÎ²Î£¬·ÀÖ¹ÆäËæ×ÅÔ­º¯ÊıÉùÃ÷ÖÜÆÚ½áÊø¶ø±»Îö¹¹
+		strncpy(data.msg, TEMP_MSG, MAX_CAN_DATA_LENGTH); // ä¸ç›´æ¥æ‹¿data.msgä½œä¸ºå½¢å‚ï¼Œé˜²æ­¢å…¶éšç€åŸå‡½æ•°å£°æ˜å‘¨æœŸç»“æŸè€Œè¢«ææ„
 
 
         pthread_t thread_id;  
         if (pthread_create(&thread_id, NULL, deal_async, &data) != 0) {  
-            // Ïß³Ì´´½¨Ê§°Ü´¦Àí£¬·µ»Ø´íÎó  
+            // çº¿ç¨‹åˆ›å»ºå¤±è´¥å¤„ç†ï¼Œè¿”å›é”™è¯¯  
             return _ERROR;  
         }  
+		
+		while(!assigned_flag);
+		assigned_flag = 0;	
+		pthread_mutex_unlock(&assigned_flag_lock);	
+
+
+	    return _SUCCESS;    
+    }
+
+
+	if (strcmp(base_receive_func, "receive_packet_can_gpu") == 0) { 
+		DealData data;
+		data.deal_func = deal; // å°† deal å‡½æ•°æŒ‡é’ˆä¿å­˜åˆ°ç»“æ„ä½“ä¸­
+		data.linked_node = linked_node;
+		data.listened_interface = source_interface;
+        //printf("date_node: %s, data_listened:%s\n", data.linked_node, data.listened_interface);
+		
+		int can_id = get_channel_id_by_index(index);
+        if (can_id != 0 && can_id != 1)
+        {
+            printf("error can id!\n");
+        	return _ERROR; // Retry sending 
+        }
+	    // Attempt to receive a packet from the source interface    
+		unsigned char TEMP_MSG[MAX_CAN_DATA_LENGTH];
+		if (receive_packet_can_gpu(can_id,TEMP_MSG,MAX_CAN_DATA_LENGTH,max_waiting_time)<0) {  
+			printf("failed to got message from \"%s\"!\n",source_interface);
+			printf("TEMP_MSG:%s\n",TEMP_MSG);
+			return _ERROR;	  
+		}	 
+		strncpy(data.msg, (const char*)TEMP_MSG, MAX_CAN_DATA_LENGTH); // ä¸ç›´æ¥æ‹¿data.msgä½œä¸ºå½¢å‚ï¼Œé˜²æ­¢å…¶éšç€åŸå‡½æ•°å£°æ˜å‘¨æœŸç»“æŸè€Œè¢«ææ„
+
+
+        pthread_t thread_id;  
+        if (pthread_create(&thread_id, NULL, deal_async, &data) != 0) {  
+            // çº¿ç¨‹åˆ›å»ºå¤±è´¥å¤„ç†ï¼Œè¿”å›é”™è¯¯ 
+            return _ERROR;  
+        }  
+
+		while(!assigned_flag);
+		assigned_flag = 0;	
+		pthread_mutex_unlock(&assigned_flag_lock);	
+
 
 	    return _SUCCESS;    
     }
@@ -212,71 +186,90 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 	
 	if (strcmp(base_receive_func, "receive_packet_rs485") == 0) {	 
 			DealData data;
-			data.deal_func = deal; // ½« deal º¯ÊıÖ¸Õë±£´æµ½½á¹¹ÌåÖĞ
+			data.deal_func = deal; 
 			data.linked_node = linked_node;
 			data.listened_interface = source_interface;
 
-			int index = get_interface_index(source_interface);
 			int fd = get_temporary_fd(index);
-
-
 			//printAllInfo();
 
-			char TEMP_MSG[MAX_MSG_LEN+1];
+			unsigned char TEMP_MSG[MAX_MSG_LEN];
 			// Attempt to receive a packet from the source interface  
 			if (receive_packet_rs485(fd,TEMP_MSG,MAX_MSG_LEN,max_waiting_time)<0) {	 
-				// If receiving the message fails, return an error and don't reply
-				//usleep(3000000);
+				printf("failed to got message from \"%s\"!\n",source_interface);
+				printf("TEMP_MSG:%s\n",TEMP_MSG);
 				return _ERROR;	  
 			}	 
-			strncpy(data.msg, TEMP_MSG, MAX_MSG_LEN + 1); // ²»Ö±½ÓÄÃdata.msg×÷ÎªĞÎ²Î£¬·ÀÖ¹ÆäËæ×ÅÔ­º¯ÊıÉùÃ÷ÖÜÆÚ½áÊø¶ø±»Îö¹¹
+			strncpy(data.msg, (const char*)TEMP_MSG, MAX_MSG_LEN); 
 
 			
 			//printAllInfo();
-
 			//printf("%s\n",data.msg);
 
 			pthread_t thread_id;  
-			if (pthread_create(&thread_id, NULL, deal_async, &data) != 0) {  
-				// Ïß³Ì´´½¨Ê§°Ü´¦Àí£¬·µ»Ø´íÎó  
+			if (pthread_create(&thread_id, NULL, deal_async, &data) != 0) {   
 				return _ERROR;	
 			}  
+			
+			while(!assigned_flag);
+			assigned_flag = 0;  
+			pthread_mutex_unlock(&assigned_flag_lock);  
 
 			return _SUCCESS;	
-	}	 
-
+	}
+    return _ERROR;
 }
 
 
-/*res_msg³¤¶ÈĞèÒªÎªmax_message_len+1£¬ÕâÑù×Ö·û´®³¤¶È²ÅÊÇmax_message_len*/
+/* res_msgé•¿åº¦éœ€è¦ä¸ºmax_message_len+1ï¼Œè¿™æ ·å­—ç¬¦ä¸²é•¿åº¦æ‰æ˜¯max_message_len */
 void fillMessageToMaxMsgLen(const char *message, char *res_msg, int max_message_len) {  
-    // Ê×ÏÈ£¬½«Ô­Ê¼ÏûÏ¢¸´ÖÆµ½ RS485MSG  
+	if(res_msg==NULL)
+	{
+		printf("[ERROR] fillMessageToMaxMsgLen got a NULL res_msg!\n");
+		return _ERROR;
+	}
+	
+	if(message==NULL)
+	{
+		printf("[ERROR] fillMessageToMaxMsgLen got a NULL message!\n");
+		return _ERROR;
+	}
+    // åŸå§‹æ¶ˆæ¯å¤åˆ¶åˆ° RS485MSG  
     strncpy(res_msg, message, max_message_len);  
 	
       
-    // Èç¹ûÔ­Ê¼ÏûÏ¢³¤¶È´óÓÚ RS485_LEN£¬½Ø¶ÏËü  
+    // å¦‚æœåŸå§‹æ¶ˆæ¯é•¿åº¦å¤§äº RS485_LENï¼Œæˆªæ–­å®ƒ  
     if (strlen(message) > max_message_len) {  
-        res_msg[max_message_len] = '\0'; // È·±£×Ö·û´®ÕıÈ·ÖÕÖ¹  
+        res_msg[max_message_len] = '\0'; // ç¡®ä¿å­—ç¬¦ä¸²æ­£ç¡®ç»ˆæ­¢  
     } else {  
-        // ·ñÔò£¬ÓÃ'\0' Ìî³äÊ£Óà²¿·Ö  
+        // å¦åˆ™ï¼Œç”¨'\0' å¡«å……å‰©ä½™éƒ¨åˆ† 
         size_t len = strlen(res_msg);  
         memset(res_msg + len, '\0', max_message_len - len);  
-        // È·±£×Ö·û´®ÔÚÄ©Î²ÕıÈ·ÖÕÖ¹  
         res_msg[max_message_len] = '\0';  
     }  
       
-    // ¿ÉÑ¡£º´òÓ¡½á¹ûÒÔÑéÖ¤  
     //intf("Filled message: '%s'\n", res_msg);  
 }  
 
 
 int send_message(const char *source_interface,const char *message)
 {   
+	if(source_interface==NULL)
+	{
+		printf("[ERROR] send_message got a NULL source_interface!\n");
+		return _ERROR;
+	}
+	
+	if(message==NULL)
+	{
+		printf("[ERROR] send_message got a NULL message!\n");
+		return _ERROR;
+	}
 	int index = get_interface_index(source_interface);
 	char *interface_status = get_interface_status_by_index(index);
 	if(strcmp(interface_status, "receiving") == 0 || strcmp(interface_status, "closed") == 0 )
 	{
-		return _ERROR; /*Èç¹ûÊÇµ¥´¿receiving»òclosed£¬ÄÇÃ´²»×öÈÎºÎ·¢ËÍ*/
+		return _ERROR; /* å¦‚æœæ˜¯å•çº¯receivingæˆ–closedï¼Œé‚£ä¹ˆä¸åšä»»ä½•å‘é€ */
 	}
 
 	char *base_send_func = get_base_send_func_by_index(index);
@@ -286,7 +279,7 @@ int send_message(const char *source_interface,const char *message)
         const char *src_mac = get_mac_addr(source_interface);    
         const char *dest_mac = get_linked_mac_addr(source_interface);  
         // Check if MAC addresses were retrieved and packet can be sent    
-        if (send_packet(source_interface, message, src_mac, dest_mac) < 0) {    
+        if (send_packet(get_ip_name_by_index(index), message, src_mac, dest_mac) < 0) {    
         	printf("send failed!\n");
         	return _ERROR; // Retry sending    
         }    
@@ -297,12 +290,9 @@ int send_message(const char *source_interface,const char *message)
     // Check if the interface type is "rs485" (could be removed if not needed)    
     if (strcmp(base_send_func, "send_packet_rs485") == 0) {  
 
-		// Ìî³äÖÁMAX_MSG_LEN£¬ÒÔ±£Ö¤·¢ËÍ³¤¶ÈÒ»¶¨ÊÇMAX_MSG_LEN¸ö×Ö½Ú
-		char RS485MSG[MAX_MSG_LEN + 1];
-		fillMessageToMaxMsgLen(message,RS485MSG,MAX_MSG_LEN);
-
-		
-		int index = get_interface_index(source_interface);
+		// å¡«å……è‡³MAX_MSG_LENï¼Œä»¥ä¿è¯å‘é€é•¿åº¦ä¸€å®šæ˜¯MAX_MSG_LENä¸ªå­—èŠ‚
+		char RS485MSG[MAX_MSG_LEN ];
+		fillMessageToMaxMsgLen(message,RS485MSG,MAX_MSG_LEN-1);
 		int fd = get_temporary_fd(index);
 
         if (send_packet_rs485(fd, RS485MSG, MAX_MSG_LEN) < 0) {    
@@ -315,14 +305,32 @@ int send_message(const char *source_interface,const char *message)
 
     // Check if the interface type is "can" (could be removed if not needed)    
     if (strcmp(base_send_func, "send_packet_can_fpu") == 0) {    
-		int i = get_interface_index(source_interface);
-		int can_id = get_channel_id_by_index(i);
+		int can_id = get_channel_id_by_index(index);
 
-		// Ìî³äÖÁMAX_MSG_LEN£¬ÒÔ±£Ö¤·¢ËÍ³¤¶ÈÒ»¶¨ÊÇMAX_MSG_LEN¸ö×Ö½Ú
-		char CANMSG[MAX_MSG_LEN + 1];
-		fillMessageToMaxMsgLen(message,CANMSG,MAX_MSG_LEN);
+		// å¡«å……è‡³MAX_MSG_LENï¼Œä»¥ä¿è¯å‘é€é•¿åº¦ä¸€å®šæ˜¯MAX_MSG_LENä¸ªå­—èŠ‚
+		char CANMSG[MAX_CAN_DATA_LENGTH];
+		fillMessageToMaxMsgLen(message,CANMSG,MAX_CAN_DATA_LENGTH-1);// ç¡®ä¿æœ€åä¸€ä½CANMSG[MAX_CAN_DATA_LENGTH -1]ä¸€å®šæ˜¯'\0'
 		
-        if (send_packet_can_fpu(can_id,CANMSG,MAX_MSG_LEN)< 0) {    
+        if (send_packet_can_fpu(can_id,CANMSG,MAX_CAN_DATA_LENGTH)< 0) {    
+        	printf("send failed!\n");
+        	return _ERROR; // Retry sending    
+        }    
+		return _SUCCESS;
+    }  	
+  
+  
+	if (strcmp(base_send_func, "send_packet_can_gpu") == 0) {    
+		int can_id = get_channel_id_by_index(index);
+		if (can_id != 0 && can_id != 1)
+        {
+            printf("error can id!\n");
+        	return _ERROR; // Retry sending 
+        }
+		// å¡«å……è‡³MAX_MSG_LENï¼Œä»¥ä¿è¯å‘é€é•¿åº¦ä¸€å®šæ˜¯MAX_MSG_LENä¸ªå­—èŠ‚
+		char CANMSG[MAX_CAN_DATA_LENGTH];
+		fillMessageToMaxMsgLen(message,CANMSG,MAX_CAN_DATA_LENGTH-1);// ç¡®ä¿æœ€åä¸€ä½CANMSG[MAX_CAN_DATA_LENGTH -1]ä¸€å®šæ˜¯'\0'
+		
+        if (send_packet_can_gpu(can_id,CANMSG,MAX_CAN_DATA_LENGTH)< 0) {    
         	printf("send failed!\n");
         	return _ERROR; // Retry sending    
         }    
@@ -335,7 +343,7 @@ int send_message(const char *source_interface,const char *message)
 
 
 
-// º¯ÊıÓÃÓÚ¼ì²é½Ó¿Ú×´Ì¬  
+// å‡½æ•°ç”¨äºæ£€æŸ¥æ¥å£çŠ¶æ€  
 int is_interface_up(const char* interface) {  
     char cmd[256];  
     snprintf(cmd, sizeof(cmd), "ifconfig %s | grep -q 'inet'", interface);  
@@ -345,12 +353,22 @@ int is_interface_up(const char* interface) {
 
 int set_status(const char *source_interface, const char *status)  
 {  
+	if(source_interface==NULL)
+	{
+		printf("[ERROR] set_status got a NULL source_interface!\n");
+		return _ERROR;
+	}
+	
+	if(status==NULL)
+	{
+		printf("[ERROR] set_status got a NULL status!\n");
+		return _ERROR;
+	}
 	char *current_status = get_interface_status(source_interface);
 	if (strcmp(current_status, status) == 0) {
 		return _SUCCESS;
 	}
  
-  
     // Get the interface type  
     //char *interface_type = get_interface_type(source_interface);  
 	int i = get_interface_index(source_interface);
@@ -412,18 +430,15 @@ int set_status(const char *source_interface, const char *status)
             snprintf(cmd_up, sizeof(cmd_up), "ifconfig %s up", source_interface);  
             system(cmd_up);  
         }  
-
   
         if (strcmp(status, "closed") == 0 && is_interface_up(source_interface)) {  
 	        char cmd_up[256];  
 	        snprintf(cmd_up, sizeof(cmd_up), "ifconfig %s down", source_interface);  
 	        system(cmd_up);
         }  
-		
-
     }  
 
-      if (strcmp(base_send_func, "send_packet_can_fpu") == 0 && strcmp(base_receive_func, "receive_packet_can_fpu") == 0) {  
+    if (strcmp(base_send_func, "send_packet_can_fpu") == 0 && strcmp(base_receive_func, "receive_packet_can_fpu") == 0) {  
         // Compare the status string correctly using strcmp  
         if (strcmp(status, "sending_and_receiving") == 0) {  
             printf("can cannot be set as 'sending_and_receiving'\n");  
@@ -445,8 +460,34 @@ int set_status(const char *source_interface, const char *status)
             // For 'closed' status, assuming no special action is needed  
             // Just return success  
         }  
+    }
 
-    }  
+
+	if (strcmp(base_send_func, "send_packet_can_gpu") == 0 && strcmp(base_receive_func, "receive_packet_can_gpu") == 0) {  
+		// Compare the status string correctly using strcmp  
+		if (strcmp(status, "sending_and_receiving") == 0) {  
+			printf("can cannot be set as 'sending_and_receiving'\n");  
+			return _ERROR;	
+		}  
+			
+		// Attempt to set the interface status	
+		if (set_interface_status(source_interface, status) < 0) {  
+			// Print an error message (assuming a function or macro for it)  
+			printf("Failed to set interface status\n");  
+			return _ERROR;	
+		} 
+			
+		if (strcmp(status, "sending") == 0 || strcmp(status, "receiving") == 0) {  
+		}  
+	
+	 
+		if (strcmp(status, "closed") == 0) {  
+			// For 'closed' status, assuming no special action is needed  
+			// Just return success	
+		}  
+	}  
+
+
     // If we reach here, either the interface type is not 'rs485' or the status is unrecognized  
     // but we're returning success as per the original function logic  
     return _SUCCESS;  
@@ -458,9 +499,9 @@ int set_status(const char *source_interface, const char *status)
 void sync_status(const char *source_interface)
 {
 	//status = sending receiving sending_and_receiving closed
-	//Õâ¸öÏÈ²»Ğ´
-	//Õâ¸ö²»ÄÜµ¥´¿Ö»ÊÇ·µ»Ø½Ó¿Ú×´Ì¬Êı¾İ¿âÖĞµÄstatus×Ö¶Î£¬¶øÓ¦¸ÃÕæÕıµ÷ÓÃµ×²ã½Ó¿ÚÈ¥¼ì²é½Ó¿ÚµÄ×´Ì¬£¬²¢ÇÒ°Ñ¼ì²é½á¹ûÍ¬²½µ½Êı¾İ¿â
-	//Õâ¸öÔÚstart_infoÖ®ºó£¬ÔØÈëÊı×éºóÒªÆô¶¯Ò»ÏÂ
+	//è¿™ä¸ªå…ˆä¸å†™
+	//è¿™ä¸ªä¸èƒ½å•çº¯åªæ˜¯è¿”å›æ¥å£çŠ¶æ€æ•°æ®åº“ä¸­çš„statuså­—æ®µï¼Œè€Œåº”è¯¥çœŸæ­£è°ƒç”¨åº•å±‚æ¥å£å»æ£€æŸ¥æ¥å£çš„çŠ¶æ€ï¼Œå¹¶ä¸”æŠŠæ£€æŸ¥ç»“æœåŒæ­¥åˆ°æ•°æ®åº“
+	//è¿™ä¸ªåœ¨start_infoä¹‹åï¼Œè½½å…¥æ•°ç»„åè¦å¯åŠ¨ä¸€ä¸‹
 }
 
 

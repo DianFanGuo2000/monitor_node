@@ -1,6 +1,6 @@
 #ifndef STATUS_CHOOSER_LIB_H  
 #define STATUS_CHOOSER_LIB_H  
-
+#include <string.h>
 
 char *status_chooser_name_array[] = {"work_at_each_round", "only_work_at_odd_round", "only_work_at_even_round"};  
 int status_chooser_num = 3;

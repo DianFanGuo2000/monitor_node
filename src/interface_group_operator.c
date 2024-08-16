@@ -5,12 +5,12 @@
 
 /*
 
-ÏÂÃæ´úÂëÊÇ¶Ô¶à½ø³ÌÖĞÄ³Ğ©½ø³Ì±»Òì³£ÖĞ¶Ïºó½«ÆäÀ­ÆğÀ´µÄ¹¦ÄÜµÄ³¢ÊÔ£¬ÏÖÔÚÏÈ¹ÒÆğ²»×ö£¬Èç¹ûºóÃæÓĞÕâ¸öĞèÒªÁËÔÙ×ö
+ä¸‹é¢ä»£ç æ˜¯å¯¹å¤šè¿›ç¨‹ä¸­æŸäº›è¿›ç¨‹è¢«å¼‚å¸¸ä¸­æ–­åå°†å…¶æ‹‰èµ·æ¥çš„åŠŸèƒ½çš„å°è¯•ï¼Œç°åœ¨å…ˆæŒ‚èµ·ä¸åšï¼Œå¦‚æœåé¢æœ‰è¿™ä¸ªéœ€è¦äº†å†åš
 
 int *status_array;  
 pthread_mutex_t *mutex_array;  
 pid_t *pid_array;  
-int array_size; // ¼ÙÉèÄúÓĞÒ»¸ö±íÊ¾Êı×é´óĞ¡µÄ±äÁ¿  
+int array_size; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¡ï¿½Ä±ï¿½ï¿½ï¿½  
   
 // Function to get the index of a PID in the pid_array  
 int get_pid_index(pid_t *pid_array, pid_t pid, int size) {  
@@ -50,12 +50,10 @@ void* child_handler(void* arg) {
     return NULL;  
 }  
 
-
-
 int *status_array;  
 pthread_mutex_t *mutex_array;  
 pid_t *pid_array;  
-int array_size; // ¼ÙÉèÄúÓĞÒ»¸ö±íÊ¾Êı×é´óĞ¡µÄ±äÁ¿  
+int array_size; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¡ï¿½Ä±ï¿½ï¿½ï¿½  
 
 void test_upon_interface_group() {  
 	int cnt = get_interface_cnt();  
@@ -73,32 +71,31 @@ void test_upon_interface_group() {
 			if status[i]==0{continue;}
 	            pid = fork();  
 	            if (pid == 0) {  
-	                // ×Ó½ø³Ì  
+	                // ï¿½Ó½ï¿½ï¿½ï¿½  
 	                init_basic_interface(i);
 					while(1){
-						test_upon_one_interface_in_one_time(get_interface_name_by_index(i), "hello, are you here?", PAKCAGES_NUM_ONE_TIME,choose_status_for_test); 
+						test_upon_one_interface_in_one_time(get_interface_name_by_index(i), "hello, are you here?", PACKAGES_NUM_ONE_TIME,choose_status_for_test); 
 					}
 					close_basic_interface(i);
-	                exit(0); // ×Ó½ø³ÌÍê³ÉºóÍË³ö  
+	                exit(0); // ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½Éºï¿½ï¿½Ë³ï¿½  
 	            } else if (pid < 0) {  
-	                // fork Ê§°Ü  
+	                // fork Ê§ï¿½ï¿½  
 	                perror("fork failed");  
-	                sleep(1);  // ¶ÌÔİµÈ´ıºóÖØÊÔ  
-	                continue;  // »Øµ½Ñ­»·¿ªÊ¼£¬ÖØĞÂ³¢ÊÔfork  
+	                sleep(1);  // ï¿½ï¿½ï¿½İµÈ´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  
+	                continue;  // ï¿½Øµï¿½Ñ­ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½Â³ï¿½ï¿½ï¿½fork  
 	            } 
 				pthread_create(&thread, NULL, child_handler, &pid);  
 	    }  
 	}
 
-    // ËùÓĞ×Ó½ø³Ì£¨»òËüÃÇµÄÖØÆô³¢ÊÔ£©¶¼ÒÑÍê³É  
+    // ï¿½ï¿½ï¿½ï¿½ï¿½Ó½ï¿½ï¿½Ì£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Çµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  
     while (wait(NULL) > 0);  
 }  
-
 */
 
 
 
-/*2024.8.5 ²»ÄÜÊ¹ÓÃ¶à½ø³Ì£¬ÒòÎªµ×²ãµÄinfor_managerÊÇÈ«¾Ö¹²ÏíµÄ£¬²»Í¬µÄ½ø³Ì»áÓĞ×Ô¼º¶ÀÁ¢µÄinfo_manager£¬ÆÆ»µÁËÕâÖÖ¹²Ïí£¬ËùÒÔÒª¸Ä³É¶àÏß³Ì*/
+/*2024.8.5 ä¸èƒ½ä½¿ç”¨å¤šè¿›ç¨‹ï¼Œå› ä¸ºåº•å±‚çš„infor_manageræ˜¯å…¨å±€å…±äº«çš„ï¼Œä¸åŒçš„è¿›ç¨‹ä¼šæœ‰è‡ªå·±ç‹¬ç«‹çš„info_managerï¼Œç ´åäº†è¿™ç§å…±äº«ï¼Œæ‰€ä»¥è¦æ”¹æˆå¤šçº¿ç¨‹ */
 /*
 void test_upon_interface_group() {  
     int cnt = get_interface_cnt();  
@@ -113,7 +110,7 @@ void test_upon_interface_group() {
             // Child process  
             init_basic_interface(i);  
             while (1) {  
-                test_upon_one_interface_in_one_time(get_interface_name_by_index(i), "hello, are you here?", PAKCAGES_NUM_ONE_TIME, choose_status_for_test);  
+                test_upon_one_interface_in_one_time(get_interface_name_by_index(i), "hello, are you here?", PACKAGES_NUM_ONE_TIME, choose_status_for_test);  
             }  
             exit(0); // Uncomment this line if you can exit the loop safely  
         } else if (pid < 0) {  
@@ -129,7 +126,6 @@ void test_upon_interface_group() {
      while (wait(NULL) > 0);  
 }  
 
-
 void listen_upon_interface_group() {  
     int cnt = get_interface_cnt();  
     int i;  
@@ -140,37 +136,36 @@ void listen_upon_interface_group() {
 	{  
             pid = fork();  
             if (pid == 0) {  
-                // ×Ó½ø³Ì  
+                // ï¿½Ó½ï¿½ï¿½ï¿½  
                 init_basic_interface(i);
                 while(1){
                 	listen_upon_one_interface_in_one_time(get_linked_node(i),get_interface_name_by_index(i),choose_status_for_listen); 
                 }
 				close_basic_interface(i);
-                exit(0); // ×Ó½ø³ÌÍê³ÉºóÍË³ö  
+                exit(0); // ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½Éºï¿½ï¿½Ë³ï¿½  
             } else if (pid < 0) {  
-                // fork Ê§°Ü  
+                // fork Ê§ï¿½ï¿½  
                 perror("fork failed");  
-                sleep(1);  // ¶ÌÔİµÈ´ıºóÖØÊÔ  
-                continue;  // »Øµ½Ñ­»·¿ªÊ¼£¬ÖØĞÂ³¢ÊÔfork  
+                sleep(1);  // ï¿½ï¿½ï¿½İµÈ´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  
+                continue;  // ï¿½Øµï¿½Ñ­ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½Â³ï¿½ï¿½ï¿½fork  
             }  
     }  
 
-    // ËùÓĞ×Ó½ø³Ì£¨»òËüÃÇµÄÖØÆô³¢ÊÔ£©¶¼ÒÑÍê³É  
+    // ï¿½ï¿½ï¿½ï¿½ï¿½Ó½ï¿½ï¿½Ì£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Çµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  
     while (wait(NULL) > 0);  
 }  
-
 */
 
 
-
-// Ïß³Ìº¯Êı  
+/*
+// çº¿ç¨‹å‡½æ•°  
 void* test_interface_thread(void* arg) {  
     int index = *(int*)arg;  
     init_basic_interface(index);  
     while (1) {  
-        test_upon_one_interface_in_one_time(get_interface_name_by_index(index), "hello, are you here?", PAKCAGES_NUM_ONE_TIME);  
+        test_upon_one_interface_in_one_time(get_interface_name_by_index(index), PAKCAGES_NUM_ONE_TIME);  
     }  
-    // ×¢Òâ£ºÊµ¼ÊÊ¹ÓÃÖĞ£¬Äã¿ÉÄÜĞèÒªÒ»¸ö»úÖÆÀ´ÓÅÑÅµØÍË³öÕâ¸öÑ­»·  
+    // æ³¨æ„ï¼šå®é™…ä½¿ç”¨ä¸­ï¼Œä½ å¯èƒ½éœ€è¦ä¸€ä¸ªæœºåˆ¶æ¥ä¼˜é›…åœ°é€€å‡ºè¿™ä¸ªå¾ªç¯  
     return NULL;  
 }  
   
@@ -180,7 +175,7 @@ void test_upon_interface_group() {
     int indexes[cnt];  
     int i;  
   
-    // ÎªÃ¿¸ö½Ó¿Ú´´½¨Ò»¸öÏß³Ì  
+    // ä¸ºæ¯ä¸ªæ¥å£åˆ›å»ºä¸€ä¸ªçº¿ç¨‹  
     for (i = 0; i < cnt; i++) {  
         indexes[i] = i;  
         if (pthread_create(&threads[i], NULL, test_interface_thread, &indexes[i]) != 0) {  
@@ -189,26 +184,26 @@ void test_upon_interface_group() {
         }  
     }  
   
-    // µÈ´ıËùÓĞÏß³ÌÍê³É  
-    // ×¢Òâ£ºÓÉÓÚÎÒÃÇµÄÏß³ÌÊÇÎŞÏŞÑ­»·µÄ£¬ÕâÀïÊµ¼ÊÉÏ²»»áÖ´ĞĞµ½ÕâÒ»ĞĞ  
-    // ³ı·ÇÄãÓĞÆäËû»úÖÆÀ´Í£Ö¹Ïß³Ì£¨ÈçĞÅºÅ¡¢Ìõ¼ş±äÁ¿µÈ£©  
+    // ç­‰å¾…æ‰€æœ‰çº¿ç¨‹å®Œæˆ  
+    // æ³¨æ„ï¼šç”±äºæˆ‘ä»¬çš„çº¿ç¨‹æ˜¯æ— é™å¾ªç¯çš„ï¼Œè¿™é‡Œå®é™…ä¸Šä¸ä¼šæ‰§è¡Œåˆ°è¿™ä¸€è¡Œ  
+    // é™¤éä½ æœ‰å…¶ä»–æœºåˆ¶æ¥åœæ­¢çº¿ç¨‹ï¼ˆå¦‚ä¿¡å·ã€æ¡ä»¶å˜é‡ç­‰ï¼‰  
     for (i = 0; i < cnt; i++) {  
         pthread_join(threads[i], NULL);  
     }  
   
-    // ×¢Òâ£ºÔÚÊµ¼ÊÓ¦ÓÃÖĞ£¬Äã¿ÉÄÜ²»»áÕâÑùµÈ´ıÎŞÏŞÑ­»·µÄÏß³Ì  
+    // æ³¨æ„ï¼šåœ¨å®é™…åº”ç”¨ä¸­ï¼Œä½ å¯èƒ½ä¸ä¼šè¿™æ ·ç­‰å¾…æ— é™å¾ªç¯çš„çº¿ç¨‹  
 }  
   
 
 
-// Ïß³Ìº¯Êı  
+// çº¿ç¨‹å‡½æ•°  
 void* listen_interface_thread(void* arg) {  
     int index = *(int*)arg;  
     init_basic_interface(index);  
     while (1) {  
         listen_upon_one_interface_in_one_time(get_linked_node(index),get_interface_name_by_index(index));  
     }  
-    // ×¢Òâ£ºÊµ¼ÊÊ¹ÓÃÖĞ£¬Äã¿ÉÄÜĞèÒªÒ»¸ö»úÖÆÀ´ÓÅÑÅµØÍË³öÕâ¸öÑ­»·  
+    // æ³¨æ„ï¼šå®é™…ä½¿ç”¨ä¸­ï¼Œä½ å¯èƒ½éœ€è¦ä¸€ä¸ªæœºåˆ¶æ¥ä¼˜é›…åœ°é€€å‡ºè¿™ä¸ªå¾ªç¯  
     return NULL;  
 }  
   
@@ -218,7 +213,7 @@ void listen_upon_interface_group() {
     int indexes[cnt];  
     int i;  
   
-    // ÎªÃ¿¸ö½Ó¿Ú´´½¨Ò»¸öÏß³Ì  
+    // ä¸ºæ¯ä¸ªæ¥å£åˆ›å»ºä¸€ä¸ªçº¿ç¨‹  
     for (i = 0; i < cnt; i++) {  
         indexes[i] = i;  
         if (pthread_create(&threads[i], NULL, listen_interface_thread, &indexes[i]) != 0) {  
@@ -227,21 +222,72 @@ void listen_upon_interface_group() {
         }  
     }  
   
-    // µÈ´ıËùÓĞÏß³ÌÍê³É  
-    // ×¢Òâ£ºÓÉÓÚÎÒÃÇµÄÏß³ÌÊÇÎŞÏŞÑ­»·µÄ£¬ÕâÀïÊµ¼ÊÉÏ²»»áÖ´ĞĞµ½ÕâÒ»ĞĞ  
-    // ³ı·ÇÄãÓĞÆäËû»úÖÆÀ´Í£Ö¹Ïß³Ì£¨ÈçĞÅºÅ¡¢Ìõ¼ş±äÁ¿µÈ£©  
+    // ç­‰å¾…æ‰€æœ‰çº¿ç¨‹å®Œæˆ  
+    // æ³¨æ„ï¼šç”±äºæˆ‘ä»¬çš„çº¿ç¨‹æ˜¯æ— é™å¾ªç¯çš„ï¼Œè¿™é‡Œå®é™…ä¸Šä¸ä¼šæ‰§è¡Œåˆ°è¿™ä¸€è¡Œ  
+    // é™¤éä½ æœ‰å…¶ä»–æœºåˆ¶æ¥åœæ­¢çº¿ç¨‹ï¼ˆå¦‚ä¿¡å·ã€æ¡ä»¶å˜é‡ç­‰ï¼‰  
     for (i = 0; i < cnt; i++) {  
         pthread_join(threads[i], NULL);  
     }  
   
-    // ×¢Òâ£ºÔÚÊµ¼ÊÓ¦ÓÃÖĞ£¬Äã¿ÉÄÜ²»»áÕâÑùµÈ´ıÎŞÏŞÑ­»·µÄÏß³Ì  
+    // æ³¨æ„ï¼šåœ¨å®é™…åº”ç”¨ä¸­ï¼Œä½ å¯èƒ½ä¸ä¼šè¿™æ ·ç­‰å¾…æ— é™å¾ªç¯çš„çº¿ç¨‹  
+}  
+
+*/
+
+
+
+
+// çº¿ç¨‹å‡½æ•°  
+void* interface_thread(void* arg) {  
+    int index = *(int*)arg;  
+    initializer_transfer(get_initializer_name_by_index(index),get_interface_name_by_index(index));  
+    while (1) {  
+		if(strcmp(get_interface_mode_by_index(index),"test")==0)
+		{
+			test_upon_one_interface_in_one_time(get_interface_name_by_index(index), PACKAGES_NUM_ONE_TIME); 
+		}
+		if(strcmp(get_interface_mode_by_index(index),"listen")==0)
+		{
+			listen_upon_one_interface_in_one_time(get_linked_node(index),get_interface_name_by_index(index));
+		} 
+    }  
+	closer_transfer(get_closer_name_by_index(index),get_interface_name_by_index(index));
+    // æ³¨æ„ï¼šå®é™…ä½¿ç”¨ä¸­ï¼Œä½ å¯èƒ½éœ€è¦ä¸€ä¸ªæœºåˆ¶æ¥ä¼˜é›…åœ°é€€å‡ºè¿™ä¸ªå¾ªç¯  
+    return NULL;  
+}  
+
+void test_or_listen_upon_interface_group() {  
+    int cnt = get_interface_cnt();  
+    pthread_t threads[cnt];  
+    int indexes[cnt];  
+    int i;  
+
+	initialize_lock();
+  
+    // ä¸ºæ¯ä¸ªæ¥å£åˆ›å»ºä¸€ä¸ªçº¿ç¨‹  
+    for (i = 0; i < cnt; i++) {  
+        indexes[i] = i;  
+        if (pthread_create(&threads[i], NULL, interface_thread, &indexes[i]) != 0) {  
+            perror("pthread_create failed");  
+            exit(EXIT_FAILURE);  
+        }  
+    }  
+  
+    // ç­‰å¾…æ‰€æœ‰çº¿ç¨‹å®Œæˆ  
+    // æ³¨æ„ï¼šç”±äºæˆ‘ä»¬çš„çº¿ç¨‹æ˜¯æ— é™å¾ªç¯çš„ï¼Œè¿™é‡Œå®é™…ä¸Šä¸ä¼šæ‰§è¡Œåˆ°è¿™ä¸€è¡Œ  
+    // é™¤éä½ æœ‰å…¶ä»–æœºåˆ¶æ¥åœæ­¢çº¿ç¨‹ï¼ˆå¦‚ä¿¡å·ã€æ¡ä»¶å˜é‡ç­‰ï¼‰  
+    for (i = 0; i < cnt; i++) {  
+        pthread_join(threads[i], NULL);  
+    }  
+
+  	destroy_lock();
+    // æ³¨æ„ï¼šåœ¨å®é™…åº”ç”¨ä¸­ï¼Œä½ å¯èƒ½ä¸ä¼šè¿™æ ·ç­‰å¾…æ— é™å¾ªç¯çš„çº¿ç¨‹  
 }  
   
 
 
 /*
-
-// ÏÂÃæº¯ÊıËäÈ»¿ÉÒÔÀ­ÆğËÀµôµÄ×Ó½ø³Ì£¬µ«ÊÇÖ»ÄÜÖ´ĞĞµÚÒ»¸ö×Ó½ø³Ì£¬ÓĞºÜ´óµÄ¾ÖÏŞĞÔ£¬ËùÒÔÉáÆúµôÀ­ÆğËÀÈ¥×Ó½ø³ÌµÄ¹¦ÄÜ
+// ä¸‹é¢å‡½æ•°è™½ç„¶å¯ä»¥æ‹‰èµ·æ­»æ‰çš„å­è¿›ç¨‹ï¼Œä½†æ˜¯åªèƒ½æ‰§è¡Œç¬¬ä¸€ä¸ªå­è¿›ç¨‹ï¼Œæœ‰å¾ˆå¤§çš„å±€é™æ€§ï¼Œæ‰€ä»¥èˆå¼ƒæ‰æ‹‰èµ·æ­»å»å­è¿›ç¨‹çš„åŠŸèƒ½
 
 void test_upon_interface_group() {  
 	int cnt = get_interface_cnt();  
@@ -250,54 +296,51 @@ void test_upon_interface_group() {
     int status;  
   
     for (i = 0; i < cnt; i++) {  
-        while (1) {  // Ê¹ÓÃÎŞÏŞÑ­»·À´È·±£ÔÚÒì³£ÍË³öÊ±ÖØĞÂ´´½¨×Ó½ø³Ì  
+        while (1) {  // Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½ï¿½ï¿½ï¿½ì³£ï¿½Ë³ï¿½Ê±ï¿½ï¿½ï¿½Â´ï¿½ï¿½ï¿½ï¿½Ó½ï¿½ï¿½ï¿½  
             pid = fork();  
   
             if (pid == 0) {  
-                // ×Ó½ø³Ì  
+                // ï¿½Ó½ï¿½ï¿½ï¿½  
                 init_basic_interface(i);
 				while(1){
-					test_upon_one_interface_in_one_time(get_interface_name_by_index(i), "hello, are you here?", PAKCAGES_NUM_ONE_TIME,choose_status_for_test); 
+					test_upon_one_interface_in_one_time(get_interface_name_by_index(i), "hello, are you here?", PACKAGES_NUM_ONE_TIME,choose_status_for_test); 
 				}
 				close_basic_interface(i);
-                exit(0); // ×Ó½ø³ÌÍê³ÉºóÍË³ö  
+                exit(0); // ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½Éºï¿½ï¿½Ë³ï¿½  
             } else if (pid < 0) {  
-                // fork Ê§°Ü  
+                // fork Ê§ï¿½ï¿½  
                 perror("fork failed");  
-                sleep(1);  // ¶ÌÔİµÈ´ıºóÖØÊÔ  
-                continue;  // »Øµ½Ñ­»·¿ªÊ¼£¬ÖØĞÂ³¢ÊÔfork  
+                sleep(1);  // ï¿½ï¿½ï¿½İµÈ´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  
+                continue;  // ï¿½Øµï¿½Ñ­ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½Â³ï¿½ï¿½ï¿½fork  
             }  
   
-            // ¸¸½ø³Ì¼ÌĞø£¬»òÕßÔÚÕâÀïµÈ´ı×Ó½ø³Ì  
+            // ï¿½ï¿½ï¿½ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È´ï¿½ï¿½Ó½ï¿½ï¿½ï¿½  
             pid_t wpid = waitpid(pid, &status, 0);  
             if (wpid == -1) {  
                 perror("waitpid failed");  
-                continue;  // Ìø¹ıµ±Ç°Ñ­»·£¬²»ÖØĞÂfork  
+                continue;  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½fork  
             }  
   
             if (WIFEXITED(status)) {  
                 if (WEXITSTATUS(status) != 0) {  
-                    // ×Ó½ø³ÌÒì³£ÍË³ö  
+                    // ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ì³£ï¿½Ë³ï¿½  
                     printf("Child %d exited abnormally with status %d, restarting...\n", pid, WEXITSTATUS(status));  
-                    continue;  // »Øµ½Ñ­»·¿ªÊ¼£¬ÖØĞÂfork  
+                    continue;  // ï¿½Øµï¿½Ñ­ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½fork  
                 }  
             } else if (WIFSIGNALED(status)) {  
-                // ×Ó½ø³Ì±»ĞÅºÅÉ±ËÀ  
+                // ï¿½Ó½ï¿½ï¿½Ì±ï¿½ï¿½Åºï¿½É±ï¿½ï¿½  
                 printf("Child %d killed by signal %d, restarting...\n", pid, WTERMSIG(status));  
-                continue;  // »Øµ½Ñ­»·¿ªÊ¼£¬ÖØĞÂfork  
+                continue;  // ï¿½Øµï¿½Ñ­ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½fork  
             }  
   
-            // Èç¹û×Ó½ø³ÌÕı³£ÍË³ö£¬ÔòÌø³öÑ­»·  
+            // ï¿½ï¿½ï¿½ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½  
             break;  
         }  
     }  
-  
-    // ËùÓĞ×Ó½ø³Ì£¨»òËüÃÇµÄÖØÆô³¢ÊÔ£©¶¼ÒÑÍê³É  
+
+    // ï¿½ï¿½ï¿½ï¿½ï¿½Ó½ï¿½ï¿½Ì£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Çµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  
     while (wait(NULL) > 0);  
 }  
-
-
-
 
 void listen_upon_interface_group() {  
     int cnt = get_interface_cnt();  
@@ -306,207 +349,143 @@ void listen_upon_interface_group() {
     int status;  
   
     for (i = 0; i < cnt; i++) {  
-        while (1) {  // Ê¹ÓÃÎŞÏŞÑ­»·À´È·±£ÔÚÒì³£ÍË³öÊ±ÖØĞÂ´´½¨×Ó½ø³Ì  
+        while (1) {  // Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½ï¿½ï¿½ï¿½ì³£ï¿½Ë³ï¿½Ê±ï¿½ï¿½ï¿½Â´ï¿½ï¿½ï¿½ï¿½Ó½ï¿½ï¿½ï¿½  
             pid = fork();  
   
             if (pid == 0) {  
-                // ×Ó½ø³Ì  
+                // ï¿½Ó½ï¿½ï¿½ï¿½  
                 init_basic_interface(i);
                 while(1){
                 	listen_upon_one_interface_in_one_time(get_linked_node(i),get_interface_name_by_index(i),choose_status_for_listen); 
                 }
 				close_basic_interface(i);
-                exit(0); // ×Ó½ø³ÌÍê³ÉºóÍË³ö  
+                exit(0); // ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½Éºï¿½ï¿½Ë³ï¿½  
             } else if (pid < 0) {  
-                // fork Ê§°Ü  
+                // fork Ê§ï¿½ï¿½  
                 perror("fork failed");  
-                sleep(1);  // ¶ÌÔİµÈ´ıºóÖØÊÔ  
-                continue;  // »Øµ½Ñ­»·¿ªÊ¼£¬ÖØĞÂ³¢ÊÔfork  
+                sleep(1);  // ï¿½ï¿½ï¿½İµÈ´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  
+                continue;  // ï¿½Øµï¿½Ñ­ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½Â³ï¿½ï¿½ï¿½fork  
             }  
   
-            // ¸¸½ø³Ì¼ÌĞø£¬»òÕßÔÚÕâÀïµÈ´ı×Ó½ø³Ì  
+            // ï¿½ï¿½ï¿½ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È´ï¿½ï¿½Ó½ï¿½ï¿½ï¿½  
             pid_t wpid = waitpid(pid, &status, 0);  
             if (wpid == -1) {  
                 perror("waitpid failed");  
-                continue;  // Ìø¹ıµ±Ç°Ñ­»·£¬²»ÖØĞÂfork  
+                continue;  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½fork  
             }  
   
             if (WIFEXITED(status)) {  
                 if (WEXITSTATUS(status) != 0) {  
-                    // ×Ó½ø³ÌÒì³£ÍË³ö  
+                    // ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ì³£ï¿½Ë³ï¿½  
                     printf("Child %d exited abnormally with status %d, restarting...\n", pid, WEXITSTATUS(status));  
-                    continue;  // »Øµ½Ñ­»·¿ªÊ¼£¬ÖØĞÂfork  
+                    continue;  // ï¿½Øµï¿½Ñ­ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½fork  
                 }  
             } else if (WIFSIGNALED(status)) {  
-                // ×Ó½ø³Ì±»ĞÅºÅÉ±ËÀ  
+                // ï¿½Ó½ï¿½ï¿½Ì±ï¿½ï¿½Åºï¿½É±ï¿½ï¿½  
                 printf("Child %d killed by signal %d, restarting...\n", pid, WTERMSIG(status));  
-                continue;  // »Øµ½Ñ­»·¿ªÊ¼£¬ÖØĞÂfork  
+                continue;  // ï¿½Øµï¿½Ñ­ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½fork  
             }  
   
-            // Èç¹û×Ó½ø³ÌÕı³£ÍË³ö£¬ÔòÌø³öÑ­»·  
+            // ï¿½ï¿½ï¿½ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½  
             break;  
         }  
     }  
   
-    // ËùÓĞ×Ó½ø³Ì£¨»òËüÃÇµÄÖØÆô³¢ÊÔ£©¶¼ÒÑÍê³É  
+    // ï¿½ï¿½ï¿½ï¿½ï¿½Ó½ï¿½ï¿½Ì£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Çµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  
     while (wait(NULL) > 0);  
 }  
-
 */
 
 
 #if 1
-
-
-/*ĞÍÊ½ÊÔÑéÈë¿Ú*/
-
-#include <unistd.h> // °üº¬ access º¯ÊıµÄÉùÃ÷  
-
+/*å‹å¼è¯•éªŒå…¥å£*/
 int is_valid_filename(const char *filename) {  
-    // Ê×ÏÈ¼ì²éÖ¸ÕëÊÇ·ñÎª¿ÕºÍ×Ö·û´®ÊÇ·ñÎª¿Õ  
+    // é¦–å…ˆæ£€æŸ¥æŒ‡é’ˆæ˜¯å¦ä¸ºç©ºå’Œå­—ç¬¦ä¸²æ˜¯å¦ä¸ºç©º   
     if (filename == NULL || *filename == '\0') {  
-        // ÕâÀïµÄÂß¼­È¡¾öÓÚÄãµÄ¶¨Òå£º¡°¿Õ¡±»ò¡°¿Õ×Ö·û´®¡±µÄ filename ÊÇ·ñ±»ÈÏÎªÊÇ¡°ÓĞĞ§¡±µÄ  
-        // ÔÚÕâ¸öÀı×ÓÖĞ£¬ÎÒÃÇ¼ÙÉèËüÃÇ²»ÊÇÓĞĞ§µÄ  
         return 0;  
     }  
   
-    // Ê¹ÓÃ access º¯Êı¼ì²éÎÄ¼şÊÇ·ñ´æÔÚÇÒ¿É·ÃÎÊ  
-    // F_OK ¼ì²éÎÄ¼şÊÇ·ñ´æÔÚ  
-    // ×¢Òâ£ºÕâÀïµÄ R_OK, W_OK, X_OK ĞèÒª¸ù¾İÄãµÄÊµ¼ÊĞèÇóÀ´Ñ¡Ôñ»ò×éºÏ  
-    // µ«ÎªÁË¼òµ¥Æğ¼û£¬ÕâÀïÖ»¼ì²éÎÄ¼şÊÇ·ñ´æÔÚ  
+    // ä½¿ç”¨ access å‡½æ•°æ£€æŸ¥æ–‡ä»¶æ˜¯å¦å­˜åœ¨ä¸”å¯è®¿é—®  
     if (access(filename, F_OK) == -1) {  
-        // Èç¹û access ·µ»Ø -1£¬±íÊ¾³öÏÖ´íÎó£¨ÎÄ¼ş²»´æÔÚ»òÃ»ÓĞÈ¨ÏŞµÈ£©  
-        // ×¢Òâ£ºÔÚ¶àÏß³Ì»ò¶à½ø³Ì»·¾³ÖĞ£¬ÎÄ¼ş¿ÉÄÜÔÚ access µ÷ÓÃÖ®ºóÁ¢¼´±»É¾³ı»òĞŞ¸Ä  
-        // Òò´Ë£¬Õâ¸ö¼ì²é²¢²»ÊÇÍêÈ«¿É¿¿µÄ  
-        // ¼ì²é errno ¿ÉÒÔÌá¹©¸ü¶à¹ØÓÚÎªÊ²Ã´ access Ê§°ÜµÄĞÅÏ¢£¬µ«ÔÚÕâÀïÎÒÃÇ¼òµ¥·µ»Ø 0  
+        // å¦‚æœ access è¿”å› -1ï¼Œè¡¨ç¤ºå‡ºç°é”™è¯¯ï¼ˆæ–‡ä»¶ä¸å­˜åœ¨æˆ–æ²¡æœ‰æƒé™ç­‰ï¼‰  
+        // æ³¨æ„ï¼šåœ¨å¤šçº¿ç¨‹æˆ–å¤šè¿›ç¨‹ç¯å¢ƒä¸­ï¼Œæ–‡ä»¶å¯èƒ½åœ¨ access è°ƒç”¨ä¹‹åç«‹å³è¢«åˆ é™¤æˆ–ä¿®æ”¹  
+        // å› æ­¤ï¼Œè¿™ä¸ªæ£€æŸ¥å¹¶ä¸æ˜¯å®Œå…¨å¯é çš„  
+        // æ£€æŸ¥ errno å¯ä»¥æä¾›æ›´å¤šå…³äºä¸ºä»€ä¹ˆ access å¤±è´¥çš„ä¿¡æ¯ï¼Œä½†åœ¨è¿™é‡Œæˆ‘ä»¬ç®€å•è¿”å› 0  
         return 0;  
     }  
   
-    // Èç¹û access ³É¹¦£¬ÎÒÃÇ¼ÙÉèÎÄ¼şÃûÊÇÓĞĞ§µÄ  
+    // ï¿½ï¿½ï¿½ access ï¿½É¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¼ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ§ï¿½ï¿½  
     return 1;  
 }
 
 
 int main(int argc, char *argv[]) {
-	// ¼ì²é²ÎÊıÊıÁ¿  
 	if (argc < 3) {  
-		// ²ÎÊı²»×ã  
-		fprintf(stderr, "Usage: %s <config_file> test\n", argv[0]);  
-		fprintf(stderr, "Or:	 %s <config_file> listen <res_file_name>\n", argv[0]);  
+		// å‚æ•°ä¸è¶³  
 		fprintf(stderr, "Not enough arguments.\n");  
-		return 1; // ±íÊ¾³ÌĞòÒòÎª´íÎóµÄ²ÎÊı¶øÍË³ö  
+		fprintf(stderr, "Usage: %s <config_file> <res_file_name>\n", argv[0]);   
+		return 1; // è¡¨ç¤ºç¨‹åºå› ä¸ºé”™è¯¯çš„å‚æ•°è€Œé€€å‡º  
 	} else if (argc == 3) {  
-		// 3¸ö²ÎÊı£¬¼ì²éÄ£Ê½ÊÇ·ñÎª 'test'	
-		if (strcmp(argv[2], "test") != 0) {  
-			fprintf(stderr, "Invalid mode '%s'. Mode should be 'test' for 4 arguments.\n", argv[2]); 
-			fprintf(stderr, "Usage: %s <config_file> test\n", argv[0]);  
-			fprintf(stderr, "Or:	 %s <config_file> listen <res_file_name>\n", argv[0]); 
-
-			return 1;  
-		}  
+		// 3ä¸ªå‚æ•°
 		if (!is_valid_filename(argv[1])) {	
 			fprintf(stderr, "Invalid round parameter '%s'. It should be a file path.\n", argv[1]);	
-			fprintf(stderr, "Usage: %s <config_file> test\n", argv[0]);  
-			fprintf(stderr, "Or:	 %s <config_file> listen <res_file_name>\n", argv[0]); 
+			fprintf(stderr, "Usage: %s <config_file> <res_file_name>\n", argv[0]); 
 
 			return 1;  
 		}  
-
-	} else if (argc == 4) {  
-		// 4¸ö²ÎÊı£¬¼ì²éÄ£Ê½ÊÇ·ñÎª 'listen'  
-		if (strcmp(argv[2], "listen") != 0) {  
-			fprintf(stderr, "Invalid mode '%s'. Mode should be 'listen' for 5 arguments.\n", argv[2]);	
-			fprintf(stderr, "Usage: %s <config_file> test\n", argv[0]);  
-			fprintf(stderr, "Or:	 %s <config_file> listen <res_file_name>\n", argv[0]); 
+		if (!is_valid_filename(argv[2])) {	
+			fprintf(stderr, "Invalid round parameter '%s'. It should be a file path.\n", argv[2]);	
+			fprintf(stderr, "Usage: %s <config_file> <res_file_name>\n", argv[0]); 
 
 			return 1;  
 		}  
-		if (!is_valid_filename(argv[1])) {	
-			fprintf(stderr, "Invalid round parameter '%s'. It should be a file path.\n", argv[1]);	
-			fprintf(stderr, "Usage: %s <config_file> test\n", argv[0]);  
-			fprintf(stderr, "Or:	 %s <config_file> listen <res_file_name>\n", argv[0]); 
-
-			return 1;  
-		}  
-
-		if (!is_valid_filename(argv[3])) {	
-			fprintf(stderr, "Invalid round parameter '%s'. It should be a file path.\n", argv[3]);	
-			fprintf(stderr, "Usage: %s <config_file> test\n", argv[0]);  
-			fprintf(stderr, "Or:	 %s <config_file> listen <res_file_name>\n", argv[0]);  
-			return 1;  
-		}  
-
-	} else {  
-		// ²ÎÊı¹ı¶à  
+	}else {  
+		// å‚æ•°è¿‡å¤š  
 		fprintf(stderr, "Too many arguments.\n");  
-		fprintf(stderr, "Usage: %s <config_file> test\n", argv[0]);  
-		fprintf(stderr, "Or:	 %s <config_file> listen <res_file_name>\n", argv[0]); 
-
+		fprintf(stderr, "Usage: %s <config_file> <res_file_name>\n", argv[0]);  
 		return 1;  
 	}  
 	  
-
-  
-
-  
-    // Èç¹ûÊÇ¼àÌıÄ£Ê½ÇÒ²ÎÊıÊıÁ¿²»×ã  
-
-
-  
     const char* config_file = argv[1];  
-    const char* mode = argv[2];
+    set_res_file_name(argv[2]);
 
+    start_and_load_info(config_file); 
+		
+	init_test_or_listen_record_arrays();
 
-    if (strcmp(mode, "test") == 0) {  
-        start_and_load_info(config_file); 
+	initialize_assigned_flag_lock();
 		
-		init_test_or_listen_record_arrays();
-		
-		// ÏÂÃæ¿ªÊ¼Ñ­»·²âÊÔ¸÷¸öÅäÖÃºÃµÄÎïÀíÍ¨ĞÅ½Ó¿Ú
-		test_upon_interface_group();
-		
-		free_test_or_listen_record_arrays();		
-		
-    } else if (strcmp(mode, "listen") == 0) {
-        start_and_load_info(config_file);
-		set_res_file_name(argv[3]);
-		init_test_or_listen_record_arrays();
+		// ä¸‹é¢å¼€å§‹å¾ªç¯æµ‹è¯•å„ä¸ªé…ç½®å¥½çš„ç‰©ç†é€šä¿¡æ¥å£
+	test_or_listen_upon_interface_group();
 
-		// ÏÂÃæ¿ªÊ¼Ñ­»·¼àÌı¸÷¸öÅäÖÃºÃµÄÎïÀíÍ¨ĞÅ½Ó¿Ú
-		listen_upon_interface_group();
-
-		free_test_or_listen_record_arrays();
-    } else {  
-        fprintf(stderr, "Invalid mode '%s'. Valid modes are 'test' 'listen'.\n", mode);  
-        return 1; // ±íÊ¾³ÌĞòÒòÎªÎŞĞ§µÄÄ£Ê½¶øÍË³ö  
-    }
+	destroy_assigned_flag_lock();
 		
-    return 0; // ±íÊ¾³ÌĞòÕı³£ÍË³ö  
+	free_test_or_listen_record_arrays();		
+
+		
+    return 0; 
 }
-
 #endif
 
 
 
 
 #if 0
-
-
-/*Ê±¼ä×ª»»²âÊÔ*/
+/*æ—¶é—´è½¬æ¢æµ‹è¯•*/
 
 
 int main(int argc, char *argv[]) {  
-    time_t parsed_time = time(NULL);  // »ñÈ¡µ±Ç°Ê±¼ä  
+    time_t parsed_time = time(NULL);  // ï¿½ï¿½È¡ï¿½ï¿½Ç°Ê±ï¿½ï¿½  
     char time_str[80];  
   
-    // ½« time_t ×ª»»Îª×Ö·û´®  
+    // ï¿½ï¿½ time_t ×ªï¿½ï¿½Îªï¿½Ö·ï¿½ï¿½ï¿½  
     if (time_t_to_string(parsed_time, time_str, sizeof(time_str)) == _SUCCESS) {  
         printf("Converted time to string: %s\n", time_str);  
   
-        // Ê¹ÓÃÒ»¸öÒÑÖªÓĞĞ§µÄÊ±¼ä×Ö·û´®À´²âÊÔ string_to_time_t  
-        const char* test_time_buffer = "Tue Mar  3 10:03:58 2020"; // Ê¾ÀıÊ±¼ä×Ö·û´®  
+        // Ê¹ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Öªï¿½ï¿½Ğ§ï¿½ï¿½Ê±ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ string_to_time_t  
+        const char* test_time_buffer = "Tue Mar  3 10:03:58 2020"; // Ê¾ï¿½ï¿½Ê±ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½  
   
-        // ½«×Ö·û´®×ª»»»Ø time_t  
+        // ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½ time_t  
         if (string_to_time_t(test_time_buffer, &parsed_time) == _SUCCESS) {  
             printf("Parsed time (time_t) from string: %ld\n", (long)parsed_time);  
 			printf("parsed_time: %d\n",parsed_time);
@@ -519,25 +498,16 @@ int main(int argc, char *argv[]) {
   
     return 0;  
 }
-
-
 #endif
 
 
 #if 0
-
-/*Ö®Ç°µÄ CAN ²âÊÔ´úÂë*/
-
-
-
+/*ä¹‹å‰çš„ CAN æµ‹è¯•ä»£ç */
 typedef int             INT32;
 #define STATUS  int
 
-
 extern INT32  udpCanStart(void);
 extern STATUS canAndCanFdTest(void);
-
-
 
 int main(int argc, char *argv[]) {  
 	
@@ -558,50 +528,31 @@ int main(int argc, char *argv[]) {
   
     return 0;  
 }
-
-
 #endif
 
 
 
 
 #if 0
-
-/*can×ÔÊÕ×Ô·¢²âÊÔ*/
-
-
-
-#include <string.h> // ÎªÁËÊ¹ÓÃ memcpy  
-#include <stdio.h>  // ÎªÁËÊ¹ÓÃ printf  
-  
+/*canè‡ªæ”¶è‡ªå‘æµ‹è¯•*/
 int main(int argc, char *argv[]) {  
-    char *package_content = "hello";  
-    char send[10];  
-    char recv[10] = {0}; // ³õÊ¼»¯Îª0£¬È·±£ÊÇnull½áÎ²µÄ×Ö·û´®  
-    memcpy(send, package_content, strlen(package_content) + 1); // +1 ÊÇÎªÁË¸´ÖÆ null ½áÎ²·û  
-  
-    comCfgInit(1, 1, 1000);  
-    comCfgInit(2, 1, 1000);  
-    appCanDataSend(1, 1, send, strlen(package_content) + 1); // +1 ÊÇÎªÁË·¢ËÍ null ½áÎ²·û  
-  
-    // ¼ÙÉèÓĞÒ»¸öºÏÊÊµÄÑÓ³Ùº¯Êı£¬±ÈÈç TASK_DELAY();  
-    // TASK_DELAY(); // Èç¹ûÕâ¸öº¯ÊıÊÇ±ØÒªµÄ£¬ÇëÌá¹©ËüµÄÊµÏÖ»òÉùÃ÷  
-  
-    appCanDataRecv(2, recv, sizeof(recv), -1); // É¾³ıÁË¶àÓàµÄ²ÎÊı  
-    printf("%s\n", recv);  
+	char res[10];
+	comCanSTDCfgInit(1,500);
+	comCanSTDCfgInit(2,500);
+	send_packet_can(1,"hello",5);
+	TASK_DELAY();
+	receive_packet_can(2,res,5,1);
+
+	printf("%s\n",res);
   
     return 0;  
 }
-
 #endif
 
 
 
 #if 0
-
-/*rs485·¢²âÊÔ*/
-
-
+/*rs485å‘æµ‹è¯•*/
 int main(int argc, char *argv[]) {  
     int fd;
     int length;
@@ -650,18 +601,13 @@ int main(int argc, char *argv[]) {
     close_port(fd);
     return _SUCCESS; 
 }
-
-
 #endif
 
 
 
 
 #if 0
-
-/*rs485ÊÕ²âÊÔ*/
-
-
+/*rs485æ”¶æµ‹è¯•*/
 int main(int argc, char *argv[]) {
     int fd;
     int length;
@@ -708,8 +654,6 @@ int main(int argc, char *argv[]) {
     close_port(fd);
     return _SUCCESS;
 }
-
-
 #endif
 
 
