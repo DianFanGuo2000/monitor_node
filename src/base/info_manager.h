@@ -69,6 +69,7 @@ struct interface_info {
 	char *status;
 	char *duplex;
 	int initialized_flag; //表示还未初始化
+	time_t last_work_time;
 };
 
 

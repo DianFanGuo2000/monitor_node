@@ -273,7 +273,7 @@ void listen_upon_one_interface_in_test_case(char *linked_node, char *listened_in
 	for (int i = 0; i < LISTENING_THREAD_NUM; i++) {  
 	        args[i].linked_node = linked_node;  
 	        args[i].listened_interface = listened_interface;  
-			printf("Listen thread %d for linked_node \"%s\" started!\n",i,linked_node);
+			printf("Listen thread %d at listened interface \"%s\" for linked_node \"%s\" started!\n",i,listened_interface,linked_node);
 	        pthread_create(&threads[i], NULL, listen_thread_function, &args[i]);  
 	}  
 	  

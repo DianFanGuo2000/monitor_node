@@ -510,8 +510,7 @@ void    read_interface_info_array_from_json(const char *filename, struct interfa
 		array[i].msg_generator_of_sender = strdup(cJSON_GetObjectItem(interface, "msg_generator_of_sender")->valuestring);
 		array[i].initializer_name = strdup(cJSON_GetObjectItem(interface, "initializer_name")->valuestring);
 		array[i].closer_name = strdup(cJSON_GetObjectItem(interface, "closer_name")->valuestring);
- 
- 
+
 
         array[i].status = strdup(cJSON_GetObjectItem(interface, "status")->valuestring);
 		array[i].mode = strdup(cJSON_GetObjectItem(interface, "mode")->valuestring);
@@ -845,7 +844,7 @@ void start_and_load_info(const char *filename)
 	
 	malloc_interface_info_array(size);
 	read_interface_info_array_from_json(filename,interface_info_array,interface_cnt);
-
+	
 
 	int count=0;
 	for(int i=0;i<size;i++)
@@ -995,6 +994,20 @@ void  set_temporary_fd(int i,int fd)
 {
 	interface_info_array[i].rs485_info.temporary_fd = fd;
 }
+
+
+time_t  get_last_work_time(int i)
+{
+	return interface_info_array[i].last_work_time;
+}
+
+void  set_last_work_time(int i,time_t now)
+{
+	interface_info_array[i].last_work_time = now;
+}
+
+
+
 
 
 char* get_rs485_dev_path_by_index(int i)

@@ -1,0 +1,96 @@
+[{
+	"mode":       "listen",
+	"located_node": "virtual_machine",
+	"interface_name":        "ens33-listen",
+	"interface_type":        "eth",
+	"linked_node":  "fpu",
+	"linked_interface_name":       "enp3s0-test",
+	"linked_interface_type":       "eth",
+	"center_interface_name":        "ens33-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "ens33",
+		"ip_addr":     "192.168.1.51",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:0c:29:8e:5f:92"
+	},
+	"linked_eth_info":     {
+		"ip_name":     "enp3s0",
+		"ip_addr":     "192.168.1.10",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:77:40:12"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex"
+},{
+	"mode":       "test",
+	"located_node": "virtual_machine",
+	"interface_name":       "vir-rs485-test",
+	"interface_type":       "rs485",
+	"linked_node":  "fpu",
+	"linked_interface_name":        "fpu-rs485-listen",
+	"linked_interface_type":        "rs485",
+	"center_interface_name":        "ens33-listen",
+	"status_chooser":        "only_work_at_even_round",
+	"base_send_func":        "send_packet_rs485",
+	"base_receive_func":        "receive_packet_rs485",
+	"msg_generator_of_sender":        "generate_rs485_test_msg",
+	"initializer_name":        "rs485_initializer_normal",
+	"closer_name":        "rs485_closer_normal",
+	"rs485_info":   {
+			"rs485_dev_path":        "/dev/ttyS1",
+			"rs485_gpio_number":    482,
+			"baud_rate":    115200,
+			"databits":    8,
+			"stopbits":    1,
+			"paritybits":    78
+	},
+	"linked_rs485_info":     {
+		"rs485_dev_path":        "/dev/ttyS4",
+		"rs485_gpio_number":    482,
+		"baud_rate":    115200,
+		"databits":    8,
+		"stopbits":    1,
+		"paritybits":    78
+	},
+	"status":       "receiving",
+	"duplex":       "half-duplex"
+},{
+	"mode":       "listen",
+	"located_node": "virtual_machine",
+	"interface_name":       "vir-rs485-listen",
+	"interface_type":       "rs485",
+	"linked_node":  "fpu",
+	"linked_interface_name":        "fpu-rs485-test",
+	"linked_interface_type":        "rs485",
+	"center_interface_name":        "ens33-listen",
+	"status_chooser":        "only_work_at_odd_round",
+	"base_send_func":        "send_packet_rs485",
+	"base_receive_func":        "receive_packet_rs485",
+	"msg_generator_of_sender":        "generate_rs485_test_msg",
+	"initializer_name":        "rs485_initializer_normal",
+	"closer_name":        "rs485_closer_normal",
+	"rs485_info":   {
+			"rs485_dev_path":        "/dev/ttyS1",
+			"rs485_gpio_number":    482,
+			"baud_rate":    115200,
+			"databits":    8,
+			"stopbits":    1,
+			"paritybits":    78
+	},
+	"linked_rs485_info":     {
+		"rs485_dev_path":        "/dev/ttyS4",
+		"rs485_gpio_number":    482,
+		"baud_rate":    115200,
+		"databits":    8,
+		"stopbits":    1,
+		"paritybits":    78
+	},
+	"status":       "receiving",
+	"duplex":       "half-duplex"
+}]

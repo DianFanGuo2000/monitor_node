@@ -44,8 +44,8 @@ int receive_packet_can_fpu(UINT32 can_channel_id, char *msg, UINT32 length, int 
 	char data_frame[RECEIVED_CAN_DATA_PACKAGE_SIZE];
     while (time(NULL) - now < wait_time) // 这里单位为秒  
     {  
-    	pthread_mutex_lock(&can_fpu_lock);  
-        int ret = appCanDataRecv(can_channel_id, data_frame, RECEIVED_CAN_DATA_PACKAGE_SIZE, -1); //这里78是发送数据时，包装数据所得帧的字节大小 
+    	pthread_mutex_lock(&can_fpu_lock);  //一次只能有一个监听线程在等待
+        int ret = appCanDataRecv(can_channel_id, data_frame, RECEIVED_CAN_DATA_PACKAGE_SIZE, -1);// 下载数据 //这里78是发送数据时，包装数据所得帧的字节大小 
         pthread_mutex_unlock(&can_fpu_lock);  
         if (isAllZeros(data_frame,RECEIVED_CAN_DATA_PACKAGE_SIZE)) { 
             continue;  
@@ -53,7 +53,8 @@ int receive_packet_can_fpu(UINT32 can_channel_id, char *msg, UINT32 length, int 
 			memcpy(msg, data_frame + OFFSET_OF_TARGET_DATA_IN_RECEIVED_CAN_DATA_PACKAGE, len);
             return _SUCCESS;  
         }
-    }  
+    }
+	 
 	printf("Can Recv Timeout\n");
     return _ERROR;  
 }

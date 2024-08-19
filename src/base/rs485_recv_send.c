@@ -379,7 +379,7 @@ int receive_packet_rs485(int fd, unsigned char *msg, unsigned int length, int wa
     timeout.tv_usec = 0;
 
 	//printf("fd:%d msg_len:%d msg:%s wait_time:%d\n",fd,length,msg,wait_time);
-	pthread_mutex_lock(&rs485_lock); 
+	pthread_mutex_lock(&rs485_lock);   //一次只能有一个监听线程在等待
     while (bytesReadTotal < length) {
         /* Try to read data. */
         int retval = select(fd + 1, &readfds, NULL, NULL, &timeout);

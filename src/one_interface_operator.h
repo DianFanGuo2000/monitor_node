@@ -26,13 +26,13 @@ char *res_file_name;
 
 
 
+
 void update_status_in_current_round(const char *updated_interface,const char *mode, int current_round);
 
 
 void set_res_file_name(char *file_name);
 
-int sync_communication_info(const char* listened_interface, const char* center_interface_name);
-
+int sync_communication_info(const char* listened_interface, const char* center_interface_name,char *communication_info_array_json_str);
 
 char* generate_eth_reply(const char* msg);
 
