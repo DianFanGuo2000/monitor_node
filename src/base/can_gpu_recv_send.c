@@ -94,13 +94,11 @@ int receive_packet_can_gpu(int can_id, unsigned char *msg, int length, long wait
 		len = length;
 
 
-	pthread_mutex_lock(&can_gpu_lock);  //一次只能有一个监听线程在等待
 	char data_frame[RECEIVED_CAN_DATA_PACKAGE_SIZE];
     if (can_id == 0)
     {
         if (can0Recv(len, wait_time))// 下载数据
         {
-        	pthread_mutex_unlock(&can_gpu_lock); 
             perror("Receive can0 failed");
             return _ERROR;
         }
@@ -111,14 +109,12 @@ int receive_packet_can_gpu(int can_id, unsigned char *msg, int length, long wait
     {
         if (can1Recv(len, wait_time))// 下载数据
         {
-        	pthread_mutex_unlock(&can_gpu_lock); 
             perror("Receive can1 failed");
             return _ERROR;
         }
         memcpy(data_frame, can1RecvArray, len);
         memset(can1RecvArray, 0x0, sizeof(can1RecvArray));
     }
-	pthread_mutex_unlock(&can_gpu_lock); 
 
     if (isAllZero(data_frame,RECEIVED_CAN_DATA_PACKAGE_SIZE)) 
     { 

@@ -39,7 +39,7 @@ int receive_packet(const char *interface_name, unsigned char *msg,long max_waiti
 		return _ERROR;
 	}
 
-	pthread_mutex_lock(&eth_lock);  //一次只能有一个监听线程在等待
+	
 	//printf("source_interface: %s\n",interface_name);
     // Create a raw socket for packet capturing  
     int sockfd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_SNMP));  
@@ -47,7 +47,7 @@ int receive_packet(const char *interface_name, unsigned char *msg,long max_waiti
         // If socket creation fails, print error and return  
         perror("socket");  
 
-		pthread_mutex_unlock(&eth_lock);
+		
         return _ERROR;  
     }  
   
@@ -66,7 +66,7 @@ int receive_packet(const char *interface_name, unsigned char *msg,long max_waiti
         perror("ioctl");  
         close(sockfd);  
 
-		pthread_mutex_unlock(&eth_lock);
+		
         return _ERROR;  
     }  
   
@@ -78,7 +78,7 @@ int receive_packet(const char *interface_name, unsigned char *msg,long max_waiti
         perror("bind");  
         close(sockfd);  
 
-		pthread_mutex_unlock(&eth_lock);
+		
         return _ERROR;  
     }
 
@@ -96,13 +96,13 @@ int receive_packet(const char *interface_name, unsigned char *msg,long max_waiti
     if (ret == -1)
     {
         perror("select");
-		pthread_mutex_unlock(&eth_lock);
+		
         return _ERROR;
     }
     else if (ret == 0)
     {
         printf("No data was received.\n");
-		pthread_mutex_unlock(&eth_lock);
+		
         return _ERROR;
     }
     else
@@ -114,7 +114,7 @@ int receive_packet(const char *interface_name, unsigned char *msg,long max_waiti
 	            // If receive fails, print error and continue 
 	            if (packet_len < 0) {
 	                perror("recvfrom");
-					pthread_mutex_unlock(&eth_lock);
+					
 	                return _ERROR;
 	            }
 	            struct ether_header *eh = (struct ether_header *)packet;
@@ -137,7 +137,7 @@ int receive_packet(const char *interface_name, unsigned char *msg,long max_waiti
     // Close the socket  
     close(sockfd); 
 
-	pthread_mutex_unlock(&eth_lock);
+	
 	return _SUCCESS;
 
 }

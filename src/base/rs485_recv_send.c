@@ -379,7 +379,7 @@ int receive_packet_rs485(int fd, unsigned char *msg, unsigned int length, int wa
     timeout.tv_usec = 0;
 
 	//printf("fd:%d msg_len:%d msg:%s wait_time:%d\n",fd,length,msg,wait_time);
-	pthread_mutex_lock(&rs485_lock);   //一次只能有一个监听线程在等待
+	
     while (bytesReadTotal < length) {
         /* Try to read data. */
         int retval = select(fd + 1, &readfds, NULL, NULL, &timeout);
@@ -389,7 +389,7 @@ int receive_packet_rs485(int fd, unsigned char *msg, unsigned int length, int wa
         }
         /* If select() encounters an error, print an error message and return. */
         if (retval == -1) {
-			pthread_mutex_unlock(&rs485_lock); 
+			
             perror("ERROR: select() failed");
             return _ERROR;
         }
@@ -398,7 +398,7 @@ int receive_packet_rs485(int fd, unsigned char *msg, unsigned int length, int wa
 
         /* if error */
         if (bytesReadNow < 0) {
-			pthread_mutex_unlock(&rs485_lock); 
+			
             perror("ERROR: Failed to read data from serial port");
             return _ERROR;
         }
@@ -417,7 +417,7 @@ int receive_packet_rs485(int fd, unsigned char *msg, unsigned int length, int wa
         /* Update the total number of bytes read so far. */
         bytesReadTotal += bytesReadNow;
     }
-	pthread_mutex_unlock(&rs485_lock); 
+	
 	if(bytesReadTotal==0) /*if timeout with retval==0*/
 	{
 		printf("Timeout!\n");

@@ -80,6 +80,7 @@ struct communication_info{
 	//char *error_ratio_value;
 	unsigned long tx;
 	unsigned long rx;
+	int current_round;
 
 	int if_newest_flag;// 是否写入到结果文件中了，写了代表不是最新的，为-1，没写代表是最新的，为1
 };
@@ -165,11 +166,13 @@ char* parse_communication_info_array_to_json();
 int update_communication_info_array_from_json(char* communication_info_array_json_str);
 
 
-int update_communication_info_array(char* linked_node,char* interface_name,time_t updated_time,unsigned long tx,unsigned long rx); //,char* error_ratio_value
+int update_communication_info_array(char* linked_node,char* interface_name,time_t updated_time,unsigned long tx,unsigned long rx,int current_round); //,char* error_ratio_value
 void string_to_unsigned_long(const char* str, unsigned long* result);
 
 int get_interface_index(const char* interface_name);
+void printCertainCommucationInfo(const char* certain_interface_name);
 
+void string_to_int(const char* str, int* result);
 
 char* get_interface_status(const char* interface_name);
 char* get_interface_mode(const char* interface_name);

@@ -130,7 +130,13 @@ char* parse_communication_info_array_to_json() {
 		snprintf(rx_str, sizeof(rx_str), "%lu", communication_info_array[i].rx);  
 			  
 		cJSON_AddStringToObject(json_obj, "tx", tx_str);  
-		cJSON_AddStringToObject(json_obj, "rx", rx_str);  
+		cJSON_AddStringToObject(json_obj, "rx", rx_str);
+
+
+		char current_round_str[32];
+		snprintf(current_round_str, sizeof(current_round_str), "%d", communication_info_array[i].current_round);  
+		cJSON_AddStringToObject(json_obj, "current_round", current_round_str);  
+		
 
         //cJSON_AddStringToObject(json_obj, "error_ratio_value", communication_info_array[i].error_ratio_value);  
         cJSON_AddItemToArray(json_array, json_obj);  
@@ -169,6 +175,11 @@ char* parse_communication_info_array_with_certain_listen_interface_to_json(const
 		cJSON_AddStringToObject(json_obj, "tx", tx_str);  
 		cJSON_AddStringToObject(json_obj, "rx", rx_str);  
 
+		char current_round_str[32];
+		snprintf(current_round_str, sizeof(current_round_str), "%d", communication_info_array[i].current_round);  
+		cJSON_AddStringToObject(json_obj, "current_round", current_round_str);  
+
+
         //cJSON_AddStringToObject(json_obj, "error_ratio_value", communication_info_array[i].error_ratio_value);  
         cJSON_AddItemToArray(json_array, json_obj);  
     }  
@@ -204,6 +215,11 @@ char* parse_newest_communication_infos_to_json() {
 		cJSON_AddStringToObject(json_obj, "tx", tx_str);  
 		cJSON_AddStringToObject(json_obj, "rx", rx_str);  
 
+		char current_round_str[32];
+		snprintf(current_round_str, sizeof(current_round_str), "%d", communication_info_array[i].current_round);  
+		cJSON_AddStringToObject(json_obj, "current_round", current_round_str);  
+
+
         //cJSON_AddStringToObject(json_obj, "error_ratio_value", communication_info_array[i].error_ratio_value);  
         cJSON_AddItemToArray(json_array, json_obj); 
     }  
@@ -214,7 +230,7 @@ char* parse_newest_communication_infos_to_json() {
     return json_string;  
 }  
 
-int update_communication_info_array(char* linked_node,char* interface_name,time_t updated_time,unsigned long tx,unsigned long rx) //,char* error_ratio_value
+int update_communication_info_array(char* linked_node,char* interface_name,time_t updated_time,unsigned long tx,unsigned long rx,int current_round) //,char* error_ratio_value
 {
 	pthread_mutex_lock(&communication_info_lock);
 	
@@ -225,6 +241,7 @@ int update_communication_info_array(char* linked_node,char* interface_name,time_
 			communication_info_array[i].tx = tx;
 			communication_info_array[i].rx = rx;
 			//communication_info_array[i].error_ratio_value = strdup(error_ratio_value);
+			communication_info_array[i].current_round = current_round;
 
 			communication_info_array[i].if_newest_flag= 1;//表示是最新的，还没有经过同步
 			pthread_mutex_unlock(&communication_info_lock);
@@ -243,6 +260,11 @@ void string_to_unsigned_long(const char* str, unsigned long* result) {
 }  
 
 
+void string_to_int(const char* str, int* result) 
+{
+	// 使用标准库函数 strtol 将字符串转换为 int 类型      
+	*result = strtol(str, NULL, 10);  
+}
 
 
   
@@ -301,6 +323,10 @@ int update_communication_info_array_from_json(char* communication_info_array_jso
 				string_to_unsigned_long(cJSON_GetObjectItem(communication_info_item, "tx")->valuestring, &tx_);	
 				communication_info_array[j].tx = tx_; 
 
+				int current_round_;
+				string_to_int(cJSON_GetObjectItem(communication_info_item, "current_round")->valuestring, &current_round_);	
+				communication_info_array[j].current_round = current_round_; 
+
 				communication_info_array[j].if_newest_flag = 1;//表示是最新的，还没有经过同步
 				
                 //communication_info_array[j].error_ratio_value = strdup(cJSON_GetObjectItem(communication_info_item, "error_ratio_value")->valuestring);
@@ -333,6 +359,11 @@ int update_communication_info_array_from_json(char* communication_info_array_jso
 			communication_info_array[communication_info_cnt - 1].tx = tx_;  
 			string_to_unsigned_long(cJSON_GetObjectItem(communication_info_item, "rx")->valuestring, &rx_); 
 			communication_info_array[communication_info_cnt - 1].rx = rx_;  
+
+			int current_round_;
+			string_to_int(cJSON_GetObjectItem(communication_info_item, "current_round")->valuestring, &current_round_); 
+			communication_info_array[communication_info_cnt - 1].current_round = current_round_; 
+
 
 			communication_info_array[communication_info_cnt - 1].if_newest_flag = 1;//表示是最新的，还没有经过同步
 
@@ -1293,6 +1324,7 @@ void print_communication_info(const struct communication_info*info)
     printf("Updated Time: %s\n", time_buffer);  
     printf("Tx Number: %d\n", info->tx);  
 	printf("Rx Number: %d\n", info->rx);  
+	printf("\n"); // 添加空行以分隔不同的接口信息  
 	pthread_mutex_unlock(&communication_info_lock);
 }
 
@@ -1306,7 +1338,6 @@ void print_communication_info_array(const struct communication_info *array, int 
   	printf("\n");
     for (int i = 0; i < size; i++) {    
         print_communication_info(&array[i]);  
-        printf("\n"); // 添加空行以分隔不同的接口信息  
     }  
 }
 
@@ -1325,9 +1356,27 @@ void printNewestCommucationInfo()
     for (int i = 0; i < communication_info_cnt; i++) {  
 		if(communication_info_array[i].if_newest_flag>0)
         	print_communication_info(&communication_info_array[i]);
-		printf("\n"); // 添加空行以分隔不同的接口信息  
     }  
 }
+
+void printCertainCommucationInfo(const char* certain_interface_name)
+{
+    if (communication_info_array == NULL || communication_info_cnt <= 0) {  
+        printf("communication info array is NULL or size is invalid\n");  
+        return;  
+    }  
+  	printf("\n");
+    for (int i = 0; i < communication_info_cnt; i++) {  
+		if(strcmp(communication_info_array[i].interface_name,certain_interface_name)==0)
+		{
+        	print_communication_info(&communication_info_array[i]);
+			return;
+		}
+    }  
+	printf("cannot find the certain interface whose interface name is \"%s\"\n",certain_interface_name);
+	return;
+}
+
 
 
 // Function to print interface information  

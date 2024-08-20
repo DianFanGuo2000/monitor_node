@@ -41,7 +41,7 @@ int sync_communication_info(const char* current_interface,const char* center_int
 		char* the_interface_linked_with_center_interface = get_interface_name_by_linked_interface_name(center_interface_name);
 		if(!the_interface_linked_with_center_interface)
 		{
-			printf("sync failed because of missing the the interface linked with center interface!\n");
+			printf("sync failed at current interface \"%s\" because of missing the the interface linked with center interface!\n",current_interface);
 			return _ERROR;
 		}else if(strcmp(current_interface,the_interface_linked_with_center_interface)!=0)// 如果当前接口不是可用发送接口，直接返回
 		{
@@ -49,7 +49,7 @@ int sync_communication_info(const char* current_interface,const char* center_int
 		}else
 		{
 			printf("\n");
-			printf("now sync the listened result, which is below:\n");
+			printf("now sync the listened result at current interface \"%s\", which is below:\n",current_interface);
 			printf("%s",communication_info_array_json_str);
 			printf("\n");
 			
@@ -61,7 +61,7 @@ int sync_communication_info(const char* current_interface,const char* center_int
 			
 			if(_ERROR == send_message(the_interface_linked_with_center_interface,communication_info_array_json_str))
 			{
-				printf("sync failed because of sending failing!\n");
+				printf("sync failed at current interface \"%s\" because of sending failing!\n",current_interface);
 				return _ERROR;
 			}
 		}	
@@ -237,9 +237,9 @@ void deal_with_mnt(const char* linked_node,const char* listened_interface, const
 			printf("the interface \"%s\" got an error ratio value with %s ( tx:%d rx:%d)\n",listened_interface,result,PAKCAGES_NUM_ONE_TIME,cnt_array[ind]); 
 			free(result);	*/
 
-			update_communication_info_array(linked_node,listened_interface,time(NULL),PAKCAGES_NUM_ONE_TIME,cnt_array[ind]);
-			printf("the newest listened result is below:\n");
-			printNewestCommucationInfo();
+			update_communication_info_array(linked_node,listened_interface,time(NULL),PAKCAGES_NUM_ONE_TIME,cnt_array[ind],current_round);
+			printf("the newest listened result at the listened interface \"%s\" is below:\n",listened_interface);
+			printCertainCommucationInfo(listened_interface);
             cnt_array[ind] = 1; // 重置计数器  
             round_array[ind]= current_round; 
 			pthread_mutex_unlock(&cnt_mutex_array[ind]);

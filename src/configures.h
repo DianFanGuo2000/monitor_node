@@ -8,13 +8,18 @@
 #define BUFFER_SIZE 30000 // 30KB
 
 #define MAX_WAITING_TIME_IN_ONE_ROUND 8 // s
-#define TEST_BEIGIN_TIME "Tue Jul 23 18:31:15 2024" // s
+#define TEST_BEIGIN_TIME "Tue Aug 20 18:31:15 2024" // s
 
 #define PAKCAGES_NUM_ONE_TIME 20 // 20 pakcages one time
 
 
 
-#define LISTENING_THREAD_NUM 4 // 20 pakcages one time
+#define LISTENING_THREAD_NUM 1 // 20 pakcages one time
+/*
+这里线程数目智能设置为1，我开始设想给所有访问底层代码的线程用一把锁，结果发现有问题，需要给每个监听线程都动态
+配上一把锁才行，但目前没什么必要，因为发送时间间隔很大，不需要多个监听线程轮询，所以我把底层代码中的一把锁给去掉
+了，但是这个宏先不变，放着吧，后面有多线程监听轮询的需求可以再往上加
+*/
 
 
 #define SENDING_TIME_SPEC 200000000 //ns
@@ -26,25 +31,25 @@
 
 
 
-#define MAX_IF_LEN 64
-#define MAX_RES_LEN 2048
 
+#define MAX_RES_LEN 4086
+#define MAX_CAN_DATA_LENGTH 8
+#define MAX_RS485_DATA_LENGTH 64
+#define MAX_ETH_DATA_LENGTH 2048
+
+
+#define MAX_IF_LEN 64
 
 
 #define MAX_CAN_ID_STR_LEN 32
 #define MAX_BAUD_RATE_STR_LEN 32
 #define MAX_INTERFACES 100
+#define RECEIVED_CAN_DATA_PACKAGE_SIZE 86
+#define OFFSET_OF_TARGET_DATA_IN_RECEIVED_CAN_DATA_PACKAGE 16
+
 
 
 #define ETH_P_SNMP 0x080C
-
-
-
-#define RECEIVED_CAN_DATA_PACKAGE_SIZE 86
-#define OFFSET_OF_TARGET_DATA_IN_RECEIVED_CAN_DATA_PACKAGE 16
-#define MAX_CAN_DATA_LENGTH 8
-#define MAX_RS485_DATA_LENGTH 64
-#define MAX_ETH_DATA_LENGTH 2048
 
 
 
