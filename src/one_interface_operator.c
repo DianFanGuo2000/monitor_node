@@ -25,10 +25,15 @@ void update_status_in_current_round(const char *updated_interface,const char *mo
 
 
 /*遵循一个原则，只发送自己所监听的部分，而不是所有部分*/
-int sync_communication_info(const char* listened_interface, const char* center_interface_name,char *communication_info_array_json_str)
+int sync_communication_info(const char* current_interface,const char* center_interface_name,char *communication_info_array_json_str)
 {
+
 	if(is_this_interface_in_current_node(center_interface_name))
 	{
+		printf("\n");
+		printf("download all the listened result locally at current interface \"%s\" , which is below:\n",current_interface);
+		printAllCommucationInfo();
+		printf("\n");	
 		write_communication_info_array_to_json(res_file_name);
 	}else
 	{
@@ -38,12 +43,20 @@ int sync_communication_info(const char* listened_interface, const char* center_i
 		{
 			printf("sync failed because of missing the the interface linked with center interface!\n");
 			return _ERROR;
+		}else if(strcmp(current_interface,the_interface_linked_with_center_interface)!=0)// 如果当前接口不是可用发送接口，直接返回
+		{
+			return _ERROR;
 		}else
 		{
+			printf("\n");
+			printf("now sync the listened result, which is below:\n");
+			printf("%s",communication_info_array_json_str);
+			printf("\n");
+			
 			//char* communication_info_array_json_str = parse_communication_info_array_with_certain_listen_interface_to_json(listened_interface);
 			//printf("communication_info_array_json_str:%s\n",communication_info_array_json_str);
-			int ind = get_interface_index(the_interface_linked_with_center_interface);
-			while(time(NULL)-get_last_work_time(ind)<1);	// 等待发送端口一秒钟
+			//int ind = get_interface_index(the_interface_linked_with_center_interface);
+			//while(time(NULL)-get_last_work_time(ind)<1);	// 等待发送端口一秒钟
 			//是不是要考虑加锁，并且在这个地方把last_work_time再改一下，还有就是时间间隔搞成200ms，改成可以配置的那种，不能同时发
 			
 			if(_ERROR == send_message(the_interface_linked_with_center_interface,communication_info_array_json_str))
@@ -174,7 +187,7 @@ void deal_with_mnt(const char* linked_node,const char* listened_interface, const
 	pthread_mutex_lock(&cnt_mutex_array[ind]);
 
 	/*复原一下发送方发送的字符串*/
-	char expect_msg[MAX_MSG_LEN];
+	char expect_msg[MAX_RES_LEN];
 	int ret = msg_generator_transfer(get_msg_generator_of_sender_by_index(ind),get_linked_interface_name_by_index(ind),\
 		get_interface_mode_by_index(ind),current_round,expect_msg);
 	if(ret<0)
@@ -225,21 +238,12 @@ void deal_with_mnt(const char* linked_node,const char* listened_interface, const
 			free(result);	*/
 
 			update_communication_info_array(linked_node,listened_interface,time(NULL),PAKCAGES_NUM_ONE_TIME,cnt_array[ind]);
-			printf("\n");
-			printf("now sync the listened result of last round( %d ), current listened interface is %s, the result is below:\n",round_array[ind],listened_interface);
-			printAllCommucationInfo();
-			printf("\n");
-			//printf("listened_interface get_interface_status(listened_interface) current_round: %s %s %d\n",listened_interface,get_interface_status(listened_interface),current_round);
-			char* communication_info_array_json_str = parse_communication_info_array_with_certain_listen_interface_to_json(listened_interface);
-
+			printf("the newest listened result is below:\n");
+			printNewestCommucationInfo();
             cnt_array[ind] = 1; // 重置计数器  
             round_array[ind]= current_round; 
 			pthread_mutex_unlock(&cnt_mutex_array[ind]);
-
-			//在这个地方把上一轮统计结果传出去，要不直接就保存下来，先把锁给释放掉，让其他监听线程可以有机会修改相关值
-			// 下面函数会等待目标发出端口结束上一轮工作1s后再进行同步
-			sync_communication_info(listened_interface,get_center_interface_name(ind),communication_info_array_json_str);
-			free(communication_info_array_json_str);
+			
 			return;
             //pthread_mutex_unlock(&cnt_mutex_array[ind]);  
         }else{
@@ -253,7 +257,7 @@ void deal_with_mnt(const char* linked_node,const char* listened_interface, const
 		
     }else if(update_communication_info_array_from_json(msg)==_SUCCESS)
     {
-    	write_communication_info_array_to_json(res_file_name);
+    	//write_communication_info_array_to_json(res_file_name); //不需要监听线程来写入，每个测试轮回，都会循环调用这个来写入的
 		pthread_mutex_unlock(&cnt_mutex_array[ind]);   
 		return;
     }
@@ -303,7 +307,7 @@ void test_upon_one_interface_in_one_time(const char *test_interface,int packages
 
 	int ind = get_interface_index(test_interface);
 
-	char message[MAX_MSG_LEN];
+	char message[MAX_RES_LEN];
 	int ret = msg_generator_transfer(get_msg_generator_of_sender_by_index(ind),get_interface_name_by_index(ind),"test",current_round,message);
 	if(ret<0)
 	{
@@ -347,10 +351,19 @@ void test_upon_one_interface_in_one_time(const char *test_interface,int packages
 				printf("now sending the package %d through the interface \"%s\"\n",i+1,test_interface);
 			}
 		}  
-	  
 	    for (int i = 0; i < packages_num; i++) {  
 	        pthread_join(threads[i], NULL);  
 	    }  
+		
+		nanosleep(&delay, NULL);
+		nanosleep(&delay, NULL);
+
+		//printf("listened_interface get_interface_status(listened_interface) current_round: %s %s %d\n",listened_interface,get_interface_status(listened_interface),current_round);
+		
+		char* communication_info_array_json_str = parse_newest_communication_infos_to_json();
+		sync_communication_info(test_interface,get_center_interface_name(ind),communication_info_array_json_str);
+		free(communication_info_array_json_str);
+
 		round_array[ind]=current_round;
 	}
 }  

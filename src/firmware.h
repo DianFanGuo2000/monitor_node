@@ -20,7 +20,7 @@ typedef void (*Dealer)(const char* located_node,const char* listened_interface, 
 
 typedef struct {  
     Dealer deal_func;  
-    char msg[MAX_MSG_LEN];
+    char msg[MAX_RES_LEN];
 	char* linked_node;
 	char* listened_interface;
 } DealData; 

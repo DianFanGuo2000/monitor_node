@@ -1,19 +1,19 @@
 [{
 		"linked_node":	"fpu",
 		"interface_name":	"ens33-listen",
-		"updated_time":	"Mon Aug 19 11:51:15 2024",
+		"updated_time":	"Tue Aug 20 14:12:03 2024",
 		"tx":	"20",
 		"rx":	"20"
 	}, {
 		"linked_node":	"fpu",
 		"interface_name":	"vir-rs485-listen",
-		"updated_time":	"Mon Aug 19 11:38:09 2024",
+		"updated_time":	"Tue Aug 20 14:11:55 2024",
 		"tx":	"20",
-		"rx":	"0"
+		"rx":	"20"
 	}, {
 		"linked_node":	"virtual_machine",
 		"interface_name":	"fpu-rs485-listen",
-		"updated_time":	"Mon Aug 19 11:51:15 2024",
+		"updated_time":	"Tue Aug 20 14:11:47 2024",
 		"tx":	"20",
 		"rx":	"20"
 	}]

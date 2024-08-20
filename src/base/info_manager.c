@@ -3,6 +3,17 @@
 #include "info_manager.h"
 
  
+pthread_mutex_t communication_info_lock;
+
+// 在程序初始化时创建锁  
+void initialize_communication_info_lock() {  
+    pthread_mutex_init(&communication_info_lock, NULL);  
+}  
+  
+// 在程序结束时销毁锁  
+void destroy_communication_info_lock() {  
+    pthread_mutex_destroy(&communication_info_lock);  
+}
 
 // 将字符串转换为 time_t  
 int string_to_time_t(const char* time_buffer, time_t* parsed_time) {  
@@ -71,16 +82,27 @@ char* get_interface_name_by_linked_interface_name(char* linked_interface_name)
 
 void write_communication_info_array_to_json(const char* filename)
 {
+	pthread_mutex_lock(&communication_info_lock);
+
 	FILE *file = fopen(filename, "w");  
     if (!file) {  
         fprintf(stderr, "Failed to open file %s\n", filename);   
+		pthread_mutex_unlock(&communication_info_lock);
         return;  
-    }  
+    } 
+	pthread_mutex_unlock(&communication_info_lock);
 
-	char* communication_info_array_json_str = parse_communication_info_array_to_json();
+	char* communication_info_array_json_str = parse_communication_info_array_to_json();//这个子函数里面也有加锁解锁操作，记得在调用它之前先把锁给解掉
+
+	pthread_mutex_lock(&communication_info_lock);
+	for(int i = 0; i < communication_info_cnt; i++) {
+		communication_info_array[i].if_newest_flag = -1;//代表已写入，不是最新的了
+	}
     fprintf(file, "%s", communication_info_array_json_str);  
 	free(communication_info_array_json_str);
     fclose(file);  
+	
+	pthread_mutex_unlock(&communication_info_lock);
 }
 
 
@@ -89,7 +111,9 @@ void write_communication_info_array_to_json(const char* filename)
 
 
 // Function to convert communication_info_array to JSON string  
-char* parse_communication_info_array_to_json() {  
+char* parse_communication_info_array_to_json() {
+	pthread_mutex_lock(&communication_info_lock);
+
     cJSON *json_array = cJSON_CreateArray();  
     for (int i = 0; i < communication_info_cnt; i++) {  
         cJSON *json_obj = cJSON_CreateObject();  
@@ -113,6 +137,8 @@ char* parse_communication_info_array_to_json() {
     }  
     char *json_string = cJSON_Print(json_array);  
     cJSON_Delete(json_array);  
+
+	pthread_mutex_unlock(&communication_info_lock);
     return json_string;  
 }  
 
@@ -120,6 +146,8 @@ char* parse_communication_info_array_to_json() {
 
 // Function to convert communication_info_array to JSON string  
 char* parse_communication_info_array_with_certain_listen_interface_to_json(const char *certain_listen_interface) {  
+	pthread_mutex_lock(&communication_info_lock);
+
     cJSON *json_array = cJSON_CreateArray();  
     for (int i = 0; i < communication_info_cnt; i++) {  
 		if(strcmp(certain_listen_interface,communication_info_array[i].interface_name)!=0)
@@ -146,12 +174,50 @@ char* parse_communication_info_array_with_certain_listen_interface_to_json(const
     }  
     char *json_string = cJSON_Print(json_array);  
     cJSON_Delete(json_array);  
+
+	pthread_mutex_unlock(&communication_info_lock);
     return json_string;  
 }  
 
+// Function to convert communication_info_array to JSON string  
+char* parse_newest_communication_infos_to_json() {
+	pthread_mutex_lock(&communication_info_lock);
+
+    cJSON *json_array = cJSON_CreateArray();  
+    for (int i = 0; i < communication_info_cnt; i++) {  
+		if(communication_info_array[i].if_newest_flag<0)
+			continue;
+		
+        cJSON *json_obj = cJSON_CreateObject();  
+		cJSON_AddStringToObject(json_obj, "linked_node", communication_info_array[i].linked_node);  
+        cJSON_AddStringToObject(json_obj, "interface_name", communication_info_array[i].interface_name);  
+        char time_buffer[80]; // Assuming enough space for ctime(3) format  
+        time_t_to_string(communication_info_array[i].updated_time,time_buffer,sizeof(time_buffer));
+        cJSON_AddStringToObject(json_obj, "updated_time", time_buffer);  
+
+		// 将 tx 和 rx 转换为字符串并添加到 JSON 对象中  
+		char tx_str[32]; // 假设 tx 的值不会超过 10^9，因此 32 个字符足够  
+		char rx_str[32]; // 同上  
+		snprintf(tx_str, sizeof(tx_str), "%lu", communication_info_array[i].tx);  
+		snprintf(rx_str, sizeof(rx_str), "%lu", communication_info_array[i].rx);  
+			  
+		cJSON_AddStringToObject(json_obj, "tx", tx_str);  
+		cJSON_AddStringToObject(json_obj, "rx", rx_str);  
+
+        //cJSON_AddStringToObject(json_obj, "error_ratio_value", communication_info_array[i].error_ratio_value);  
+        cJSON_AddItemToArray(json_array, json_obj); 
+    }  
+    char *json_string = cJSON_Print(json_array);  
+    cJSON_Delete(json_array);  
+
+	pthread_mutex_unlock(&communication_info_lock);
+    return json_string;  
+}  
 
 int update_communication_info_array(char* linked_node,char* interface_name,time_t updated_time,unsigned long tx,unsigned long rx) //,char* error_ratio_value
 {
+	pthread_mutex_lock(&communication_info_lock);
+	
 	for (size_t i = 0; i < communication_info_cnt; i++) {
         if (strcmp(communication_info_array[i].interface_name, interface_name) == 0) {
 			communication_info_array[i].linked_node = linked_node;
@@ -159,9 +225,14 @@ int update_communication_info_array(char* linked_node,char* interface_name,time_
 			communication_info_array[i].tx = tx;
 			communication_info_array[i].rx = rx;
 			//communication_info_array[i].error_ratio_value = strdup(error_ratio_value);
+
+			communication_info_array[i].if_newest_flag= 1;//表示是最新的，还没有经过同步
+			pthread_mutex_unlock(&communication_info_lock);
             return _SUCCESS;
         }
     }
+
+	pthread_mutex_unlock(&communication_info_lock);
 	return _ERROR;
 
 }
@@ -177,25 +248,30 @@ void string_to_unsigned_long(const char* str, unsigned long* result) {
   
 // Function to update the communication_info_array from a JSON string  
 int update_communication_info_array_from_json(char* communication_info_array_json_str) {
+	pthread_mutex_lock(&communication_info_lock);
 	printf("\nUpdate communication info array from json now!\n");
 
     cJSON *json, *communication_info_item;
+	//printf("xsasas\n");
     json = cJSON_Parse(communication_info_array_json_str);
+	//printf("26516\n");
     if (!json) { 
         const char *error_ptr = cJSON_GetErrorPtr();
         if (error_ptr != NULL) {
             printf("Error before: %s\n", error_ptr);
         }
+		pthread_mutex_unlock(&communication_info_lock);
         return _ERROR;
     }
 
     if (!cJSON_IsArray(json)) { 
         printf("Error: JSON is not an array\n");
         cJSON_Delete(json);
+		pthread_mutex_unlock(&communication_info_lock);
         return _ERROR;
     }
 
-	
+	//printf("xsasas\n");
     int _size = cJSON_GetArraySize(json);
     for (int i = 0; i < _size; i++) {
         communication_info_item = cJSON_GetArrayItem(json, i);
@@ -224,16 +300,21 @@ int update_communication_info_array_from_json(char* communication_info_array_jso
 				unsigned long tx_;
 				string_to_unsigned_long(cJSON_GetObjectItem(communication_info_item, "tx")->valuestring, &tx_);	
 				communication_info_array[j].tx = tx_; 
+
+				communication_info_array[j].if_newest_flag = 1;//表示是最新的，还没有经过同步
 				
                 //communication_info_array[j].error_ratio_value = strdup(cJSON_GetObjectItem(communication_info_item, "error_ratio_value")->valuestring);
                 found = 1;
 				printf("Communication info exist!\n");
+				pthread_mutex_unlock(&communication_info_lock);
 				print_communication_info(&communication_info_array[j]);
+				pthread_mutex_lock(&communication_info_lock);
                 break;
             }
         }
         if (!found) {
             communication_info_cnt++;
+			//free_communication_info_array()；
             communication_info_array = realloc(communication_info_array, communication_info_cnt * sizeof(struct communication_info));
             if (!communication_info_array) {
                 printf("Error: Memory allocation failed\n");
@@ -253,21 +334,36 @@ int update_communication_info_array_from_json(char* communication_info_array_jso
 			string_to_unsigned_long(cJSON_GetObjectItem(communication_info_item, "rx")->valuestring, &rx_); 
 			communication_info_array[communication_info_cnt - 1].rx = rx_;  
 
+			communication_info_array[communication_info_cnt - 1].if_newest_flag = 1;//表示是最新的，还没有经过同步
+
 			printf("Communication info added!\n");
+			pthread_mutex_unlock(&communication_info_lock);
 			print_communication_info(&communication_info_array[communication_info_cnt-1]);
+			pthread_mutex_lock(&communication_info_lock);
 			//communication_info_array[communication_info_cnt - 1].error_ratio_value = strdup(cJSON_GetObjectItem(communication_info_item, "error_ratio_value")->valuestring);
         }
     }
 	//printf("xsasxas\n");
     cJSON_Delete(json);
     // 清理通信信息数组中未使用的条目
-	
+	pthread_mutex_unlock(&communication_info_lock);
 	return  _SUCCESS;
 }
 
 
+int get_if_newest_flag(int i)
+{
+	return communication_info_array[i].if_newest_flag;
+}
+
+int set_if_newest_flag(int i,int flag)
+{
+	communication_info_array[i].if_newest_flag = flag;
+}
 
 int read_communication_info_array_from_json(const char *filename) {
+	pthread_mutex_lock(&communication_info_lock);
+	
 	char buffer[BUFFER_SIZE];
 	FILE *file = fopen(filename, "r");  
     if (file == NULL) {  
@@ -285,7 +381,9 @@ int read_communication_info_array_from_json(const char *filename) {
 
 	free_communication_info_array();
 	malloc_communication_info_array(0);
-	return update_communication_info_array_from_json(buffer);
+	int ret = update_communication_info_array_from_json(buffer);
+	pthread_mutex_unlock(&communication_info_lock);
+	return ret;
 }
 
 
@@ -845,7 +943,8 @@ void start_and_load_info(const char *filename)
 	malloc_interface_info_array(size);
 	read_interface_info_array_from_json(filename,interface_info_array,interface_cnt);
 	
-
+	initialize_communication_info_lock();
+	
 	int count=0;
 	for(int i=0;i<size;i++)
 	{
@@ -882,6 +981,8 @@ void dump_info_and_close(const char *filename)
 	write_interface_info_array_to_json(filename,interface_info_array,interface_cnt);
 	free_interface_info_array();
 	free_communication_info_array();
+
+	destroy_communication_info_lock();
 }
 
 
@@ -1184,6 +1285,7 @@ char* get_center_interface_name(int i)
 
 void print_communication_info(const struct communication_info*info)
 {
+	pthread_mutex_lock(&communication_info_lock);
     printf("Linked Node: %s\n", info->linked_node);  
     printf("Listened Interface Name: %s\n", info->interface_name);  
 	char time_buffer[80]; // Assuming enough space for ctime(3) format  
@@ -1191,7 +1293,7 @@ void print_communication_info(const struct communication_info*info)
     printf("Updated Time: %s\n", time_buffer);  
     printf("Tx Number: %d\n", info->tx);  
 	printf("Rx Number: %d\n", info->rx);  
-
+	pthread_mutex_unlock(&communication_info_lock);
 }
 
 
@@ -1213,6 +1315,19 @@ void printAllCommucationInfo()
 	print_communication_info_array(communication_info_array,communication_info_cnt);
 }
 
+void printNewestCommucationInfo()
+{
+    if (communication_info_array == NULL || communication_info_cnt <= 0) {  
+        printf("communication info array is NULL or size is invalid\n");  
+        return;  
+    }  
+  	printf("\n");
+    for (int i = 0; i < communication_info_cnt; i++) {  
+		if(communication_info_array[i].if_newest_flag>0)
+        	print_communication_info(&communication_info_array[i]);
+		printf("\n"); // 添加空行以分隔不同的接口信息  
+    }  
+}
 
 
 // Function to print interface information  

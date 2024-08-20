@@ -174,7 +174,7 @@ int rs485_initializer_normal(const char *interface_name)
 		printf("Open port failed!\n");
 		return _ERROR;
 	}
-	set_temporary_fd(i,fd);
+	//set_temporary_fd(i,fd);
 	
 	printf("interface_name:%s, fd:%d, baudrate:%d, databits:%d, stopbits:%d, paritybits:%c\n",interface_name,fd,
 				params.baudrate,params.databits,params.stopbits,params.paritybits);
@@ -185,6 +185,7 @@ int rs485_initializer_normal(const char *interface_name)
 		if(strcmp(get_interface_type_by_index(j),"rs485")==0 && strcmp(rs485_dev_path,get_rs485_dev_path_by_index(j))==0)
 		{
 			set_initialized_flag_by_index(j,1);
+			set_temporary_fd(j,fd);
 		}
 	}
 	return _SUCCESS;
@@ -289,6 +290,7 @@ int rs485_closer_normal(const char *interface_name)
 		if(strcmp(get_interface_type_by_index(j),"rs485")==0 && strcmp(rs485_dev_path,get_rs485_dev_path_by_index(j))==0)
 		{
 			set_initialized_flag_by_index(j,-1);
+			set_temporary_fd(j,-1);
 		}
 	}
 	return _SUCCESS;

@@ -511,18 +511,24 @@ int main(int argc, char *argv[]) {
     const char* config_file = argv[1];  
     set_res_file_name(argv[2]);
 
+
     start_and_load_info(config_file); 
+	
 		
 	init_test_or_listen_record_arrays();
 
 	initialize_assigned_flag_lock();
+
+	
 		
 		// 下面开始循环测试各个配置好的物理通信接口
 	test_or_listen_upon_interface_group();
 
 	destroy_assigned_flag_lock();
 		
-	free_test_or_listen_record_arrays();		
+	free_test_or_listen_record_arrays();	
+
+	dump_info_and_close(config_file);
 
 		
     return 0; // 表示程序正常退出  

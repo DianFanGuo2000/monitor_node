@@ -44,11 +44,13 @@ void* deal_async(void* arg) {
 	}
 	char TEMP_NODE[MAX_IF_LEN];
 	char TEMP_INF[MAX_IF_LEN];
-	char TEMP_MSG[MAX_MSG_LEN];
+	char TEMP_MSG[MAX_RES_LEN];
 
-	strncpy(TEMP_NODE,data->linked_node , MAX_MSG_LEN); 
-	strncpy(TEMP_INF, data->listened_interface, MAX_MSG_LEN); 
-	strncpy(TEMP_MSG, data->msg, MAX_MSG_LEN); 
+	//printf("xsaasxa\n");
+
+	strncpy(TEMP_NODE,data->linked_node , MAX_IF_LEN); 
+	strncpy(TEMP_INF, data->listened_interface, MAX_IF_LEN); 
+	strncpy(TEMP_MSG, data->msg, MAX_RES_LEN); 
 
     assigned_flag = 1; // 发送信号通知父线程已结束赋值了
     data->deal_func(TEMP_NODE,TEMP_INF,TEMP_MSG); // 调用 deal 函数处理消息  
@@ -91,15 +93,14 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 		data.listened_interface = source_interface;
 		
 	    // Attempt to receive a packet from the source interface  
-		char TEMP_MSG[MAX_MSG_LEN]={0};
+		char TEMP_MSG[MAX_ETH_DATA_LENGTH]={0};
 		if (receive_packet(get_ip_name_by_index(index),TEMP_MSG,max_waiting_time)<0) {  
 			//usleep(3000000);
 			printf("failed to got message from \"%s\"!\n",source_interface);
 			printf("TEMP_MSG:%s\n",TEMP_MSG);
 			return _ERROR;	  
 		}	 
-		strncpy(data.msg, TEMP_MSG, MAX_MSG_LEN); // 不直接拿data.msg作为形参，防止其随着原函数声明周期结束而被析构
-
+		strncpy(data.msg, TEMP_MSG, MAX_ETH_DATA_LENGTH); // 不直接拿data.msg作为形参，防止其随着原函数声明周期结束而被析构
 
 		pthread_mutex_lock(&assigned_flag_lock);  
         pthread_t thread_id;  
@@ -193,14 +194,14 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 			int fd = get_temporary_fd(index);
 			//printAllInfo();
 
-			char TEMP_MSG[MAX_MSG_LEN];
+			char TEMP_MSG[MAX_RS485_DATA_LENGTH];
 			// Attempt to receive a packet from the source interface  
-			if (receive_packet_rs485(fd,TEMP_MSG,MAX_MSG_LEN,max_waiting_time)<0) {	 
+			if (receive_packet_rs485(fd,TEMP_MSG,MAX_RS485_DATA_LENGTH,max_waiting_time)<0) {	 
 				printf("failed to got message from \"%s\"!\n",source_interface);
 				printf("TEMP_MSG:%s\n",TEMP_MSG);
 				return _ERROR;	  
 			}	 
-			strncpy(data.msg, TEMP_MSG, MAX_MSG_LEN); // 不直接拿data.msg作为形参，防止其随着原函数声明周期结束而被析构
+			strncpy(data.msg, TEMP_MSG, MAX_RS485_DATA_LENGTH); // 不直接拿data.msg作为形参，防止其随着原函数声明周期结束而被析构
 
 			
 			//printAllInfo();
@@ -304,11 +305,11 @@ int send_message(const char *source_interface,const char *message)
     if (strcmp(base_send_func, "send_packet_rs485") == 0) {  
 
 		// 填充至MAX_MSG_LEN，以保证发送长度一定是MAX_MSG_LEN个字节
-		char RS485MSG[MAX_MSG_LEN];
-		fillMessageToMaxMsgLen(message,RS485MSG,MAX_MSG_LEN-1);// 确保最后一位RS485MSG[MAX_MSG_LEN-1]一定是'\0'
+		char RS485MSG[MAX_RS485_DATA_LENGTH];
+		fillMessageToMaxMsgLen(message,RS485MSG,MAX_RS485_DATA_LENGTH-1);// 确保最后一位RS485MSG[MAX_MSG_LEN-1]一定是'\0'
 		int fd = get_temporary_fd(index);
 
-        if (send_packet_rs485(fd, RS485MSG, MAX_MSG_LEN) < 0) {    
+        if (send_packet_rs485(fd, RS485MSG, MAX_RS485_DATA_LENGTH) < 0) {    
         	printf("send failed!\n");
         	return _ERROR; // Retry sending    
         }    

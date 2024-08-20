@@ -80,6 +80,8 @@ struct communication_info{
 	//char *error_ratio_value;
 	unsigned long tx;
 	unsigned long rx;
+
+	int if_newest_flag;// 是否写入到结果文件中了，写了代表不是最新的，为-1，没写代表是最新的，为1
 };
 
 
@@ -94,10 +96,20 @@ int interface_cnt;
 time_t test_begin_time; 
 
 
+void initialize_communication_info_lock();
+
+void destroy_communication_info_lock();
+
+int get_sync_flag(int i);
+
+int set_sync_flag(int i,int flag);
+
 int get_initialized_flag_by_index(int i);
 void set_initialized_flag_by_index(int i,int flag);
 char* parse_communication_info_array_with_certain_listen_interface_to_json(const char *certain_listen_interface);
 
+void printNewestCommucationInfo();
+char* parse_newest_communication_infos_to_json();
 
 time_t get_test_begin_time();
 char* get_interface_status_by_index(int i);
