@@ -360,7 +360,8 @@ void test_upon_one_interface_in_one_time(const char *test_interface,int packages
 
 		//printf("listened_interface get_interface_status(listened_interface) current_round: %s %s %d\n",listened_interface,get_interface_status(listened_interface),current_round);
 		
-		char* communication_info_array_json_str = parse_newest_communication_infos_to_json();
+		char* communication_info_array_json_str = parse_newest_communication_infos_to_json(MAX_SYNC_COMMUNICATION_INFO_NUM_FOR_ONE_TIME,1);
+		printf("newest communication infos are below:\n %s \n",communication_info_array_json_str);
 		sync_communication_info(test_interface,get_center_interface_name(ind),communication_info_array_json_str);
 		free(communication_info_array_json_str);
 

@@ -94,7 +94,7 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 		
 	    // Attempt to receive a packet from the source interface  
 		char TEMP_MSG[MAX_ETH_DATA_LENGTH]={0};
-		if (receive_packet(get_temporary_sockfd_by_index(index),TEMP_MSG,max_waiting_time)<0) {  
+		if (receive_packet(get_ip_name_by_index(index),TEMP_MSG,max_waiting_time)<0) {  
 			//usleep(3000000);
 			printf("failed to got message from \"%s\"!\n",source_interface);
 			printf("TEMP_MSG:%s\n",TEMP_MSG);
@@ -115,6 +115,38 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 
 	    return _SUCCESS;    
     }
+
+    if (strcmp(base_receive_func, "receive_packet_xy") == 0) {   
+		DealData data;
+		data.deal_func = deal; // 将 deal 函数指针保存到结构体中
+		data.linked_node = linked_node;
+		data.listened_interface = source_interface;
+		
+	    // Attempt to receive a packet from the source interface  
+		char TEMP_MSG[MAX_ETH_DATA_LENGTH]={0};
+		if (receive_packet_xy(get_temporary_sockfd_by_index(index),TEMP_MSG,max_waiting_time)<0) {  
+			//usleep(3000000);
+			printf("failed to got message from \"%s\"!\n",source_interface);
+			printf("TEMP_MSG:%s\n",TEMP_MSG);
+			return _ERROR;	  
+		}	 
+		strncpy(data.msg, TEMP_MSG, MAX_ETH_DATA_LENGTH); // 不直接拿data.msg作为形参，防止其随着原函数声明周期结束而被析构
+
+		pthread_mutex_lock(&assigned_flag_lock);  
+        pthread_t thread_id;  
+        if (pthread_create(&thread_id, NULL, deal_async, &data) != 0) {  
+            // 线程创建失败处理，返回错误  
+            return _ERROR;  
+        }  
+		
+		while(!assigned_flag);
+		assigned_flag = 0;	
+		pthread_mutex_unlock(&assigned_flag_lock);	
+
+	    return _SUCCESS;    
+    }
+
+
 
     if (strcmp(base_receive_func, "receive_packet_can_fpu") == 0) { 
 		DealData data;
@@ -287,8 +319,25 @@ int send_message(const char *source_interface,const char *message)
 	}
 
 	char *base_send_func = get_base_send_func_by_index(index);
+
+
     // Check if the interface type is "eth" (could be removed if not needed)    
     if (strcmp(base_send_func, "send_packet") == 0) {    
+        // Retrieve the MAC addresses    
+        const char *src_mac = get_mac_addr(source_interface);    
+        const char *dest_mac = get_linked_mac_addr(source_interface);  
+
+        // Check if MAC addresses were retrieved and packet can be sent    
+        if (send_packet(get_ip_name_by_index(index),message, src_mac, dest_mac) < 0) {    
+        	printf("send failed!\n");
+        	return _ERROR; // Retry sending    
+        }    
+		return _SUCCESS;
+    }  
+
+	
+    // Check if the interface type is "eth" (could be removed if not needed)    
+    if (strcmp(base_send_func, "send_packet_xy") == 0) {    
         // Retrieve the MAC addresses    
         const char *src_mac = get_mac_addr(source_interface);    
         const char *dest_mac = get_linked_mac_addr(source_interface);  
@@ -296,7 +345,7 @@ int send_message(const char *source_interface,const char *message)
 		printf("bb %s\n",*bb);
 		printf("%d\n",bb);
         // Check if MAC addresses were retrieved and packet can be sent    
-        if (send_packet(get_temporary_sockfd_by_index(index),get_sock_addr_value_addr(index), message, src_mac, dest_mac) < 0) {    
+        if (send_packet_xy(get_temporary_sockfd_by_index(index),get_sock_addr_value_addr(index), message, src_mac, dest_mac) < 0) {    
         	printf("send failed!\n");
         	return _ERROR; // Retry sending    
         }    
@@ -458,6 +507,37 @@ int set_status(const char *source_interface, const char *status)
 		
 
     }  
+
+	  if (strcmp(base_send_func, "send_packet_xy") == 0 && strcmp(base_receive_func, "receive_packet_xy") == 0) {  
+		  // Compare the status string correctly using strcmp  
+		 /* if (strcmp(status, "sending") == 0 || strcmp(status, "receiving") == 0) {  
+			  printf("eth cannot be set as 'sending' or 'receiving'\n");  
+			  return _ERROR;  
+		  }  */
+		  
+		  // Attempt to set the interface status  
+		  if (set_interface_status(source_interface, status) < 0) {  
+			  // Print an error message (assuming a function or macro for it)  
+			  printf("Failed to set interface status\n");  
+			  return _ERROR;  
+		  } 
+		  
+		  if (strcmp(status, "sending_and_receiving") == 0 && !is_interface_up(source_interface)) {  
+			  char cmd_up[256];  
+			  snprintf(cmd_up, sizeof(cmd_up), "ifconfig %s up", source_interface);  
+			  system(cmd_up);  
+		  }  
+	  
+	  
+		  if (strcmp(status, "closed") == 0 && is_interface_up(source_interface)) {  
+			  char cmd_up[256];  
+			  snprintf(cmd_up, sizeof(cmd_up), "ifconfig %s down", source_interface);  
+			  system(cmd_up);
+		  }  
+		  
+	  
+	  }  
+
 
       if (strcmp(base_send_func, "send_packet_can_fpu") == 0 && strcmp(base_receive_func, "receive_packet_can_fpu") == 0) {  
         // Compare the status string correctly using strcmp  

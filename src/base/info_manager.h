@@ -124,7 +124,7 @@ void set_sock_addr_value_addr(int i,struct sockaddr_ll* addr);
 char* parse_communication_info_array_with_certain_listen_interface_to_json(const char *certain_listen_interface);
 
 void printNewestCommucationInfo();
-char* parse_newest_communication_infos_to_json();
+char* parse_newest_communication_infos_to_json(int max_info_num_one_time, int whether_used_for_sync);
 
 time_t get_test_begin_time();
 char* get_interface_status_by_index(int i);

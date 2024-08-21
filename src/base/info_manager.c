@@ -191,14 +191,21 @@ char* parse_communication_info_array_with_certain_listen_interface_to_json(const
 }  
 
 // Function to convert communication_info_array to JSON string  
-char* parse_newest_communication_infos_to_json() {
+char* parse_newest_communication_infos_to_json(int max_info_num_one_time, int whether_used_for_sync) {
 	pthread_mutex_lock(&communication_info_lock);
 
+
+	int cnt = 0;
+	
     cJSON *json_array = cJSON_CreateArray();  
     for (int i = 0; i < communication_info_cnt; i++) {  
 		if(communication_info_array[i].if_newest_flag<0)
 			continue;
-		
+
+		if(whether_used_for_sync>0)
+			communication_info_array[i].if_newest_flag = -1;
+
+		cnt++; // 计数，开始转化第一个info为字符串
         cJSON *json_obj = cJSON_CreateObject();  
 		cJSON_AddStringToObject(json_obj, "linked_node", communication_info_array[i].linked_node);  
         cJSON_AddStringToObject(json_obj, "interface_name", communication_info_array[i].interface_name);  
@@ -222,6 +229,10 @@ char* parse_newest_communication_infos_to_json() {
 
         //cJSON_AddStringToObject(json_obj, "error_ratio_value", communication_info_array[i].error_ratio_value);  
         cJSON_AddItemToArray(json_array, json_obj); 
+
+		if(max_info_num_one_time > 0 && cnt == max_info_num_one_time)
+			break;
+
     }  
     char *json_string = cJSON_Print(json_array);  
     cJSON_Delete(json_array);  

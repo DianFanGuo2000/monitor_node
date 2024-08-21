@@ -37,6 +37,14 @@ int initializer_transfer(char *initializer_name, const char *interface_name)
 		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
         return ret;  
     }  
+
+    if (strcmp(initializer_name, "eth_initializer_xy") == 0) {
+		int ret = eth_initializer_xy(interface_name);
+		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
+        return ret;  
+    }  
+
+	
     if (strcmp(initializer_name, "rs485_initializer_normal") == 0) { 
 		int ret = rs485_initializer_normal(interface_name);
 		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
@@ -79,6 +87,14 @@ int closer_transfer(char *closer_name, const char *interface_name)
 		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
         return ret;  
     }  
+
+    if (strcmp(closer_name, "eth_closer_xy") == 0) {
+		int ret = eth_closer_xy(interface_name);
+		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
+        return ret;  
+    }  
+
+	
     if (strcmp(closer_name, "rs485_closer_normal") == 0) {  
 		int ret = rs485_closer_normal(interface_name); 
 		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
@@ -101,6 +117,55 @@ int closer_transfer(char *closer_name, const char *interface_name)
 
 
 int eth_initializer_normal(const char *interface_name)
+{
+	initialize_eth_lock();
+
+	int i = get_interface_index(interface_name);
+	int initialized_flag = get_initialized_flag_by_index(i);
+	if(initialized_flag>0)
+	{
+		return _SUCCESS;
+	}
+	
+	char* ip_addr = get_ip_addr_by_index(i);  
+	char* mask = get_net_mask_by_index(i);	
+	char* ip_name = get_ip_name_by_index(i);	
+			  
+	if (ip_addr == NULL || mask == NULL) {	
+		// Handle NULL pointers appropriately  
+		return _ERROR; // Or some other error code	
+	}  
+	
+	set_interface_status(interface_name,"sending_and_receiving");
+
+	
+	  
+	// Use snprintf or similar to safely format strings for system call  
+	char cmd_up[256];  
+	snprintf(cmd_up, sizeof(cmd_up), "ifconfig %s up", ip_name);  
+	system(cmd_up); 
+			
+	  
+	char cmd_addr[256];  
+	snprintf(cmd_addr, sizeof(cmd_addr), "ifconfig %s %s netmask %s", ip_name, ip_addr, mask);  
+	system(cmd_addr);  
+	
+	printf("ip_name:%s, ip_addr:%s, mask:%s\n",ip_name,ip_addr,mask);
+
+	for(int j=0;j<get_interface_cnt();j++)
+	{
+		if(strcmp(get_interface_type_by_index(j),"eth")==0 && strcmp(ip_name,get_ip_name_by_index(j))==0)
+		{
+			set_initialized_flag_by_index(j,1);
+			//printf("aaa %s\n",*sock_addr_value_addr);
+		}
+	}
+	
+	return _SUCCESS;
+}
+
+
+int eth_initializer_xy(const char *interface_name)
 {
 	initialize_eth_lock();
 
@@ -195,6 +260,7 @@ int eth_initializer_normal(const char *interface_name)
 
 }
 
+
 int rs485_initializer_normal(const char *interface_name)
 {
 
@@ -283,7 +349,7 @@ int can_gpu_initializer_normal(const char *interface_name)
 
 
 
-int eth_closer_normal(const char *interface_name)
+int eth_closer_xy(const char *interface_name)
 {
 
 	destroy_eth_lock();
@@ -316,6 +382,40 @@ int eth_closer_normal(const char *interface_name)
 
 	return _SUCCESS;
 }
+
+
+
+int eth_closer_normal(const char *interface_name)
+{
+
+	destroy_eth_lock();
+
+	int i = get_interface_index(interface_name);
+	int initialized_flag = get_initialized_flag_by_index(i);
+	if(initialized_flag<0)
+	{
+		return _SUCCESS;
+	}
+
+	
+	char* ip_name = get_ip_name_by_index(i);	
+	
+	char cmd[256];	
+	snprintf(cmd, sizeof(cmd), "ifconfig %s down", ip_name);  
+	system(cmd);
+
+	for(int j=0;j<get_interface_cnt();j++)
+	{
+		if(strcmp(get_interface_type_by_index(j),"eth")==0 && strcmp(ip_name,get_ip_name_by_index(j))==0)
+		{
+			set_initialized_flag_by_index(j,-1);
+		}
+	}
+	
+	return _SUCCESS;
+}
+
+
 
 int rs485_closer_normal(const char *interface_name)
 {
