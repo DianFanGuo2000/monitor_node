@@ -293,6 +293,7 @@ int send_message(const char *source_interface,const char *message)
         const char *src_mac = get_mac_addr(source_interface);    
         const char *dest_mac = get_linked_mac_addr(source_interface);  
         // Check if MAC addresses were retrieved and packet can be sent    
+        
         if (send_packet(get_temporary_sockfd_by_index(index),get_sock_addr_value_addr(index), message, src_mac, dest_mac) < 0) {    
         	printf("send failed!\n");
         	return _ERROR; // Retry sending    

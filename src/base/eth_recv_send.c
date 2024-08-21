@@ -33,7 +33,6 @@ int receive_packet(int sockfd, unsigned char *msg,long max_waiting_time)
 		printf("[ERROR] receive_packet got a NULL msg!\n");
 		return _ERROR;
 	}
-
 	
 	//printf("source_interface: %s\n",interface_name);
 
@@ -150,6 +149,12 @@ int stringToMacAddress(const char* macStr, unsigned char* macAddr) {
  */  
 int send_packet(int sockfd, struct sockaddr_ll* sock_addr_value_addr, const char *message, const char *ether_shost, const char *ether_dhost)  
 {  
+	printf("sockfd: %d\n",sockfd);
+	if(sockfd<0)
+	{
+		printf("[ERROR] sockfd < 0");
+		return _ERROR;
+	}
 
 	if(message==NULL)
 	{
@@ -206,12 +211,10 @@ int send_packet(int sockfd, struct sockaddr_ll* sock_addr_value_addr, const char
     if (sendto(sockfd, packet, sizeof(packet), 0, (struct sockaddr *)sock_addr_value_addr, sizeof(*sock_addr_value_addr)) < 0) {  
         // Error handling: print error message  
         perror("sendto");  
-		close(sockfd); 
 		return _ERROR;
     }  
   
-    // Close the socket  
-    close(sockfd); 
+    
 	return _SUCCESS;
 
 }
