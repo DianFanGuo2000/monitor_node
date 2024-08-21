@@ -28,7 +28,7 @@ struct eth_info {
     char *mac_addr;  
 
 	int temporary_sockfd;
-	struct sockaddr_ll addr; 
+	struct sockaddr_ll *sock_addr; 
 };  
   
 struct can_info {  
@@ -117,6 +117,7 @@ int get_temporary_sockfd_by_index(int i);
 void set_temporary_sockfd_by_index(int i,int sockfd);
 
 struct sockaddr_ll* get_sock_addr_value_addr(int i);
+void set_sock_addr_value_addr(int i,struct sockaddr_ll* addr);
 
 
 

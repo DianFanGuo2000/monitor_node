@@ -137,19 +137,17 @@ int eth_initializer_normal(const char *interface_name)
 	printf("ip_name:%s, ip_addr:%s, mask:%s\n",ip_name,ip_addr,mask);
 
 
-
 	// Create a raw socket for packet capturing  
     int sockfd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_SNMP));  
     if (sockfd < 0) {  
         // If socket creation fails, print error and return  
         perror("socket");  
-
-		
         return _ERROR;  
     }  
 
     // Initialize a sockaddr_ll structure to bind the socket to a specific interface   
 	struct sockaddr_ll* sock_addr_value_addr = get_sock_addr_value_addr(i);
+
 	
     memset(sock_addr_value_addr, 0, sizeof(*sock_addr_value_addr)); // Clear the structure  
   
@@ -169,16 +167,18 @@ int eth_initializer_normal(const char *interface_name)
     }  
   
     sock_addr_value_addr->sll_ifindex = ifr.ifr_ifindex; // Set the interface index  
+
+	//printf("aaa %s\n",*sock_addr_value_addr);
   
     // Bind the socket to the specified interface  
     if (bind(sockfd, (struct sockaddr *)sock_addr_value_addr, sizeof(*sock_addr_value_addr)) < 0) {  
         // If bind fails, print error, close socket, and return  
         perror("bind");  
         close(sockfd);  
-
-		
         return _ERROR;  
     }
+
+	//printf("aaa %s\n",*sock_addr_value_addr);
 
 	for(int j=0;j<get_interface_cnt();j++)
 	{
@@ -186,6 +186,8 @@ int eth_initializer_normal(const char *interface_name)
 		{
 			set_initialized_flag_by_index(j,1);
 			set_temporary_sockfd_by_index(j,sockfd);
+			set_sock_addr_value_addr(j,sock_addr_value_addr);
+			//printf("aaa %s\n",*sock_addr_value_addr);
 		}
 	}
 	
@@ -302,7 +304,7 @@ int eth_closer_normal(const char *interface_name)
 
 	// Close the socket  
     close(get_temporary_sockfd_by_index(i)); 
-	
+
 	for(int j=0;j<get_interface_cnt();j++)
 	{
 		if(strcmp(get_interface_type_by_index(j),"eth")==0 && strcmp(ip_name,get_ip_name_by_index(j))==0)

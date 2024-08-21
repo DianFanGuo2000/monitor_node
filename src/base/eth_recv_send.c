@@ -147,9 +147,8 @@ int stringToMacAddress(const char* macStr, unsigned char* macAddr) {
  * @param message   The message to be sent as the payload of the packet.  
  * @usage send_packet("eth1", "eth1 is good", "\x3A\x0F\x58\xF4\x95\x89", "\x20\x7B\xD2\x3C\xF2\x9D");  
  */  
-int send_packet(int sockfd, struct sockaddr_ll* sock_addr_value_addr, const char *message, const char *ether_shost, const char *ether_dhost)  
-{  
-	printf("sockfd: %d\n",sockfd);
+int send_packet(int sockfd, const struct sockaddr_ll* sock_addr_value_addr, const char *message, const char *ether_shost, const char *ether_dhost)  
+{
 	if(sockfd<0)
 	{
 		printf("[ERROR] sockfd < 0");
@@ -180,7 +179,8 @@ int send_packet(int sockfd, struct sockaddr_ll* sock_addr_value_addr, const char
 		printf("ether_dhost is NULL!");
 	}
 	printf("source_interface:%s ether_shost:%s ether_dhost:%s\n",interface_name,ether_shost,ether_dhost);*/
-
+	printf("sockfd: %d  sock_addr_value:%s\n",sockfd ,*sock_addr_value_addr);
+	printf("%d\n",sock_addr_value_addr);
 
 	stringToMacAddress(ether_shost,srcmac);
 	stringToMacAddress(ether_dhost,dstmac);
@@ -204,8 +204,6 @@ int send_packet(int sockfd, struct sockaddr_ll* sock_addr_value_addr, const char
   
     // Copy the message payload into the packet, immediately after the Ethernet header  
     memcpy(packet + sizeof(struct ether_header), message, message_len);  
-  
-    
   
     // Send the packet  
     if (sendto(sockfd, packet, sizeof(packet), 0, (struct sockaddr *)sock_addr_value_addr, sizeof(*sock_addr_value_addr)) < 0) {  

@@ -5,7 +5,7 @@
 
 
 #define RESULT_STRING_SIZE 20
-#define BUFFER_SIZE 30000 // 30KB
+#define BUFFER_SIZE 40000 // 40KB
 
 #define MAX_WAITING_TIME_IN_ONE_ROUND 8 // s
 #define TEST_BEIGIN_TIME "Tue Aug 20 18:31:15 2024" // s

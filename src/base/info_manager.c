@@ -926,7 +926,7 @@ void free_interface_info_array()
 		free(interface_info_array[i].eth_info.ip_addr);
 		free(interface_info_array[i].eth_info.net_mask);
 		free(interface_info_array[i].eth_info.mac_addr);
-		free(&interface_info_array[i].eth_info.addr);
+		free(interface_info_array[i].eth_info.sock_addr);
 		free(interface_info_array[i].linked_eth_info.ip_name);
 		free(interface_info_array[i].linked_eth_info.ip_addr);
 		free(interface_info_array[i].linked_eth_info.net_mask);
@@ -971,10 +971,13 @@ void start_and_load_info(const char *filename)
 		printf("cannot parse the test begin time!\n");
 	}
 
-	
+	free_interface_info_array();
 	malloc_interface_info_array(size);
 	read_interface_info_array_from_json(filename,interface_info_array,interface_cnt);
+	printf("interface information loaded\n");
+
 	
+	printf("loading communication information......\n");
 	initialize_communication_info_lock();
 	
 	int count=0;
@@ -982,8 +985,11 @@ void start_and_load_info(const char *filename)
 	{
 		if(strcmp(interface_info_array[i].mode,"listen")==0)
 			count++;
+		if(strcmp(interface_info_array[i].interface_type,"eth")==0)
+			interface_info_array[i].eth_info.sock_addr = (struct sockaddr_ll*)malloc(sizeof(struct sockaddr_ll));
 	}
 
+	free_communication_info_array();
 	communication_info_cnt = count;
 	malloc_communication_info_array(count);
 
@@ -1004,7 +1010,7 @@ void start_and_load_info(const char *filename)
 		}
 	}
 
-	printf("loaded\n");
+	printf("communication information loaded\n");
 	
 }
 
@@ -1093,9 +1099,14 @@ void set_temporary_sockfd_by_index(int i,int sockfd)
 
 struct sockaddr_ll* get_sock_addr_value_addr(int i)
 {
-	return &(interface_info_array[i].eth_info.addr);
+	return interface_info_array[i].eth_info.sock_addr;
 }
 
+
+void set_sock_addr_value_addr(int i,struct sockaddr_ll* addr)
+{
+	interface_info_array[i].eth_info.sock_addr = addr;
+}
 
 char*  get_msg_generator_of_sender_by_index(int i)
 {
