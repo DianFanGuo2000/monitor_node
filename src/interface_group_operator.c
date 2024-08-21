@@ -289,7 +289,14 @@ void listen_upon_one_interface_in_test_case(char *linked_node, char *listened_in
 // Ïß³Ìº¯Êý  
 void* interface_thread(void* arg) {  
     int index = *(int*)arg;  
-    initializer_transfer(get_initializer_name_by_index(index),get_interface_name_by_index(index)); 
+    int ret = initializer_transfer(get_initializer_name_by_index(index),get_interface_name_by_index(index)); 
+
+	if(ret == _ERROR)
+	{
+		printf("[ERROR] cannot initialize the interface \"%s\"\n",get_interface_name_by_index(index));
+		printf("[ERROR] refuse to start %s thread at the interface \"%s\"\n",get_interface_mode_by_index(index),get_interface_name_by_index(index));
+		return;
+	}
 	
 	if(strcmp(get_interface_mode_by_index(index),"test")==0)
 	{

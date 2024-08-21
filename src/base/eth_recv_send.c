@@ -25,13 +25,8 @@ void destroy_eth_lock() {
  * unsigned char msg[100];
  * receive_packet("eth1", msg);  
  */  
-int receive_packet(const char *interface_name, unsigned char *msg,long max_waiting_time)  
+int receive_packet(int sockfd, unsigned char *msg,long max_waiting_time)  
 {  
-	if(interface_name==NULL)
-	{
-		printf("[ERROR] receive_packet got a NULL interface_name!\n");
-		return _ERROR;
-	}
 
 	if(msg==NULL)
 	{
@@ -41,46 +36,7 @@ int receive_packet(const char *interface_name, unsigned char *msg,long max_waiti
 
 	
 	//printf("source_interface: %s\n",interface_name);
-    // Create a raw socket for packet capturing  
-    int sockfd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_SNMP));  
-    if (sockfd < 0) {  
-        // If socket creation fails, print error and return  
-        perror("socket");  
 
-		
-        return _ERROR;  
-    }  
-  
-    // Initialize a sockaddr_ll structure to bind the socket to a specific interface  
-    struct sockaddr_ll addr;  
-    memset(&addr, 0, sizeof(addr)); // Clear the structure  
-  
-    addr.sll_family = AF_PACKET; // Set the address family  
-    addr.sll_protocol = htons(ETH_P_SNMP); // Set the protocol to SNMP  
-  
-    // Use ifreq to get the index of the specified interface  
-    struct ifreq ifr;  
-    strncpy(ifr.ifr_name, interface_name, IFNAMSIZ); // Copy the interface name  
-    if (ioctl(sockfd, SIOCGIFINDEX, &ifr) < 0) {  
-        // If ioctl fails, print error, close socket, and return  
-        perror("ioctl");  
-        close(sockfd);  
-
-		
-        return _ERROR;  
-    }  
-  
-    addr.sll_ifindex = ifr.ifr_ifindex; // Set the interface index  
-  
-    // Bind the socket to the specified interface  
-    if (bind(sockfd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {  
-        // If bind fails, print error, close socket, and return  
-        perror("bind");  
-        close(sockfd);  
-
-		
-        return _ERROR;  
-    }
 
     int ret = 0;
     fd_set readfd;
@@ -134,10 +90,7 @@ int receive_packet(const char *interface_name, unsigned char *msg,long max_waiti
 	            }
 	        }
     } 
-    // Close the socket  
-    close(sockfd); 
-
-	
+    
 	return _SUCCESS;
 
 }
@@ -195,14 +148,8 @@ int stringToMacAddress(const char* macStr, unsigned char* macAddr) {
  * @param message   The message to be sent as the payload of the packet.  
  * @usage send_packet("eth1", "eth1 is good", "\x3A\x0F\x58\xF4\x95\x89", "\x20\x7B\xD2\x3C\xF2\x9D");  
  */  
-int send_packet(const char *interface_name, const char *message, const char *ether_shost, const char *ether_dhost)  
+int send_packet(int sockfd, struct sockaddr_ll* sock_addr_value_addr, const char *message, const char *ether_shost, const char *ether_dhost)  
 {  
-
-	if(interface_name==NULL)
-	{
-		printf("[ERROR] receive_packet got a NULL interface_name!\n");
-		return _ERROR;
-	}
 
 	if(message==NULL)
 	{
@@ -253,37 +200,10 @@ int send_packet(const char *interface_name, const char *message, const char *eth
     // Copy the message payload into the packet, immediately after the Ethernet header  
     memcpy(packet + sizeof(struct ether_header), message, message_len);  
   
-    // Create a raw socket for sending packets at the Ethernet level  
-    int sockfd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_SNMP));  
-    if (sockfd < 0) {  
-        // Error handling: print error message and return  
-        perror("socket");  
-        return _ERROR;
-    }  
-  
-    // Initialize the sockaddr_ll structure for specifying the interface to send on  
-    struct sockaddr_ll addr;  
-    memset(&addr, 0, sizeof(addr));  
-  
-    // Set the address family and protocol  
-    addr.sll_family = AF_PACKET;  
-    addr.sll_protocol = htons(ETH_P_SNMP);  
-  
-    // Get the index of the network interface to send on  
-    struct ifreq ifr;  
-    strncpy(ifr.ifr_name, interface_name, IF_NAMESIZE);  
-    if (ioctl(sockfd, SIOCGIFINDEX, &ifr) < 0) {  
-        // Error handling: print error message, close socket, and return  
-        perror("ioctl");  
-        close(sockfd);  
-        return _ERROR;
-    }  
-  
-    // Set the interface index in the sockaddr_ll structure  
-    addr.sll_ifindex = ifr.ifr_ifindex;  
+    
   
     // Send the packet  
-    if (sendto(sockfd, packet, sizeof(packet), 0, (struct sockaddr *)&addr, sizeof(addr)) < 0) {  
+    if (sendto(sockfd, packet, sizeof(packet), 0, (struct sockaddr *)sock_addr_value_addr, sizeof(*sock_addr_value_addr)) < 0) {  
         // Error handling: print error message  
         perror("sendto");  
 		close(sockfd); 

@@ -28,8 +28,8 @@ void initialize_eth_lock();
 void destroy_eth_lock();
 
 
-int receive_packet(const char *interface_name, unsigned char *msg,long max_waiting_time);
-int send_packet(const char *interface_name, const char *message, const char *ether_shost, const char *ether_dhost);
+int receive_packet(int sockfd, unsigned char *msg,long max_waiting_time);
+int send_packet(int sockfd, struct sockaddr_ll* sock_addr_value_addr, const char *message, const char *ether_shost, const char *ether_dhost);
 
 
 

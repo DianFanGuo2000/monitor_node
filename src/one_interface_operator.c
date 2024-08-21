@@ -323,7 +323,7 @@ void test_upon_one_interface_in_one_time(const char *test_interface,int packages
 	}
 
 	if (current_round > round_array[ind]) { 
-		printf("current round is %d\n",current_round);
+		printf("current round is %d and current sending interface is %s\n",current_round,test_interface);
 		update_status_in_current_round(test_interface,"test",current_round);
 		
 		pthread_t threads[packages_num];  

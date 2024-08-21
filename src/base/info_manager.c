@@ -925,7 +925,8 @@ void free_interface_info_array()
 		free(interface_info_array[i].eth_info.ip_name);
 		free(interface_info_array[i].eth_info.ip_addr);
 		free(interface_info_array[i].eth_info.net_mask);
-		free(interface_info_array[i].eth_info.mac_addr);  
+		free(interface_info_array[i].eth_info.mac_addr);
+		free(&interface_info_array[i].eth_info.addr);
 		free(interface_info_array[i].linked_eth_info.ip_name);
 		free(interface_info_array[i].linked_eth_info.ip_addr);
 		free(interface_info_array[i].linked_eth_info.net_mask);
@@ -1080,6 +1081,21 @@ int get_interface_index(const char* interface_name)
     return -1;
 
 }
+
+int get_temporary_sockfd_by_index(int i)
+{
+	return interface_info_array[i].eth_info.temporary_sockfd;
+}
+void set_temporary_sockfd_by_index(int i,int sockfd)
+{
+	interface_info_array[i].eth_info.temporary_sockfd = sockfd;
+}
+
+struct sockaddr_ll* get_sock_addr_value_addr(int i)
+{
+	return &(interface_info_array[i].eth_info.addr);
+}
+
 
 char*  get_msg_generator_of_sender_by_index(int i)
 {
@@ -1317,7 +1333,8 @@ char* get_center_interface_name(int i)
 void print_communication_info(const struct communication_info*info)
 {
 	pthread_mutex_lock(&communication_info_lock);
-    printf("Linked Node: %s\n", info->linked_node);  
+    printf("Linked Node: %s\n", info->linked_node); 
+	printf("Current Round: %d\n", info->current_round);
     printf("Listened Interface Name: %s\n", info->interface_name);  
 	char time_buffer[80]; // Assuming enough space for ctime(3) format  
     time_t_to_string(info->updated_time,time_buffer,sizeof(time_buffer));

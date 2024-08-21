@@ -13,7 +13,9 @@
 #include <string.h>  
 #include <cjson/cJSON.h> /*��Ҫ��װcJSON */
 #include <stdbool.h>  
-
+#include <sys/types.h>  
+#include <sys/socket.h>  
+#include <linux/if_packet.h>
 
 
 
@@ -24,6 +26,9 @@ struct eth_info {
 	char *net_mask;  
 
     char *mac_addr;  
+
+	int temporary_sockfd;
+	struct sockaddr_ll addr; 
 };  
   
 struct can_info {  
@@ -107,6 +112,14 @@ int set_sync_flag(int i,int flag);
 
 int get_initialized_flag_by_index(int i);
 void set_initialized_flag_by_index(int i,int flag);
+
+int get_temporary_sockfd_by_index(int i);
+void set_temporary_sockfd_by_index(int i,int sockfd);
+
+struct sockaddr_ll* get_sock_addr_value_addr(int i);
+
+
+
 char* parse_communication_info_array_with_certain_listen_interface_to_json(const char *certain_listen_interface);
 
 void printNewestCommucationInfo();

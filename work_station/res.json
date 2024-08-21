@@ -1,43 +1,15 @@
 [{
 		"linked_node":	"fpu",
 		"interface_name":	"ens33-listen",
-		"updated_time":	"Tue Aug 20 18:57:23 2024",
+		"updated_time":	"Wed Aug 21 15:15:26 2024",
 		"tx":	"20",
-		"rx":	"20",
-		"current_round":	"196"
+		"rx":	"0",
+		"current_round":	"0"
 	}, {
 		"linked_node":	"fpu",
 		"interface_name":	"vir-rs485-listen",
-		"updated_time":	"Tue Aug 20 18:57:15 2024",
+		"updated_time":	"Wed Aug 21 15:15:26 2024",
 		"tx":	"20",
-		"rx":	"20",
-		"current_round":	"195"
-	}, {
-		"linked_node":	"virtual_machine",
-		"interface_name":	"enp3s0-listen",
-		"updated_time":	"Tue Aug 20 18:57:23 2024",
-		"tx":	"20",
-		"rx":	"20",
-		"current_round":	"196"
-	}, {
-		"linked_node":	"virtual_machine",
-		"interface_name":	"fpu-rs485-listen",
-		"updated_time":	"Tue Aug 20 18:57:23 2024",
-		"tx":	"20",
-		"rx":	"20",
-		"current_round":	"196"
-	}, {
-		"linked_node":	"fpu",
-		"interface_name":	"can4-listen",
-		"updated_time":	"Tue Aug 20 18:57:15 2024",
-		"tx":	"20",
-		"rx":	"20",
-		"current_round":	"195"
-	}, {
-		"linked_node":	"fpu",
-		"interface_name":	"can1-listen",
-		"updated_time":	"Tue Aug 20 18:57:23 2024",
-		"tx":	"20",
-		"rx":	"20",
-		"current_round":	"196"
+		"rx":	"0",
+		"current_round":	"0"
 	}]

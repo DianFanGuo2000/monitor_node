@@ -94,7 +94,7 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 		
 	    // Attempt to receive a packet from the source interface  
 		char TEMP_MSG[MAX_ETH_DATA_LENGTH]={0};
-		if (receive_packet(get_ip_name_by_index(index),TEMP_MSG,max_waiting_time)<0) {  
+		if (receive_packet(get_temporary_sockfd_by_index(index),TEMP_MSG,max_waiting_time)<0) {  
 			//usleep(3000000);
 			printf("failed to got message from \"%s\"!\n",source_interface);
 			printf("TEMP_MSG:%s\n",TEMP_MSG);
@@ -293,7 +293,7 @@ int send_message(const char *source_interface,const char *message)
         const char *src_mac = get_mac_addr(source_interface);    
         const char *dest_mac = get_linked_mac_addr(source_interface);  
         // Check if MAC addresses were retrieved and packet can be sent    
-        if (send_packet(get_ip_name_by_index(index), message, src_mac, dest_mac) < 0) {    
+        if (send_packet(get_temporary_sockfd_by_index(index),get_sock_addr_value_addr(index), message, src_mac, dest_mac) < 0) {    
         	printf("send failed!\n");
         	return _ERROR; // Retry sending    
         }    

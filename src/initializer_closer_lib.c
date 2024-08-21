@@ -137,13 +137,58 @@ int eth_initializer_normal(const char *interface_name)
 	printf("ip_name:%s, ip_addr:%s, mask:%s\n",ip_name,ip_addr,mask);
 
 
+
+	// Create a raw socket for packet capturing  
+    int sockfd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_SNMP));  
+    if (sockfd < 0) {  
+        // If socket creation fails, print error and return  
+        perror("socket");  
+
+		
+        return _ERROR;  
+    }  
+
+    // Initialize a sockaddr_ll structure to bind the socket to a specific interface   
+	struct sockaddr_ll* sock_addr_value_addr = get_sock_addr_value_addr(i);
+	
+    memset(sock_addr_value_addr, 0, sizeof(*sock_addr_value_addr)); // Clear the structure  
+  
+    sock_addr_value_addr->sll_family = AF_PACKET; // Set the address family  
+    sock_addr_value_addr->sll_protocol = htons(ETH_P_SNMP); // Set the protocol to SNMP  
+  
+    // Use ifreq to get the index of the specified interface  
+    struct ifreq ifr;  
+    strncpy(ifr.ifr_name, ip_name, IFNAMSIZ); // Copy the interface name  
+    if (ioctl(sockfd, SIOCGIFINDEX, &ifr) < 0) {  
+        // If ioctl fails, print error, close socket, and return  
+        perror("ioctl");  
+        close(sockfd);  
+
+		
+        return _ERROR;  
+    }  
+  
+    sock_addr_value_addr->sll_ifindex = ifr.ifr_ifindex; // Set the interface index  
+  
+    // Bind the socket to the specified interface  
+    if (bind(sockfd, (struct sockaddr *)sock_addr_value_addr, sizeof(*sock_addr_value_addr)) < 0) {  
+        // If bind fails, print error, close socket, and return  
+        perror("bind");  
+        close(sockfd);  
+
+		
+        return _ERROR;  
+    }
+
 	for(int j=0;j<get_interface_cnt();j++)
 	{
 		if(strcmp(get_interface_type_by_index(j),"eth")==0 && strcmp(ip_name,get_ip_name_by_index(j))==0)
 		{
 			set_initialized_flag_by_index(j,1);
+			set_temporary_sockfd_by_index(j,sockfd);
 		}
 	}
+	
 	return _SUCCESS;
 
 }
@@ -255,12 +300,15 @@ int eth_closer_normal(const char *interface_name)
 	snprintf(cmd, sizeof(cmd), "ifconfig %s down", ip_name);  
 	system(cmd);
 
+	// Close the socket  
+    close(get_temporary_sockfd_by_index(i)); 
 	
 	for(int j=0;j<get_interface_cnt();j++)
 	{
 		if(strcmp(get_interface_type_by_index(j),"eth")==0 && strcmp(ip_name,get_ip_name_by_index(j))==0)
 		{
 			set_initialized_flag_by_index(j,-1);
+			set_temporary_sockfd_by_index(j,-1);
 		}
 	}
 

@@ -5,6 +5,12 @@
 #include "base/info_manager.h"
 #include "./base/rs485_recv_send.h"
 #include "./base/can_fpu_recv_send.h"
+#include <net/if.h>
+#include <netinet/ether.h>
+#include <netinet/in.h>
+#include <linux/if_packet.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
 
 
 char *initializer_name_array[] = {"eth_initializer_normal", "rs485_initializer_normal", "can_fpu_initializer_normal"};  
