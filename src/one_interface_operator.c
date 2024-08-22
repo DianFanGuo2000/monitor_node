@@ -364,7 +364,7 @@ void test_upon_one_interface_in_one_time(const char *test_interface,int packages
 	        pthread_create(&threads[i], NULL, test_thread_function, &args[i]);  
 		}  
 
-		while(isAllOne(sended_array[ind],get_interface_cnt())!=1);
+		while(isAllOne(sended_array[ind],packages_num)!=1);
 		free(sended_array[ind]);
 		
 		nanosleep(&delay, NULL);
