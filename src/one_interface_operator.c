@@ -24,50 +24,34 @@ void update_status_in_current_round(const char *updated_interface,const char *mo
 }  
 
 
-/*遵循一个原则，只发送自己所监听的部分，而不是所有部分*/
-int sync_communication_info(const char* current_interface,const char* center_interface_name,char *communication_info_array_json_str)
+int choose_communication_info_operation_at_specified_interface(int index)
 {
-
+	char* current_interface = get_interface_name_by_index(index);
+	char* center_interface_name = get_center_interface_name(index);
 	if(is_this_interface_in_current_node(center_interface_name))
 	{
-		printf("\n");
-		printf("download all the listened result locally at current interface \"%s\" , which is below:\n",current_interface);
-		printAllCommucationInfo();
-		printf("\n");	
-		write_communication_info_array_to_json(res_file_name);
+		printf("Operation: download all the listened results locally at current interface '%s' because its center interface '%s' is located at the same node\n",current_interface,center_interface_name);	
+		return DOWNLOAD_ALL_COMMUNICATION_INFOS_LOCALLY;
 	}else
 	{
-		// non_center_node reponsible for sending communication info to certer_node
 		char* the_interface_linked_with_center_interface = get_interface_name_by_linked_interface_name(center_interface_name);
 		if(!the_interface_linked_with_center_interface)
 		{
-			printf("sync failed at current interface \"%s\" because of missing the the interface linked with center interface!\n",current_interface);
-			return _ERROR;
-		}else if(strcmp(current_interface,the_interface_linked_with_center_interface)!=0)// 如果当前接口不是可用发送接口，直接返回
+			printf("Operation: do nothing with the listened results because of missing the linked interface at current node with its center interface '%s'\n",center_interface_name);
+			return DO_NOTHING_WITH_THE_COMMUNICATION_INFOS;
+		}else if(strcmp(current_interface,the_interface_linked_with_center_interface)!=0)
 		{
-			return _ERROR;
+			printf("Operation: do nothing with the listened results because specified interface '%s' is not linked with its center interface '%s'\n",current_interface,center_interface_name);
+			return DO_NOTHING_WITH_THE_COMMUNICATION_INFOS;
 		}else
 		{
-			printf("\n");
-			printf("now sync the listened result at current interface \"%s\", which is below:\n",current_interface);
-			printf("%s",communication_info_array_json_str);
-			printf("\n");
-			
-			//char* communication_info_array_json_str = parse_communication_info_array_with_certain_listen_interface_to_json(listened_interface);
-			//printf("communication_info_array_json_str:%s\n",communication_info_array_json_str);
-			//int ind = get_interface_index(the_interface_linked_with_center_interface);
-			//while(time(NULL)-get_last_work_time(ind)<1);	// 等待发送端口一秒钟
-			//是不是要考虑加锁，并且在这个地方把last_work_time再改一下，还有就是时间间隔搞成200ms，改成可以配置的那种，不能同时发
-			
-			if(_ERROR == send_message(the_interface_linked_with_center_interface,communication_info_array_json_str))
-			{
-				printf("sync failed at current interface \"%s\" because of sending failing!\n",current_interface);
-				return _ERROR;
-			}
-		}	
+			printf("Operation: sync the listened results through the specified interface '%s'\n",current_interface);
+			return SYNC_THE_COMMUNICATION_INFOS;
+		}
 	}
-	return _SUCCESS;
 }
+
+
 
 
 
@@ -359,11 +343,38 @@ void test_upon_one_interface_in_one_time(const char *test_interface,int packages
 		nanosleep(&delay, NULL);
 
 		//printf("listened_interface get_interface_status(listened_interface) current_round: %s %s %d\n",listened_interface,get_interface_status(listened_interface),current_round);
-		
-		char* communication_info_array_json_str = parse_newest_communication_infos_to_json(MAX_SYNC_COMMUNICATION_INFO_NUM_FOR_ONE_TIME,1);
-		printf("newest communication infos are below:\n %s \n",communication_info_array_json_str);
-		sync_communication_info(test_interface,get_center_interface_name(ind),communication_info_array_json_str);
-		free(communication_info_array_json_str);
+
+		int flag = choose_communication_info_operation_at_specified_interface(ind);
+		if(flag==DOWNLOAD_ALL_COMMUNICATION_INFOS_LOCALLY)
+		{
+			printf("\n");
+			printf("download all the listened results locally at current interface \"%s\" , which is below:\n",test_interface);
+			printAllCommucationInfo();
+			printf("\n");	
+			write_communication_info_array_to_json(res_file_name);
+		}
+		if(flag==DO_NOTHING_WITH_THE_COMMUNICATION_INFOS)
+		{
+		}
+		if(flag==SYNC_THE_COMMUNICATION_INFOS)
+		{
+			char* communication_info_array_json_str = parse_newest_communication_infos_to_json(MAX_SYNC_COMMUNICATION_INFO_NUM_FOR_ONE_TIME,1);
+			//printf("newest communication infos are below:\n %s \n",communication_info_array_json_str);
+			//printf("\n");
+			printf("now sync the listened result at current interface \"%s\", which is below:\n",test_interface);
+			printf("%s",communication_info_array_json_str);
+			printf("\n");
+			
+			char* the_interface_linked_with_center_interface = get_interface_name_by_linked_interface_name(get_center_interface_name(ind));
+			/*遵循一个原则，只发送自己所监听的部分，而不是所有部分*/
+			if(_ERROR == send_message(the_interface_linked_with_center_interface,communication_info_array_json_str))
+			{
+				printf("sync failed at current interface \"%s\" because of sending failing!\n",test_interface);
+				free(communication_info_array_json_str);
+				return _ERROR;
+			}
+			free(communication_info_array_json_str);
+		}
 
 		round_array[ind]=current_round;
 	}

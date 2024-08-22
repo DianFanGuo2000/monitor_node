@@ -28,11 +28,11 @@ char *res_file_name;
 
 
 void update_status_in_current_round(const char *updated_interface,const char *mode, int current_round);
+int choose_communication_info_operation_at_specified_interface(int index);
 
 
 void set_res_file_name(char *file_name);
 
-int sync_communication_info(const char* current_interface,const char* center_interface_name,char *communication_info_array_json_str);
 
 char* generate_eth_reply(const char* msg);
 
