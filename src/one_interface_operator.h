@@ -20,6 +20,7 @@ extern void destroy_initializer_lock();
 typedef struct {  
     const char *interface_name;  
     const char *message;
+	int package_id;
 } test_thread_args;  
 
 char *res_file_name;

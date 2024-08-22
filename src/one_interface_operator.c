@@ -61,6 +61,11 @@ int initialized_flag = -1;
   
 // Global counter array, needs to be thread-safe  
 int *cnt_array = NULL;  
+
+
+// Global sended array, needs to be thread-safe  
+int **sended_array = NULL;  
+
   
 // Array of mutexes to protect cnt_array  
 pthread_mutex_t *cnt_mutex_array = NULL;  
@@ -90,6 +95,17 @@ void init_test_or_listen_record_arrays() {
         }  
 		for(int i=0;i<number;i++)
 			cnt_array[i]=0;
+
+        // Allocate memory for arrays  
+        sended_array= malloc(number * sizeof(int*));  
+        if (sended_array == NULL) {  
+            // Handle error  
+            pthread_mutex_unlock(&init_mutex); // Unlock the mutex on error  
+            return;  
+        }  
+
+
+
   
         cnt_mutex_array = malloc(number * sizeof(pthread_mutex_t));  
         if (cnt_mutex_array == NULL) {  
@@ -148,11 +164,15 @@ void free_test_or_listen_record_arrays() {
         }  
         free(cnt_mutex_array);  
         cnt_mutex_array = NULL; // 可选  
+
+		for(int i=0;i<get_interface_cnt();i++)
+			free(sended_array[i]);
+		free(sended_array);
   
         // 释放cnt_array  
         free(cnt_array);  
         cnt_array = NULL; // 可选  
-  
+
         // 标记为未初始化（可选，取决于你的具体需求）  
         initialized_flag = -1;  
     }  
@@ -272,10 +292,20 @@ void listen_upon_one_interface_in_one_time(char *linked_node, char *listened_int
 
 
 void *test_thread_function(void *arg) {  
-    test_thread_args*ta = (test_thread_args *)arg;  
+    test_thread_args*ta = (test_thread_args *)arg; 
 	int ind = get_interface_index(ta->interface_name);
-	set_last_work_time(ind,time(NULL));
-	send_message(ta->interface_name, ta->message);
+
+	char *interface_status = get_interface_status_by_index(ind);
+	if(strcmp(interface_status, "receiving") == 0 || strcmp(interface_status, "closed") == 0 )
+	{
+	}else
+	{
+		printf("now sending the package %d through the interface \"%s\"\n",ta->package_id,ta->interface_name);
+		int ind = get_interface_index(ta->interface_name);
+		set_last_work_time(ind,time(NULL));
+		send_message(ta->interface_name, ta->message);
+	}
+	sended_array[ind][ta->package_id-1]=1;
     return NULL;  
 }  
 
@@ -283,7 +313,6 @@ void *test_thread_function(void *arg) {
 
 void test_upon_one_interface_in_one_time(const char *test_interface,int packages_num)
 {  
-
 	time_t current_time = time(NULL);  
 	int current_round = (current_time - get_test_begin_time()) / MAX_WAITING_TIME_IN_ONE_ROUND; 
 	//printf("current_time: %d\n",current_time);
@@ -291,15 +320,6 @@ void test_upon_one_interface_in_one_time(const char *test_interface,int packages
 
 	int ind = get_interface_index(test_interface);
 
-	char message[MAX_RES_LEN];
-	int ret = msg_generator_transfer(get_msg_generator_of_sender_by_index(ind),get_interface_name_by_index(ind),"test",current_round,message);
-	if(ret<0)
-	{
-		printf("cannot generate the sended msg for test_interface: %s!\n",test_interface);
-		return ;
-	}
-
-	
 	if(round_array[ind] == 0)
 	{
 		round_array[ind] = current_round;
@@ -309,6 +329,14 @@ void test_upon_one_interface_in_one_time(const char *test_interface,int packages
 	if (current_round > round_array[ind]) { 
 		printf("current round is %d and current sending interface is %s\n",current_round,test_interface);
 		update_status_in_current_round(test_interface,"test",current_round);
+
+		char message[MAX_RES_LEN];
+		int ret = msg_generator_transfer(get_msg_generator_of_sender_by_index(ind),get_interface_name_by_index(ind),"test",current_round,message);
+		if(ret<0)
+		{
+			printf("cannot generate the sended msg for test_interface: %s!\n",test_interface);
+			return ;
+		}
 		
 		pthread_t threads[packages_num];  
 	    test_thread_args args[packages_num];  
@@ -319,25 +347,25 @@ void test_upon_one_interface_in_one_time(const char *test_interface,int packages
 		
 		delay.tv_sec = 0;  // 秒      
 		delay.tv_nsec = SENDING_TIME_SPEC;  // 100毫秒 = 100,000,000纳秒  
-		
+
+
+		sended_array[ind] = malloc(packages_num * sizeof(int));
+        if (sended_array[ind] == NULL) {  
+            return;  
+        }  
+		for(int i=0;i<packages_num;i++)
+			sended_array[ind][i]=0; /*表示对应发送线程还没有开始发送*/
+
 	    for (int i = 0; i < packages_num; i++) {  
 	        args[i].interface_name = test_interface;  
 	        args[i].message = message;  
+			args[i].package_id = i+1;
 			nanosleep(&delay, NULL);
 	        pthread_create(&threads[i], NULL, test_thread_function, &args[i]);  
-
-			char *interface_status = get_interface_status(test_interface);
-			if(strcmp(interface_status, "receiving") == 0 || strcmp(interface_status, "closed") == 0 )
-			{
-				continue;
-			}else
-			{
-				printf("now sending the package %d through the interface \"%s\"\n",i+1,test_interface);
-			}
 		}  
-	    for (int i = 0; i < packages_num; i++) {  
-	        pthread_join(threads[i], NULL);  
-	    }  
+
+		while(isAllOne(sended_array[ind],get_interface_cnt())!=1);
+		free(sended_array[ind]);
 		
 		nanosleep(&delay, NULL);
 		nanosleep(&delay, NULL);

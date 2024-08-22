@@ -34,6 +34,7 @@ int receive_packet_can_gpu(int can_id, unsigned char *msg, int length, long wait
 int can0Recv(int len, long wait_time);
 int can1Recv(int len, long wait_time);
 int isAllZero(char arr[], int size);
+int isAllOne(int arr[], int size);
 
 #endif
 

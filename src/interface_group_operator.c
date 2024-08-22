@@ -239,6 +239,16 @@ void listen_upon_interface_group() {
 
 */
 
+
+/*
+该应用可以进一步增加的功能点:
+1，为了保证程序的健壮性，把整个程序放到子进程里面跑，死了就拉起来
+2，对于复杂拓扑的配置，纯手动配置很耗时耗力，并且容易出错，可以搞一个图形化程序来拖拽配置拓扑，并且生成相应的配置文件
+，这样又快又不会出错
+*/
+
+
+
 void test_upon_one_interface_in_one_test_case(const char *test_interface,int packages_num)
 {
 	while (1) {  

@@ -14,6 +14,14 @@ void destroy_can_gpu_lock() {
 }
 
 
+int isAllOne(int arr[], int size) {  
+    for (int i = 0; i < size; i++) {  
+        if (arr[i] != 1) {  
+            return 0;  
+        }  
+    }  
+    return 1;  
+}  
 
 
 
