@@ -348,7 +348,7 @@ void test_upon_one_interface_in_one_time(const char *test_interface,int packages
 		if(flag==DOWNLOAD_ALL_COMMUNICATION_INFOS_LOCALLY)
 		{
 			printf("\n");
-			printf("download all the listened results locally at current interface \"%s\" , which is below:\n",test_interface);
+			printf("now download all the listened results locally at current interface \"%s\" , which is below:\n",test_interface);
 			printAllCommucationInfo();
 			printf("\n");	
 			write_communication_info_array_to_json(res_file_name);
