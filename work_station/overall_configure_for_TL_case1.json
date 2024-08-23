@@ -89,6 +89,364 @@
 },{
 	"mode":       "test",
 	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-GE3-test",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp1s0",
+		"ip_addr":     "192.168.1.8",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:10:20"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-cotestee-GE6-listen"
+},{
+	"mode":       "listen",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-GE3-listen",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp1s0",
+		"ip_addr":     "192.168.1.8",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:10:20"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-cotestee-GE6-test"
+},{
+	"mode":       "listen",
+	"located_node": "fpu-cotestee",
+	"interface_name":       "fpu-cotestee-GE6-listen",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp3s0",
+		"ip_addr":     "192.168.1.110",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:30:02"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-testee-GE3-test"
+},{
+	"mode":       "test",
+	"located_node": "fpu-cotestee",
+	"interface_name":       "fpu-cotestee-GE6-test",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp3s0",
+		"ip_addr":     "192.168.1.110",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:30:02"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-testee-GE3-listen"
+},{
+	"mode":       "test",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-GE4-test",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp4s0",
+		"ip_addr":     "192.168.1.11",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:10:23"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-cotestee-GE4-listen"
+},{
+	"mode":       "listen",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-GE4-listen",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp4s0",
+		"ip_addr":     "192.168.1.11",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:10:23"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-cotestee-GE4-test"
+},{
+	"mode":       "listen",
+	"located_node": "fpu-cotestee",
+	"interface_name":       "fpu-cotestee-GE4-listen",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp4s0",
+		"ip_addr":     "192.168.1.111",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:30:03"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-testee-GE4-test"
+},{
+	"mode":       "test",
+	"located_node": "fpu-cotestee",
+	"interface_name":       "fpu-cotestee-GE4-test",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp4s0",
+		"ip_addr":     "192.168.1.111",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:30:03"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-testee-GE4-listen"
+},{
+	"mode":       "test",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-GE5-test",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp3s0",
+		"ip_addr":     "192.168.1.10",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:10:22"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-cotestee-GE8-listen"
+},{
+	"mode":       "listen",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-GE5-listen",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp3s0",
+		"ip_addr":     "192.168.1.10",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:10:22"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-cotestee-GE8-test"
+},{
+	"mode":       "listen",
+	"located_node": "fpu-cotestee",
+	"interface_name":       "fpu-cotestee-GE8-listen",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp2s0",
+		"ip_addr":     "192.168.1.109",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:30:01"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-testee-GE5-test"
+},{
+	"mode":       "test",
+	"located_node": "fpu-cotestee",
+	"interface_name":       "fpu-cotestee-GE8-test",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp2s0",
+		"ip_addr":     "192.168.1.109",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:30:01"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-testee-GE5-listen"
+},{
+	"mode":       "test",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-GE6-test",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp3s0",
+		"ip_addr":     "192.168.1.10",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:10:22"
+	},
+	"linked_eth_info":     {
+		"ip_name":     "enp1s0",
+		"ip_addr":     "192.168.1.108",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:30:00"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-cotestee-GE3-listen"
+},{
+	"mode":       "listen",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-GE6-listen",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp3s0",
+		"ip_addr":     "192.168.1.10",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:10:22"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-cotestee-GE3-test"
+},{
+	"mode":       "listen",
+	"located_node": "fpu-cotestee",
+	"interface_name":       "fpu-cotestee-GE3-listen",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp1s0",
+		"ip_addr":     "192.168.1.108",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:30:00"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-testee-GE6-test"
+},{
+	"mode":       "test",
+	"located_node": "fpu-cotestee",
+	"interface_name":       "fpu-cotestee-GE3-test",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp1s0",
+		"ip_addr":     "192.168.1.108",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:30:00"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-testee-GE6-listen"
+},{
+	"mode":       "test",
+	"located_node": "fpu-testee",
 	"interface_name":       "fpu-testee-rs485-test",
 	"interface_type":       "rs485",
 	"center_interface_name":        "fpu-cotestee-GE7-listen",
@@ -110,6 +468,182 @@
 	"duplex":       "half-duplex",
 
 	"linked_interface_name":        "fpu-cotestee-rs485-listen"
+},{
+	"mode":       "test",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-GE7-test",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp5s0",
+		"ip_addr":     "192.168.1.12",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:10:24"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-cotestee-GE1-listen"
+},{
+	"mode":       "listen",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-GE7-listen",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp5s0",
+		"ip_addr":     "192.168.1.12",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:10:24"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-cotestee-GE1-test"
+},{
+	"mode":       "listen",
+	"located_node": "fpu-cotestee",
+	"interface_name":       "fpu-cotestee-GE1-listen",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp3s0",
+		"ip_addr":     "192.168.1.110",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:30:02"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-testee-GE7-test"
+},{
+	"mode":       "test",
+	"located_node": "fpu-cotestee",
+	"interface_name":       "fpu-cotestee-GE1-test",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp3s0",
+		"ip_addr":     "192.168.1.110",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:30:02"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-testee-GE7-listen"
+},{
+	"mode":       "test",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-GE8-test",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp2s0",
+		"ip_addr":     "192.168.1.9",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:10:21"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-cotestee-GE5-listen"
+},{
+	"mode":       "listen",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-GE8-listen",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp2s0",
+		"ip_addr":     "192.168.1.9",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:10:21"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-cotestee-GE5-test"
+},{
+	"mode":       "listen",
+	"located_node": "fpu-cotestee",
+	"interface_name":       "fpu-cotestee-GE5-listen",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp3s0",
+		"ip_addr":     "192.168.1.110",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:30:02"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-testee-GE8-test"
+},{
+	"mode":       "test",
+	"located_node": "fpu-cotestee",
+	"interface_name":       "fpu-cotestee-GE5-test",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp3s0",
+		"ip_addr":     "192.168.1.110",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:30:02"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-testee-GE8-listen"
 },{
 	"mode":       "listen",
 	"located_node": "fpu-testee",
