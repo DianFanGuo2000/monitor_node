@@ -430,12 +430,15 @@ int read_communication_info_array_from_json(const char *filename) {
 
 
 void write_interface_info_array_to_json(const char *filename, struct interface_info *array, size_t size) {  
+	//printAllInfo();
+	//printf("size: %d\n",size);
+	
     cJSON *interfaces = cJSON_CreateArray();  
     if (!interfaces) {  
         fprintf(stderr, "Memory allocation failed\n");  
         return;  
     }  
-  
+	
     for (size_t i = 0; i < size; i++) {  
         cJSON *interface = cJSON_CreateObject();  
         if (!interface) {  
@@ -443,7 +446,9 @@ void write_interface_info_array_to_json(const char *filename, struct interface_i
             cJSON_Delete(interfaces);  
             return;  
         }  
-  
+
+
+  		//printf("%d\n",i);
         cJSON_AddStringToObject(interface, "located_node", array[i].located_node);  
         cJSON_AddStringToObject(interface, "interface_name", array[i].interface_name);  
         cJSON_AddStringToObject(interface, "interface_type", array[i].interface_type);  
@@ -478,7 +483,7 @@ void write_interface_info_array_to_json(const char *filename, struct interface_i
 		}  
 		cJSON_AddItemToObject(interface, "linked_eth_info", linked_eth_info); 
 
-
+		//printf("%d\n",i);
 		cJSON *can_info = cJSON_CreateObject();  
 		if (array[i].can_info.can_id != -1) {   // 假设 -1 是一个无效值，用于检查  
 		    cJSON_AddNumberToObject(can_info, "can_id", array[i].can_info.can_id);
@@ -527,7 +532,7 @@ void write_interface_info_array_to_json(const char *filename, struct interface_i
   
         cJSON_AddItemToArray(interfaces, interface);  
     }  
-  
+  	//printf("%d\n",12312);
     char *rendered = cJSON_Print(interfaces);  
     if (rendered == NULL) {  
         fprintf(stderr, "Failed to render JSON\n");  
@@ -551,7 +556,7 @@ void write_interface_info_array_to_json(const char *filename, struct interface_i
 }  
 
 
-int update_interface_cnt(const char *filename)
+int update_interface_cnt_from_split_json(const char *filename)
 {
 	cJSON *json;
 	char buffer[BUFFER_SIZE];
@@ -587,8 +592,122 @@ int update_interface_cnt(const char *filename)
 }
 
 
+int update_interface_cnt_from_overall_json(const char *current_node_name, const char *filename)
+{
+	//printf("current_node_name:%s filename: %s\n",current_node_name,filename);
 
-void    read_interface_info_array_from_json(const char *filename, struct interface_info *array,size_t size) {
+	cJSON *json,*interfaces,*interface;
+	char buffer[BUFFER_SIZE];
+	FILE *file = fopen(filename, "r");  
+    if (file == NULL) {  
+        printf("open failed\n");  
+        return 1;  
+    }  
+    int i = 0;  
+    while (i < BUFFER_SIZE - 1 && fscanf(file, "%c", &buffer[i]) == 1) {
+        i++;  
+    }
+	if (i < BUFFER_SIZE) { 
+		buffer[i] = '\0';  
+    }  
+	fclose(file);
+
+    json = cJSON_Parse(buffer);  
+    if (!json) {
+        const char *error_ptr = cJSON_GetErrorPtr();
+        if (error_ptr != NULL) {
+            fprintf(stderr, "Error before: %s\n", error_ptr);
+        }
+        return -1;
+    }
+
+    if (!cJSON_IsArray(json)) {
+        fprintf(stderr, "Error: JSON is not an array\n");
+        cJSON_Delete(json);
+        return -1;
+    }
+
+	interfaces = json;
+	int cnt = 0;
+	int _size = cJSON_GetArraySize(interfaces);
+	//printf("xasxasx\n");
+	for (int i = 0; i < _size; i++) {
+	  interface = cJSON_GetArrayItem(interfaces, i);
+		if (!interface) continue;
+
+		//printf("%s\n",cJSON_GetObjectItem(interface, "located_node")->valuestring);
+
+		/*这里只读取同属于一个节点下的接口，毕竟当前程序只在当前一个节点上跑*/
+		if(strcmp(cJSON_GetObjectItem(interface, "located_node")->valuestring,current_node_name)!=0) continue; 
+
+		cnt++;
+	}
+    return cnt;
+}
+
+
+
+int get_all_node_name_from_overall_json(const char *filename, const char *current_node_name, char *all_node_name[]) {  
+    char buffer[BUFFER_SIZE];  
+    FILE *file = fopen(filename, "r");  
+    if (file == NULL) {  
+        printf("Open failed\n");  
+        return -1;  
+    }  
+    int i = 0;  
+    while (i < BUFFER_SIZE - 1 && fscanf(file, "%c", &buffer[i]) == 1) {  
+        i++;  
+    }  
+    if (i < BUFFER_SIZE) {  
+        buffer[i] = '\0';  
+    }  
+    fclose(file);  
+  
+    cJSON *json = cJSON_Parse(buffer);  
+    if (!json) {  
+        const char *error_ptr = cJSON_GetErrorPtr();  
+        if (error_ptr != NULL) {  
+            fprintf(stderr, "Error before: %s\n", error_ptr);  
+        }  
+        return -1;  
+    }  
+  
+    if (!cJSON_IsArray(json)) {  
+        fprintf(stderr, "Error: JSON is not an array\n");  
+        cJSON_Delete(json);  
+        return -1;  
+    }  
+  
+    cJSON *interfaces = json;  
+    int cnt = 0;  
+    int _size = cJSON_GetArraySize(interfaces);  
+    for (int i = 0; i < _size; i++) {  
+        cJSON *interface = cJSON_GetArrayItem(interfaces, i);  
+        if (!interface) continue;  
+
+
+		int j=0;
+  		for(;j<cnt;j++)
+  		{
+			if (strcmp(cJSON_GetObjectItem(interface, "located_node")->valuestring, all_node_name[j]) == 0) break; /*如果已经记录过了*/ 
+  		}
+		if(j<cnt)
+		{
+			continue;
+		}
+		//printf("%d\n",cnt);
+
+        all_node_name[cnt] = strdup(cJSON_GetObjectItem(interface, "located_node")->valuestring); // 假设您想保存某个键的值  
+        cnt++;  
+    }  
+  
+    cJSON_Delete(json);  
+    return cnt;  
+}
+
+
+
+void    read_interface_info_array_from_split_json(const char *filename, struct interface_info *array) {
 	cJSON *json, *interfaces, *interface, *tmp; 
 	char buffer[BUFFER_SIZE];
 	FILE *file = fopen(filename, "r");  
@@ -624,10 +743,7 @@ void    read_interface_info_array_from_json(const char *filename, struct interfa
     }
     interfaces = json;
     int _size = cJSON_GetArraySize(interfaces);
-	if(_size>size)
-	{
-		_size=size;
-	}
+
 	//printf("xasxasx\n");
     for (int i = 0; i < _size; i++) {
         interface = cJSON_GetArrayItem(interfaces, i);
@@ -902,6 +1018,338 @@ void    read_interface_info_array_from_json(const char *filename, struct interfa
 }
 
 
+void  read_interface_info_array_from_overall_json(const char *current_node_name, const char *filename, struct interface_info *array) {
+	cJSON *json, *interfaces, *interface, *linked_interface, *tmp; 
+	char buffer[BUFFER_SIZE];
+	FILE *file = fopen(filename, "r");  
+    if (file == NULL) {  
+        printf("open failed\n");  
+        return _ERROR;  
+    }  
+    int i = 0;  
+    while (i < BUFFER_SIZE - 1 && fscanf(file, "%c", &buffer[i]) == 1) {
+        i++;  
+    }
+	if (i < BUFFER_SIZE) { 
+		buffer[i] = '\0';  
+    }  
+	fclose(file);
+
+	//printf("%d      %d      %s\n",i,BUFFER_SIZE,buffer);
+
+    json = cJSON_Parse(buffer);  
+    if (!json) {
+        const char *error_ptr = cJSON_GetErrorPtr();
+        if (error_ptr != NULL) {
+            fprintf(stderr, "Error before: %s\n", error_ptr);
+			fprintf(stderr, "Buffer content: %s\n", buffer);
+        }
+        return;
+    }
+
+    if (!cJSON_IsArray(json)) {
+        fprintf(stderr, "Error: JSON is not an array\n");
+        cJSON_Delete(json);
+        return;
+    }
+    interfaces = json;
+    int _size = cJSON_GetArraySize(interfaces);
+
+	int cnt = 0;
+	//printf("_size: %d\n",_size);
+    for (int i = 0; i < _size; i++) {
+        interface = cJSON_GetArrayItem(interfaces, i);
+		if (!interface) continue;
+
+		/*这里只读取同属于一个节点下的接口，毕竟当前程序只在当前一个节点上跑*/
+		if(strcmp(cJSON_GetObjectItem(interface, "located_node")->valuestring,current_node_name)!=0) continue; 
+		
+		
+		for(int j=0;j<_size;j++)/*检索当前节点所连接于的节点*/
+		{
+			linked_interface = cJSON_GetArrayItem(interfaces, j);
+			if (!linked_interface) continue;
+			if(strcmp(cJSON_GetObjectItem(interface, "linked_interface_name")->valuestring,cJSON_GetObjectItem(linked_interface, "interface_name")->valuestring)==0)
+			{
+				break;
+			}
+		}
+		if (!linked_interface) 
+		{
+			printf("cannot find the linked interface for the interface \"%s\"\n[ERROR] loading terminate!\n",cJSON_GetObjectItem(interface, "interface_name")->valuestring);
+			return;
+		}
+
+		array[cnt].initialized_flag = -1; //表示还未初始化
+
+        // Allocate and fill located_node
+        array[cnt].located_node = strdup(cJSON_GetObjectItem(interface, "located_node")->valuestring);
+        // Similarly fill other fields...
+        array[cnt].interface_name = strdup(cJSON_GetObjectItem(interface, "interface_name")->valuestring);
+        array[cnt].interface_type = strdup(cJSON_GetObjectItem(interface, "interface_type")->valuestring);
+        array[cnt].linked_node = strdup(cJSON_GetObjectItem(linked_interface, "located_node")->valuestring);
+        array[cnt].linked_interface_name = strdup(cJSON_GetObjectItem(linked_interface, "interface_name")->valuestring);
+        array[cnt].linked_interface_type = strdup(cJSON_GetObjectItem(linked_interface, "interface_type")->valuestring);
+		array[cnt].center_interface_name = strdup(cJSON_GetObjectItem(interface, "center_interface_name")->valuestring);
+		array[cnt].status_chooser = strdup(cJSON_GetObjectItem(interface, "status_chooser")->valuestring);
+		array[cnt].base_send_func = strdup(cJSON_GetObjectItem(interface, "base_send_func")->valuestring);
+		array[cnt].base_receive_func = strdup(cJSON_GetObjectItem(interface, "base_receive_func")->valuestring);
+		array[cnt].msg_generator_of_sender = strdup(cJSON_GetObjectItem(interface, "msg_generator_of_sender")->valuestring);
+		array[cnt].initializer_name = strdup(cJSON_GetObjectItem(interface, "initializer_name")->valuestring);
+		array[cnt].closer_name = strdup(cJSON_GetObjectItem(interface, "closer_name")->valuestring);
+
+        array[cnt].status = strdup(cJSON_GetObjectItem(interface, "status")->valuestring);
+		array[cnt].mode = strdup(cJSON_GetObjectItem(interface, "mode")->valuestring);
+		array[cnt].duplex = strdup(cJSON_GetObjectItem(interface, "duplex")->valuestring);
+
+
+        // Handle nested structures
+		// Fill eth_info  
+		tmp = cJSON_GetObjectItem(interface, "eth_info");  
+		if (tmp && cJSON_IsObject(tmp)) {  
+			cJSON *ip_name_item = cJSON_GetObjectItem(tmp, "ip_name");  
+			if (ip_name_item && cJSON_IsString(ip_name_item)) {  
+				array[cnt].eth_info.ip_name = strdup(ip_name_item->valuestring);  
+			} else {  
+				array[cnt].eth_info.ip_name = NULL;	
+			}  
+			
+			cJSON *ip_addr_item = cJSON_GetObjectItem(tmp, "ip_addr");  
+			if (ip_addr_item && cJSON_IsString(ip_addr_item)) {  
+				array[cnt].eth_info.ip_addr = strdup(ip_addr_item->valuestring);  
+			} else {  
+				array[cnt].eth_info.ip_addr = NULL;	
+			}  
+
+			cJSON *net_mask_item = cJSON_GetObjectItem(tmp, "net_mask");  
+			if (net_mask_item && cJSON_IsString(net_mask_item)) {  
+				array[cnt].eth_info.net_mask = strdup(net_mask_item->valuestring);  
+			} else {  
+				array[cnt].eth_info.net_mask = NULL;	
+			}  
+
+			cJSON *mac_addr_item = cJSON_GetObjectItem(tmp, "mac_addr");  
+			if (mac_addr_item && cJSON_IsString(mac_addr_item)) {  
+				array[cnt].eth_info.mac_addr = strdup(mac_addr_item->valuestring);  
+			} else {  
+				array[cnt].eth_info.mac_addr = NULL;	
+			}  
+		} else {  
+			array[cnt].eth_info.ip_name = NULL;
+			array[cnt].eth_info.ip_addr = NULL;
+			array[cnt].eth_info.net_mask = NULL;
+			array[cnt].eth_info.mac_addr = NULL;	
+		}  
+
+		// Fill linked_eth_info  
+		tmp = cJSON_GetObjectItem(linked_interface, "eth_info");  
+		if (tmp && cJSON_IsObject(tmp)) { 
+			cJSON *ip_name_item = cJSON_GetObjectItem(tmp, "ip_name");  
+			if (ip_name_item && cJSON_IsString(ip_name_item)) {  
+				array[cnt].linked_eth_info.ip_name = strdup(ip_name_item->valuestring);  
+			} else {  
+				array[cnt].linked_eth_info.ip_name = NULL;	
+			} 
+
+			
+			cJSON *ip_addr_item = cJSON_GetObjectItem(tmp, "ip_addr");  
+			if (ip_addr_item && cJSON_IsString(ip_addr_item)) {  
+				array[cnt].linked_eth_info.ip_addr = strdup(ip_addr_item->valuestring);  
+			} else {  
+				array[cnt].linked_eth_info.ip_addr = NULL;	
+			}  
+
+			cJSON *net_mask_item = cJSON_GetObjectItem(tmp, "net_mask");  
+			if (net_mask_item && cJSON_IsString(net_mask_item)) {  
+				array[cnt].linked_eth_info.net_mask = strdup(net_mask_item->valuestring);  
+			} else {  
+				array[cnt].linked_eth_info.net_mask = NULL;	
+			}  
+
+			cJSON *mac_addr_item = cJSON_GetObjectItem(tmp, "mac_addr");  
+			if (mac_addr_item && cJSON_IsString(mac_addr_item)) {  
+				array[cnt].linked_eth_info.mac_addr = strdup(mac_addr_item->valuestring);  
+			} else {  
+				array[cnt].linked_eth_info.mac_addr = NULL;	
+			}  
+		} else {  
+			array[cnt].linked_eth_info.ip_name = NULL;
+			array[cnt].linked_eth_info.ip_addr = NULL;
+			array[cnt].linked_eth_info.net_mask = NULL;
+			array[cnt].linked_eth_info.mac_addr = NULL;		
+		} 
+
+
+
+		// Fill can_id	
+		tmp = cJSON_GetObjectItem(interface, "can_info");  
+		if (tmp && cJSON_IsObject(tmp)) {  
+			cJSON *can_id_item = cJSON_GetObjectItem(tmp, "can_id");  
+			if (can_id_item && cJSON_IsNumber(can_id_item)) {  
+				array[cnt].can_info.can_id = can_id_item->valuedouble;  
+			} else {  
+				array[cnt].can_info.can_id = -1;  
+			}  
+			
+			cJSON *baud_rate_item = cJSON_GetObjectItem(tmp, "baud_rate");  
+			if (baud_rate_item && cJSON_IsNumber(baud_rate_item)) {  
+				array[cnt].can_info.baud_rate = baud_rate_item->valuedouble;  
+			} else {  
+				array[cnt].can_info.baud_rate = -1;  
+			} 
+		} else {  
+			array[cnt].can_info.can_id = -1;  
+			array[cnt].can_info.baud_rate = -1;  
+		}  
+
+
+		// Fill linked_can_id	
+		tmp = cJSON_GetObjectItem(linked_interface, "can_info");  
+		if (tmp && cJSON_IsObject(tmp)) {  
+			cJSON *can_id_item = cJSON_GetObjectItem(tmp, "can_id");  
+			if (can_id_item && cJSON_IsNumber(can_id_item)) {  
+				array[cnt].linked_can_info.can_id = can_id_item->valuedouble;  
+			} else {  
+				array[cnt].linked_can_info.can_id = -1;  
+			} 
+
+			cJSON *baud_rate_item = cJSON_GetObjectItem(tmp, "baud_rate");  
+			if (baud_rate_item && cJSON_IsNumber(baud_rate_item)) {  
+				array[cnt].linked_can_info.baud_rate = baud_rate_item->valuedouble;  
+			} else {  
+				array[cnt].linked_can_info.baud_rate = -1;  
+			} 
+		} else {  
+			array[cnt].linked_can_info.can_id = -1;  
+			array[cnt].linked_can_info.baud_rate = -1;  
+		}
+
+
+
+		// Fill baud_rate  
+		tmp = cJSON_GetObjectItem(interface, "rs485_info");  
+		if (tmp && cJSON_IsObject(tmp)) {  
+
+			cJSON *rs485_dev_path_item = cJSON_GetObjectItem(tmp, "rs485_dev_path");	
+			if (rs485_dev_path_item && cJSON_IsString(rs485_dev_path_item)) {  
+				array[cnt].rs485_info.rs485_dev_path = strdup(rs485_dev_path_item->valuestring);  
+			} else {  
+				array[cnt].rs485_info.rs485_dev_path= NULL;  
+			}  
+
+			
+			cJSON *rs485_gpio_number_item = cJSON_GetObjectItem(tmp, "rs485_gpio_number");	
+			if (rs485_gpio_number_item && cJSON_IsNumber(rs485_gpio_number_item)) {  
+				array[cnt].rs485_info.rs485_gpio_number = rs485_gpio_number_item->valuedouble;  
+			} else {  
+				array[cnt].rs485_info.rs485_gpio_number = -1;  
+			}  
+
+			
+			cJSON *baud_rate_item = cJSON_GetObjectItem(tmp, "baud_rate");	
+			if (baud_rate_item && cJSON_IsNumber(baud_rate_item)) {  
+				array[cnt].rs485_info.baud_rate = baud_rate_item->valuedouble;  
+			} else {  
+				array[cnt].rs485_info.baud_rate = -1;  
+			}  
+
+			cJSON *databits_item = cJSON_GetObjectItem(tmp, "databits");
+			if (databits_item && cJSON_IsNumber(databits_item)) {  
+				array[cnt].rs485_info.databits = databits_item->valuedouble;  
+			} else {  
+				array[cnt].rs485_info.databits = -1;  
+			}  
+
+			cJSON *stopbits_item = cJSON_GetObjectItem(tmp, "stopbits");
+			if (stopbits_item && cJSON_IsNumber(stopbits_item)) {  
+				array[cnt].rs485_info.stopbits = stopbits_item->valuedouble;  
+			} else {  
+				array[cnt].rs485_info.stopbits = -1;  
+			}  
+
+			cJSON *paritybits_item = cJSON_GetObjectItem(tmp, "paritybits");
+			if (paritybits_item && cJSON_IsNumber(paritybits_item)) {  
+				array[cnt].rs485_info.paritybits = paritybits_item->valuedouble;  
+			} else {  
+				array[cnt].rs485_info.paritybits = 0;  
+			}  
+
+	
+		} else {  
+			array[cnt].rs485_info.rs485_dev_path = NULL; 
+			array[cnt].rs485_info.rs485_gpio_number = -1; 
+			array[cnt].rs485_info.baud_rate = -1;  
+			array[cnt].rs485_info.databits = -1;  
+			array[cnt].rs485_info.stopbits = -1;  
+			array[cnt].rs485_info.paritybits = 0;  
+		}
+
+
+		// Fill linked_baud_rate  
+		tmp = cJSON_GetObjectItem(linked_interface, "rs485_info");  
+		if (tmp && cJSON_IsObject(tmp)) { 
+
+			cJSON *rs485_dev_path_item = cJSON_GetObjectItem(tmp, "rs485_dev_path");	
+			if (rs485_dev_path_item && cJSON_IsString(rs485_dev_path_item)) {  
+				array[cnt].linked_rs485_info.rs485_dev_path = strdup(rs485_dev_path_item->valuestring);  
+			} else {  
+				array[cnt].linked_rs485_info.rs485_dev_path= NULL;  
+			}  
+
+			
+			cJSON *rs485_gpio_number_item = cJSON_GetObjectItem(tmp, "rs485_gpio_number");	
+			if (rs485_gpio_number_item && cJSON_IsNumber(rs485_gpio_number_item)) {  
+				array[cnt].linked_rs485_info.rs485_gpio_number = rs485_gpio_number_item->valuedouble;  
+			} else {  
+				array[cnt].linked_rs485_info.rs485_gpio_number = -1;  
+			}  
+			
+			cJSON *baud_rate_item = cJSON_GetObjectItem(tmp, "baud_rate");	
+			if (baud_rate_item && cJSON_IsNumber(baud_rate_item)) {  
+				array[cnt].linked_rs485_info.baud_rate = baud_rate_item->valuedouble;  
+			} else {  
+				array[cnt].linked_rs485_info.baud_rate = -1;  
+			}  
+
+			cJSON *databits_item = cJSON_GetObjectItem(tmp, "databits");
+			if (databits_item && cJSON_IsNumber(databits_item)) {  
+				array[cnt].linked_rs485_info.databits = databits_item->valuedouble;  
+			} else {  
+				array[cnt].linked_rs485_info.databits = -1;  
+			}  
+
+			cJSON *stopbits_item = cJSON_GetObjectItem(tmp, "stopbits");
+			if (stopbits_item && cJSON_IsNumber(stopbits_item)) {  
+				array[cnt].linked_rs485_info.stopbits = stopbits_item->valuedouble;  
+			} else {  
+				array[cnt].linked_rs485_info.stopbits = -1;  
+			}  
+
+			cJSON *paritybits_item = cJSON_GetObjectItem(tmp, "paritybits");
+			if (paritybits_item && cJSON_IsNumber(paritybits_item)) {  
+				array[cnt].linked_rs485_info.paritybits = paritybits_item->valuedouble;  
+			} else {  
+				array[cnt].linked_rs485_info.paritybits = 0;  
+			}  
+
+	
+		} else {  
+			array[cnt].linked_rs485_info.rs485_dev_path = NULL; 
+			array[cnt].linked_rs485_info.rs485_gpio_number = -1; 
+			array[cnt].linked_rs485_info.baud_rate = -1;  
+			array[cnt].linked_rs485_info.databits = -1;  
+			array[cnt].linked_rs485_info.stopbits = -1;  
+			array[cnt].linked_rs485_info.paritybits = 0;  
+		}
+
+		cnt++;
+    }
+
+    cJSON_Delete(json);
+}
+
+
+
 void malloc_interface_info_array(int size)
 {
 	interface_cnt = size;	
@@ -917,6 +1365,7 @@ void malloc_communication_info_array(int size)
 
 void free_interface_info_array()
 {
+	printf("start free interface info array\n");
 	for (int i = 0; i < interface_cnt; i++) {  
 		free(interface_info_array[i].located_node);  
 		free(interface_info_array[i].interface_name);  
@@ -931,7 +1380,7 @@ void free_interface_info_array()
 		free(interface_info_array[i].msg_generator_of_sender);
 		free(interface_info_array[i].initializer_name);
 		free(interface_info_array[i].closer_name);
-
+		//printf("%d\n",i);
 
 		free(interface_info_array[i].eth_info.ip_name);
 		free(interface_info_array[i].eth_info.ip_addr);
@@ -949,17 +1398,22 @@ void free_interface_info_array()
 		free(interface_info_array[i].duplex); 
 	}  
 	free(interface_info_array);
+	interface_cnt = 0;
+	printf("interface info array freed!\n");
 }
 
 void free_communication_info_array()
 {
+	printf("start free communication info array\n");
 	for (int i = 0; i < communication_info_cnt; i++) {
 		free(communication_info_array[i].linked_node);
 		free(communication_info_array[i].interface_name);
-		free(communication_info_array[i].updated_time);
+		//free(communication_info_array[i].updated_time);
 		//free(communication_info_array[i].error_ratio_value);
 	}
 	free(communication_info_array);
+	communication_info_cnt=0;
+	printf("communication info array freed!\n");
 }
 
 
@@ -969,12 +1423,12 @@ time_t get_test_begin_time()
 }
 
 
-void start_and_load_info(const char *filename)
+void start_info_manager_from_split_json(const char *filename)
 {
 
 	printf("loading interface information......\n");
 
-	int size = update_interface_cnt(filename);
+	int size = update_interface_cnt_from_split_json(filename);
 	int ret = string_to_time_t(TEST_BEIGIN_TIME, &test_begin_time);
 	
 	if (ret!=_SUCCESS) {
@@ -984,7 +1438,7 @@ void start_and_load_info(const char *filename)
 
 	free_interface_info_array();
 	malloc_interface_info_array(size);
-	read_interface_info_array_from_json(filename,interface_info_array,interface_cnt);
+	read_interface_info_array_from_split_json(filename,interface_info_array);
 	printf("interface information loaded\n");
 
 	
@@ -1025,9 +1479,102 @@ void start_and_load_info(const char *filename)
 	
 }
 
-void dump_info_and_close(const char *filename)
+
+void start_info_manager_from_overall_json(const char* current_node_name, const char *filename)
 {
-	write_interface_info_array_to_json(filename,interface_info_array,interface_cnt);
+
+	printf("loading interface information......\n");
+
+    char *node_names[MAX_INTERFACES]; // 假设我们最多只关心10个接口  
+    int node_cnt = get_all_node_name_from_overall_json(filename, current_node_name, node_names);  
+
+	
+	//printf("xas\n");
+
+	for (int i = 0; i < node_cnt; i++) {  
+		if (strcmp(node_names[i], current_node_name) == 0) {  
+			break; // 找到匹配项，退出循环	
+		}  
+	  
+		// 如果这是最后一个元素且没有找到匹配项  
+		if (i == node_cnt - 1) {  
+			printf("cannot find this node \"%s\"\n", current_node_name);  
+			// 释放之前用 strdup 分配的内存  
+			for (int j = 0; j < node_cnt; j++) {  
+				free(node_names[j]);  
+			}  
+			return; // 提前退出函数  
+		}  
+	}  
+
+
+
+	int size = update_interface_cnt_from_overall_json(current_node_name,filename);
+	int ret = string_to_time_t(TEST_BEIGIN_TIME, &test_begin_time);
+	
+	if (ret!=_SUCCESS) {
+		test_begin_time = 0;
+		printf("cannot parse the test begin time!\n");
+	}
+
+	//printf("size:%d\n",size);
+
+	free_interface_info_array();
+	malloc_interface_info_array(size);
+	read_interface_info_array_from_overall_json(current_node_name,filename,interface_info_array);
+	printf("interface information loaded\n");
+
+	//printAllInfo();
+
+	
+	printf("loading communication information......\n");
+	initialize_communication_info_lock();
+	
+	int count=0;
+	for(int i=0;i<size;i++)
+	{
+		if(strcmp(interface_info_array[i].mode,"listen")==0)
+			count++;
+		if(strcmp(interface_info_array[i].interface_type,"eth")==0)
+			interface_info_array[i].eth_info.sock_addr = (struct sockaddr_ll*)malloc(sizeof(struct sockaddr_ll));
+	}
+
+	//printf("count:%d\n",count);
+
+	free_communication_info_array();
+	communication_info_cnt = count;
+	malloc_communication_info_array(count);
+
+
+	int c_i=0;
+	
+	for (int i = 0; i < size; i++) {
+		if(strcmp(interface_info_array[i].mode,"listen")==0)
+		{
+			communication_info_array[c_i].linked_node = strdup(interface_info_array[i].linked_node);
+			communication_info_array[c_i].interface_name = strdup(interface_info_array[i].interface_name);
+			time_t now = time(NULL); 
+			communication_info_array[c_i].updated_time = time(NULL);
+			communication_info_array[c_i].tx = PAKCAGES_NUM_ONE_TIME;
+			communication_info_array[c_i].rx = 0;
+			//communication_info_array[i].error_ratio_value = "0";
+			c_i++;
+		}
+	}
+
+	//printAllCommucationInfo();
+
+	printf("communication information loaded\n");
+	
+}
+
+
+void close_info_manager(const char *filename)
+{
+	if(filename!=NULL)/*看是否要存一下接口配置，存为一个针对当前节点的分分配置文件*/
+		write_interface_info_array_to_json(filename,interface_info_array,interface_cnt);
+
+	//printf("xsaxxsa\n");
 	free_interface_info_array();
 	free_communication_info_array();
 

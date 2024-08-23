@@ -256,7 +256,7 @@ int send_packet(const char *interface_name, const char *message, const char *eth
   
     // Copy the message payload into the packet, immediately after the Ethernet header  
     memcpy(packet + sizeof(struct ether_header), message, message_len);  
-  
+   
     // Create a raw socket for sending packets at the Ethernet level  
     int sockfd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_SNMP));  
     if (sockfd < 0) {  

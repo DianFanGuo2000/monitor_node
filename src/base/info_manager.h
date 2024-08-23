@@ -129,12 +129,21 @@ char* parse_newest_communication_infos_to_json(int max_info_num_one_time, int wh
 time_t get_test_begin_time();
 char* get_interface_status_by_index(int i);
 
-int update_interface_cnt(const char *filename);
-void start_and_load_info(const char *filename);
-void dump_info_and_close(const char *filename);
+int update_interface_cnt_from_split_json(const char *filename);
+int update_interface_cnt_from_overall_json(const char *current_node_name, const char *filename);
+
+
+void start_info_manager_from_split_json(const char *filename);
+void start_info_manager_from_overall_json(const char* current_node_name, const char *filename);
+
+void close_info_manager(const char *filename);
 
 void write_interface_info_array_to_json(const char *filename,struct interface_info *array, size_t size);
-void read_interface_info_array_from_json(const char *filename, struct interface_info *array, size_t size);
+void read_interface_info_array_from_split_json(const char *filename, struct interface_info *array);
+void  read_interface_info_array_from_overall_json(const char *current_node_name, const char *filename, struct interface_info *array);
+
+int get_all_node_name_from_overall_json(const char *filename, const char *current_node_name, char *all_node_name[]);
+
 
 int string_to_time_t(const char* time_buffer, time_t* parsed_time);
 int time_t_to_string(time_t time_val, char* buffer, size_t buffer_size);

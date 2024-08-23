@@ -476,7 +476,46 @@ void listen_upon_interface_group() {
 
 /*型式试验入口*/
 
-#include <unistd.h> // 包含 access 函数的声明  
+#include <stdio.h>  
+#include <string.h>  
+#include <unistd.h>  
+#include <errno.h>  
+#include <stdio.h>  
+#include <string.h>  
+  
+void input_split_and_copy(char *delimiter, int num_parts, char *dest[], size_t dest_size[]) {  
+    char input[1024];  
+    char *token;  
+    int part_index = 0;  
+  
+    // 读取一行输入  
+    if (fgets(input, sizeof(input), stdin) == NULL) {  
+        return; // 读取失败或遇到文件结束符  
+    }  
+  
+    // 移除换行符  
+    input[strcspn(input, "\n")] = 0;  
+  
+    // 使用strtok分割字符串  
+    token = strtok(input, delimiter);  
+    while (token != NULL && part_index < num_parts) {  
+        // 将分割出的部分复制到对应的目标数组中  
+        strncpy(dest[part_index], token, dest_size[part_index] - 1);  
+        dest[part_index][dest_size[part_index] - 1] = '\0'; // 确保字符串以null结尾  
+        part_index++;  
+  
+        // 继续获取下一个分割出的部分  
+        token = strtok(NULL, delimiter);  
+    }  
+  
+    // 对于剩余的未填充的目标数组，设置为空字符串  
+    for (; part_index < num_parts; part_index++) {  
+        dest[part_index][0] = '\0';  
+    }  
+}  
+  
+
+
 
 int is_valid_filename(const char *filename) {  
     // 首先检查指针是否为空和字符串是否为空  
@@ -496,40 +535,81 @@ int is_valid_filename(const char *filename) {
     return 1;  
 }
 
-
-int main(int argc, char *argv[]) {
-	// 检查参数数量  
-	if (argc < 3) {  
-		// 参数不足  
-		fprintf(stderr, "Not enough arguments.\n");  
-		fprintf(stderr, "Usage: %s <config_file> <res_file_name>\n", argv[0]);   
-		return 1; // 表示程序因为错误的参数而退出  
-	} else if (argc == 3) {  
-		// 3个参数
-		if (!is_valid_filename(argv[1])) {	
-			fprintf(stderr, "Invalid round parameter '%s'. It should be a file path.\n", argv[1]);	
-			fprintf(stderr, "Usage: %s <config_file> <res_file_name>\n", argv[0]); 
-
-			return 1;  
-		}  
-		if (!is_valid_filename(argv[2])) {	
-			fprintf(stderr, "Invalid round parameter '%s'. It should be a file path.\n", argv[2]);	
-			fprintf(stderr, "Usage: %s <config_file> <res_file_name>\n", argv[0]); 
-
-			return 1;  
-		}  
-	}else {  
-		// 参数过多  
-		fprintf(stderr, "Too many arguments.\n");  
-		fprintf(stderr, "Usage: %s <config_file> <res_file_name>\n", argv[0]);  
-		return 1;  
-	}  
-	  
-    const char* config_file = argv[1];  
-    set_res_file_name(argv[2]);
+void createFileIfNotExists(const char* filePath) {  
+    // Attempt to open the file in read-write mode ("r+")  
+    FILE* file = fopen(filePath, "r+");  
+  
+    // If the file does not exist, fopen will return NULL  
+    if (file == NULL) {  
+        // Attempt to create the file in write mode ("w")  
+        file = fopen(filePath, "w");  
+        if (file == NULL) {  
+            // If file creation fails, print an error message  
+            perror("Failed to create file");  
+            return;  
+        }  
+        printf("File created: %s\n", filePath);  
+  
+        // Close the file after creation  
+        fclose(file);  
+    } else {  
+        // If the file already exists, close the file and print a message  
+        printf("File already exists: %s\n", filePath);  
+        fclose(file);  
+    }  
+}
 
 
-    start_and_load_info(config_file); 
+int check_params_for_cmd_TLAtOneNodeFromSplitJsonFile(char *split_topology_config_file_name, char *res_file_name1) {  
+    // 假设 is_valid_filename 是一个验证文件名有效性的函数  
+    if (!is_valid_filename(split_topology_config_file_name)) {  
+        fprintf(stderr, "Invalid parameter '%s', which is split topology config file path. It should be a valid file path.\n", split_topology_config_file_name);  
+        return 0;  
+    }  
+    if (!is_valid_filename(res_file_name1)) {  
+        fprintf(stderr, "Invalid parameter '%s', which is communication info save path. It should be a valid file path.\n", res_file_name1);  
+        return 0;  
+    }  
+    return 1;  
+}
+
+int check_params_for_cmd_TLAtOneNodeFromOverallJsonFile(char *current_node_name, char *overall_topology_config_file_name , char *res_file_name1) {  
+    // 假设 is_valid_filename 是一个验证文件名有效性的函数  
+    if (!is_valid_filename(overall_topology_config_file_name)) {  
+        fprintf(stderr, "Invalid parameter '%s', which is overall topology config file path. It should be a valid file path.\n", overall_topology_config_file_name);  
+        return 0;  
+    }  
+    if (!is_valid_filename(res_file_name1)) {  
+        fprintf(stderr, "Invalid parameter '%s', which is communication info save path. It should be a valid file path.\n", res_file_name1);  
+        return 0;  
+    }  
+    return 1;  
+}
+
+
+int check_params_for_cmd_split_into_target(char *current_node_name, char *overall_topology_config_file_name , char *target_split_config_file_name) {  
+    // 假设 is_valid_filename 是一个验证文件名有效性的函数  
+    if (!is_valid_filename(overall_topology_config_file_name)) {  
+        fprintf(stderr, "Invalid parameter '%s', which is overall topology config file path. It should be a valid file path.\n", overall_topology_config_file_name);  
+        return 0;  
+    }  
+    if (!is_valid_filename(target_split_config_file_name)) {  
+        fprintf(stderr, "Invalid parameter '%s', which is target split config file name. It should be a valid file path.\n", target_split_config_file_name);  
+        return 0;  
+    }  
+    return 1;  
+}
+
+
+
+
+
+void TLAtOneNodeFromSplitJsonFile(char *split_config_file_name,char *res_file_name1)
+{
+    set_res_file_name(res_file_name1);
+
+
+    start_info_manager_from_split_json(split_config_file_name); 
 	
 		
 	init_test_or_listen_record_arrays();
@@ -545,14 +625,106 @@ int main(int argc, char *argv[]) {
 		
 	free_test_or_listen_record_arrays();	
 
-	dump_info_and_close(config_file);
+	close_info_manager(NULL);
 
-		
-    return 0; // 表示程序正常退出  
 }
 
-#endif
 
+void TLAtOneNodeFromOverallJsonFile(char *current_node_name,char *overall_config_file_name,char *res_file_name1)
+{
+	//printf("xsaasx\n");
+
+    set_res_file_name(res_file_name);
+
+
+    start_info_manager_from_overall_json(current_node_name,overall_config_file_name); 
+	
+		
+	init_test_or_listen_record_arrays();
+
+	initialize_assigned_flag_lock();
+
+		
+	// 下面开始循环测试各个配置好的物理通信接口
+	test_or_listen_upon_interface_group();
+
+	destroy_assigned_flag_lock();
+		
+	free_test_or_listen_record_arrays();	
+
+	close_info_manager(NULL);
+
+}
+
+
+void split_into_target(char *current_node_name,char *overall_config_file_name,char *target_split_config_file_name)
+{
+	createFileIfNotExists(target_split_config_file_name);
+	start_info_manager_from_overall_json(current_node_name,overall_config_file_name); 
+	close_info_manager(target_split_config_file_name);
+}
+
+
+
+int main(int argc, char *argv[]) {  
+	char *parts[3];  
+    size_t parts_size[3] = {50, 50, 50};  
+    parts[0] = malloc(parts_size[0]);  
+    parts[1] = malloc(parts_size[1]);  
+    parts[2] = malloc(parts_size[2]);  
+	char delimiter[5] = " ";
+
+  
+    printf("welcome to communication test program...\n\n");  
+    printf("TLAtOneNodeFromSplitJsonFile\t-- start to send, receive and record communication results at one node based on a split topology configure json file\n");  
+	printf("TLAtOneNodeFromOverallJsonFile\t-- start to send, receive and record communication results at one node based on a overall topology configure json file\n");  
+	printf("split_into_target\t-- split overall configure topology json file into target split topology configure json file at target node\n\n");  
+  
+    while (1) {  
+        printf("[cmd]: ");  
+        input_split_and_copy(delimiter,3, parts, parts_size);
+        if (strcmp(parts[0], "TLAtOneNodeFromSplitJsonFile") == 0) {  
+            printf("\TLAtOneNodeFromSplitJsonFile Input reminder: <split_topology_config_file_name> <communication_info_file_save_path>\n"); 
+			printf("[args for TLAtOneNodeFromSplitJsonFile]: ");
+            input_split_and_copy(delimiter,3, parts, parts_size);
+            while (check_params_for_cmd_TLAtOneNodeFromSplitJsonFile(parts[0], parts[1]) == 0)
+            {
+            	printf("[args for TLAtOneNodeFromSplitJsonFile]: ");
+            	input_split_and_copy(delimiter,3, parts, parts_size);
+            }
+            TLAtOneNodeFromSplitJsonFile(parts[0], parts[1]);  
+        } else if (strcmp(parts[0], "TLAtOneNodeFromOverallJsonFile") == 0) {  
+            printf("\TLAtOneNodeFromOverallJsonFile Input reminder:<current_node_name> <overall_topology_config_file_name> <communication_info_file_save_path>\n"); 
+			printf("[args for TLAtOneNodeFromOverallJsonFile]: ");
+            input_split_and_copy(delimiter,3, parts, parts_size);
+            while (check_params_for_cmd_TLAtOneNodeFromOverallJsonFile(parts[0], parts[1],parts[2]) == 0)
+            {
+            	printf("[args for TLAtOneNodeFromOverallJsonFile]: ");
+            	input_split_and_copy(delimiter,3, parts, parts_size);
+            }
+            TLAtOneNodeFromOverallJsonFile(parts[0], parts[1],parts[2]);  
+        } else if (strcmp(parts[0], "split_into_target") == 0) {  
+			printf("\split_into_target Input reminder:<current_node_name> <overall_topology_config_file_name> <target_split_config_file_save_path>\n"); 
+			printf("[args for split_into_target]: ");
+            input_split_and_copy(delimiter,3, parts, parts_size);
+		    while (check_params_for_cmd_split_into_target(parts[0], parts[1], parts[2]) == 0)
+            {
+            	printf("[args for split_into_target]: ");
+            	input_split_and_copy(delimiter,3, parts, parts_size);
+            }
+			split_into_target(parts[0], parts[1],parts[2]);
+        } 
+    }  
+
+    free(parts[0]);
+	free(parts[1]);
+	free(parts[2]);  
+
+    return 0;  
+}
+
+
+#endif
 
 
 
