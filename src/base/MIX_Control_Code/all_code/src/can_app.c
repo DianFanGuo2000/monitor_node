@@ -1056,7 +1056,7 @@ STATUS comCfgInit(UINT32 com,UINT32 mode,UINT32 bpsRate)
 	
     printf("send start ! \r\n");
 	
-	appCanDataSendFunc(com,(char *)&cfgParameterSend,sizeof(CFG_INIT_INFO));
+	retValue = appCanDataSendFunc(com,(char *)&cfgParameterSend,sizeof(CFG_INIT_INFO));
 	//vos_EdrTaskDelay(TASK_DELAY_TIME);
 	while(retValue != OK)
 	{

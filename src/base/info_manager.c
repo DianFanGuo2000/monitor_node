@@ -1365,7 +1365,7 @@ void malloc_communication_info_array(int size)
 
 void free_interface_info_array()
 {
-	printf("start free interface info array\n");
+	printf("***********************************start to free interface info array\n");
 	for (int i = 0; i < interface_cnt; i++) {  
 		free(interface_info_array[i].located_node);  
 		free(interface_info_array[i].interface_name);  
@@ -1399,12 +1399,12 @@ void free_interface_info_array()
 	}  
 	free(interface_info_array);
 	interface_cnt = 0;
-	printf("interface info array freed!\n");
+	printf("***********************************interface info array being free!\n");
 }
 
 void free_communication_info_array()
 {
-	printf("start free communication info array\n");
+	printf("***********************************start to free communication info array\n");
 	for (int i = 0; i < communication_info_cnt; i++) {
 		free(communication_info_array[i].linked_node);
 		free(communication_info_array[i].interface_name);
@@ -1413,7 +1413,7 @@ void free_communication_info_array()
 	}
 	free(communication_info_array);
 	communication_info_cnt=0;
-	printf("communication info array freed!\n");
+	printf("***********************************communication info array being free!\n");
 }
 
 
@@ -1425,8 +1425,7 @@ time_t get_test_begin_time()
 
 void start_info_manager_from_split_json(const char *filename)
 {
-
-	printf("loading interface information......\n");
+	printf("***********************************loading interface information......\n");
 
 	int size = update_interface_cnt_from_split_json(filename);
 	int ret = string_to_time_t(TEST_BEIGIN_TIME, &test_begin_time);
@@ -1436,13 +1435,13 @@ void start_info_manager_from_split_json(const char *filename)
 		printf("cannot parse the test begin time!\n");
 	}
 
-	free_interface_info_array();
+	//free_interface_info_array();
 	malloc_interface_info_array(size);
 	read_interface_info_array_from_split_json(filename,interface_info_array);
-	printf("interface information loaded\n");
+	printf("***********************************interface information loaded\n");
 
 	
-	printf("loading communication information......\n");
+	printf("***********************************loading communication information......\n");
 	initialize_communication_info_lock();
 	
 	int count=0;
@@ -1454,7 +1453,7 @@ void start_info_manager_from_split_json(const char *filename)
 			interface_info_array[i].eth_info.sock_addr = (struct sockaddr_ll*)malloc(sizeof(struct sockaddr_ll));
 	}
 
-	free_communication_info_array();
+	//free_communication_info_array();
 	communication_info_cnt = count;
 	malloc_communication_info_array(count);
 
@@ -1475,7 +1474,7 @@ void start_info_manager_from_split_json(const char *filename)
 		}
 	}
 
-	printf("communication information loaded\n");
+	printf("***********************************communication information loaded\n");
 	
 }
 
@@ -1483,7 +1482,7 @@ void start_info_manager_from_split_json(const char *filename)
 void start_info_manager_from_overall_json(const char* current_node_name, const char *filename)
 {
 
-	printf("loading interface information......\n");
+	printf("***********************************loading interface information......\n");
 
     char *node_names[MAX_INTERFACES]; // 假设我们最多只关心10个接口  
     int node_cnt = get_all_node_name_from_overall_json(filename, current_node_name, node_names);  
@@ -1507,6 +1506,9 @@ void start_info_manager_from_overall_json(const char* current_node_name, const c
 		}  
 	}  
 
+	for (int j = 0; j < node_cnt; j++) {  
+		free(node_names[j]);  
+	} 
 
 
 	int size = update_interface_cnt_from_overall_json(current_node_name,filename);
@@ -1519,15 +1521,15 @@ void start_info_manager_from_overall_json(const char* current_node_name, const c
 
 	//printf("size:%d\n",size);
 
-	free_interface_info_array();
+	//free_interface_info_array();
 	malloc_interface_info_array(size);
 	read_interface_info_array_from_overall_json(current_node_name,filename,interface_info_array);
-	printf("interface information loaded\n");
+	printf("***********************************interface information loaded\n");
 
 	//printAllInfo();
 
 	
-	printf("loading communication information......\n");
+	printf("***********************************loading communication information......\n");
 	initialize_communication_info_lock();
 	
 	int count=0;
@@ -1541,7 +1543,7 @@ void start_info_manager_from_overall_json(const char* current_node_name, const c
 
 	//printf("count:%d\n",count);
 
-	free_communication_info_array();
+	//free_communication_info_array();
 	communication_info_cnt = count;
 	malloc_communication_info_array(count);
 
@@ -1564,7 +1566,7 @@ void start_info_manager_from_overall_json(const char* current_node_name, const c
 
 	//printAllCommucationInfo();
 
-	printf("communication information loaded\n");
+	printf("***********************************communication information loaded\n");
 	
 }
 

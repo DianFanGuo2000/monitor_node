@@ -81,7 +81,7 @@ pthread_mutex_t init_mutex = PTHREAD_MUTEX_INITIALIZER;
 void init_test_or_listen_record_arrays() {  
     pthread_mutex_lock(&init_mutex); // Lock the mutex before initialization  
 
-	printf("recording variables being initialized\n");
+	printf("***********************************recording variables being initialized\n");
   
     if (initialized_flag == -1) {  
         int number = get_interface_cnt();  
@@ -141,14 +141,14 @@ void init_test_or_listen_record_arrays() {
         initialized_flag = 0;  
     }  
 
-	printf("recording variables initialized done\n");
+	printf("***********************************recording variables initialized done\n");
     pthread_mutex_unlock(&init_mutex); // Unlock the mutex after initialization  
 }  
 
 
 void free_test_or_listen_record_arrays() {  
 	pthread_mutex_lock(&init_mutex); // Lock the mutex before initialization 
-	printf("recording variables being free\n");
+	printf("***********************************recording variables being free\n");
     // 假设initialized_flag和init_mutex是全局的，并且我们知道它们的状态  
     // 如果需要，可以在这里添加检查以确保在释放资源之前已经正确初始化  
   
@@ -177,7 +177,7 @@ void free_test_or_listen_record_arrays() {
         initialized_flag = -1;  
     }  
 
-	printf("recording variables free done\n");
+	printf("***********************************recording variables free done\n");
 	pthread_mutex_unlock(&init_mutex); // Unlock the mutex after initialization  
 
 }  

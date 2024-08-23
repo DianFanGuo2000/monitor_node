@@ -19,6 +19,7 @@ int initializer_transfer(char *initializer_name, const char *interface_name)
 {
 	pthread_mutex_lock(&initializer_lock); // 在函数开始时加锁
 
+	printf("***********************************wait for %s being initialized\n",interface_name);
 	int i;  
     int found = 0;  
     for (i = 0; i < initializer_num; i++) {  
@@ -29,17 +30,20 @@ int initializer_transfer(char *initializer_name, const char *interface_name)
     }  
     if (!found) {  
 		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
+		printf("***********************************%s failed to be initialized because its initializer not found\n",interface_name);
         return _ERROR;  
     }  
   
     if (strcmp(initializer_name, "eth_initializer_normal") == 0) {
 		int ret = eth_initializer_normal(interface_name);
+		printf("***********************************%s initialized done\n",interface_name);
 		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
         return ret;  
     }  
 
     if (strcmp(initializer_name, "eth_initializer_xy") == 0) {
 		int ret = eth_initializer_xy(interface_name);
+		printf("***********************************%s initialized done\n",interface_name);
 		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
         return ret;  
     }  
@@ -47,19 +51,24 @@ int initializer_transfer(char *initializer_name, const char *interface_name)
 	
     if (strcmp(initializer_name, "rs485_initializer_normal") == 0) { 
 		int ret = rs485_initializer_normal(interface_name);
+		printf("***********************************%s initialized done\n",interface_name);
 		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
         return ret;  
     }  
     if (strcmp(initializer_name, "can_fpu_initializer_normal") == 0) { 
 		int ret = can_fpu_initializer_normal(interface_name);  
+		printf("***********************************%s initialized done\n",interface_name);
 		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
         return ret;  
     }  
 	if (strcmp(initializer_name, "can_gpu_initializer_normal") == 0) { 
-		int ret = can_gpu_initializer_normal(interface_name);  
+		int ret = can_gpu_initializer_normal(interface_name);
+		printf("***********************************%s initialized done\n",interface_name);
 		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
         return ret;  
     }  
+
+	printf("***********************************%s failed to be initialized\n",interface_name);
   	pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
     return _ERROR; // This should never be reached, but kept for safety.  
 }
@@ -69,6 +78,7 @@ int closer_transfer(char *closer_name, const char *interface_name)
 {
 	pthread_mutex_lock(&initializer_lock); // 在函数开始时加锁
 
+	printf("***********************************wait for %s being closed\n",interface_name);
 	int i;  
     int found = 0;  
     for (i = 0; i < closer_num; i++) {  
@@ -79,17 +89,20 @@ int closer_transfer(char *closer_name, const char *interface_name)
     }  
     if (!found) {  
 		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
+		printf("***********************************%s failed to be closed because its closer not found\n",interface_name);
         return _ERROR;  
     }  
   
     if (strcmp(closer_name, "eth_closer_normal") == 0) {
 		int ret = eth_closer_normal(interface_name);
+		printf("***********************************%s closed done\n",interface_name);
 		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
         return ret;  
     }  
 
     if (strcmp(closer_name, "eth_closer_xy") == 0) {
 		int ret = eth_closer_xy(interface_name);
+		printf("***********************************%s closed done\n",interface_name);
 		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
         return ret;  
     }  
@@ -97,20 +110,24 @@ int closer_transfer(char *closer_name, const char *interface_name)
 	
     if (strcmp(closer_name, "rs485_closer_normal") == 0) {  
 		int ret = rs485_closer_normal(interface_name); 
+		printf("***********************************%s closed done\n",interface_name);
 		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
         return ret;  
     }  
     if (strcmp(closer_name, "can_fpu_closer_normal") == 0) {
 		int ret = can_fpu_closer_normal(interface_name); 
+		printf("***********************************%s closed done\n",interface_name);
 		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
         return ret;  
     }  
     if (strcmp(closer_name, "can_gpu_closer_normal") == 0) {
 		int ret = can_gpu_closer_normal(interface_name); 
+		printf("***********************************%s closed done\n",interface_name);
 		pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
         return ret;  
     }  
 
+	printf("***********************************%s failed to be closed\n",interface_name);
   	pthread_mutex_unlock(&initializer_lock); // 在返回前解锁  
     return _ERROR; // This should never be reached, but kept for safety.  
 }
@@ -124,6 +141,7 @@ int eth_initializer_normal(const char *interface_name)
 	int initialized_flag = get_initialized_flag_by_index(i);
 	if(initialized_flag>0)
 	{
+		printf("%s already initialized before\n",interface_name);
 		return _SUCCESS;
 	}
 	
@@ -173,6 +191,7 @@ int eth_initializer_xy(const char *interface_name)
 	int initialized_flag = get_initialized_flag_by_index(i);
 	if(initialized_flag>0)
 	{
+		printf("%s already initialized before\n",interface_name);
 		return _SUCCESS;
 	}
 	
@@ -270,6 +289,7 @@ int rs485_initializer_normal(const char *interface_name)
 	int initialized_flag = get_initialized_flag_by_index(i);
 	if(initialized_flag>0)
 	{
+		printf("%s already initialized before\n",interface_name);
 		return _SUCCESS;
 	}
 	
@@ -314,6 +334,7 @@ int can_fpu_initializer_normal(const char *interface_name)
 	int initialized_flag = get_initialized_flag_by_index(i);
 	if(initialized_flag>0)
 	{
+		printf("%s already initialized before\n",interface_name);
 		return _SUCCESS;
 	}
 
@@ -358,6 +379,7 @@ int eth_closer_xy(const char *interface_name)
 	int initialized_flag = get_initialized_flag_by_index(i);
 	if(initialized_flag<0)
 	{
+		printf("%s already initialized before\n",interface_name);
 		return _SUCCESS;
 	}
 
@@ -394,6 +416,7 @@ int eth_closer_normal(const char *interface_name)
 	int initialized_flag = get_initialized_flag_by_index(i);
 	if(initialized_flag<0)
 	{
+		printf("%s already closed before\n",interface_name);
 		return _SUCCESS;
 	}
 
@@ -426,6 +449,7 @@ int rs485_closer_normal(const char *interface_name)
 	int initialized_flag = get_initialized_flag_by_index(i);
 	if(initialized_flag<0)
 	{
+		printf("%s already closed before\n",interface_name);
 		return _SUCCESS;
 	}
 
@@ -455,6 +479,7 @@ int can_fpu_closer_normal(const char *interface_name)
 	int initialized_flag = get_initialized_flag_by_index(i);
 	if(initialized_flag<0)
 	{
+		printf("%s already closed before\n",interface_name);
 		return _SUCCESS;
 	}
 	
