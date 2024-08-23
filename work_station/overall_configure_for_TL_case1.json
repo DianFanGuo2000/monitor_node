@@ -1,0 +1,505 @@
+[{
+	"mode":       "test",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-GE1-test",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp3s0",
+		"ip_addr":     "192.168.1.10",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:10:22"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-cotestee-GE7-listen"
+},{
+	"mode":       "listen",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-GE1-listen",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp3s0",
+		"ip_addr":     "192.168.1.10",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:10:22"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+
+	"linked_interface_name":        "fpu-cotestee-GE7-test"
+},{
+	"mode":       "listen",
+	"located_node": "fpu-cotestee",
+	"interface_name":       "fpu-cotestee-GE7-listen",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp5s0",
+		"ip_addr":     "192.168.1.112",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:30:04"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-testee-GE1-test"
+},{
+	"mode":       "test",
+	"located_node": "fpu-cotestee",
+	"interface_name":       "fpu-cotestee-GE7-test",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp5s0",
+		"ip_addr":     "192.168.1.112",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:30:04"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-testee-GE1-listen"
+},{
+	"mode":       "test",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-rs485-test",
+	"interface_type":       "rs485",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "only_work_at_even_round",
+	"base_send_func":        "send_packet_rs485",
+	"base_receive_func":        "receive_packet_rs485",
+	"msg_generator_of_sender":        "generate_rs485_test_msg",
+	"initializer_name":        "rs485_initializer_normal",
+	"closer_name":        "rs485_closer_normal",
+	"rs485_info":   {
+			"rs485_dev_path":        "/dev/ttyS4",
+			"rs485_gpio_number":    482,
+			"baud_rate":    115200,
+			"databits":    8,
+			"stopbits":    1,
+			"paritybits":    78
+	},
+	"status":       "sending",
+	"duplex":       "half-duplex",
+
+	"linked_interface_name":        "fpu-cotestee-rs485-listen"
+},{
+	"mode":       "listen",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-rs485-listen",
+	"interface_type":       "rs485",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "only_work_at_odd_round",
+	"base_send_func":        "send_packet_rs485",
+	"base_receive_func":        "receive_packet_rs485",
+	"msg_generator_of_sender":        "generate_rs485_test_msg",
+	"initializer_name":        "rs485_initializer_normal",
+	"closer_name":        "rs485_closer_normal",
+	"rs485_info":   {
+			"rs485_dev_path":        "/dev/ttyS4",
+			"rs485_gpio_number":    482,
+			"baud_rate":    115200,
+			"databits":    8,
+			"stopbits":    1,
+			"paritybits":    78
+	},
+	"status":       "receiving",
+	"duplex":       "half-duplex",
+
+	"linked_interface_name":        "fpu-cotestee-rs485-test"
+},{
+	"mode":       "listen",
+	"located_node": "fpu-cotestee",
+	"interface_name":       "fpu-cotestee-rs485-listen",
+	"interface_type":       "rs485",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "only_work_at_even_round",
+	"base_send_func":        "send_packet_rs485",
+	"base_receive_func":        "receive_packet_rs485",
+	"msg_generator_of_sender":        "generate_rs485_test_msg",
+	"initializer_name":        "rs485_initializer_normal",
+	"closer_name":        "rs485_closer_normal",
+	"rs485_info":   {
+			"rs485_dev_path":        "/dev/ttyS4",
+			"rs485_gpio_number":    482,
+			"baud_rate":    115200,
+			"databits":    8,
+			"stopbits":    1,
+			"paritybits":    78
+	},
+	"status":       "receiving",
+	"duplex":       "half-duplex",
+
+	"linked_interface_name":        "fpu-testee-rs485-test"
+},{
+	"mode":       "test",
+	"located_node": "fpu-cotestee",
+	"interface_name":       "fpu-cotestee-rs485-test",
+	"interface_type":       "rs485",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "only_work_at_odd_round",
+	"base_send_func":        "send_packet_rs485",
+	"base_receive_func":        "receive_packet_rs485",
+	"msg_generator_of_sender":        "generate_rs485_test_msg",
+	"initializer_name":        "rs485_initializer_normal",
+	"closer_name":        "rs485_closer_normal",
+	"rs485_info":   {
+			"rs485_dev_path":        "/dev/ttyS4",
+			"rs485_gpio_number":    482,
+			"baud_rate":    115200,
+			"databits":    8,
+			"stopbits":    1,
+			"paritybits":    78
+	},
+	"status":       "sending",
+	"duplex":       "half-duplex",
+
+	"linked_interface_name":        "fpu-testee-rs485-listen"
+},{
+	"mode":       "test",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-can1-test",
+	"interface_type":       "can",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "only_work_at_odd_round",
+	"base_send_func":        "send_packet_can_fpu",
+	"base_receive_func":        "receive_packet_can_fpu",
+	"msg_generator_of_sender":        "generate_fpu_can_test_msg",
+	"initializer_name":        "can_fpu_initializer_normal",
+	"closer_name":        "can_fpu_closer_normal",
+	"can_info":     {
+			"can_id":       1,
+			"baud_rate":    1000
+	},
+	"status":       "sending",
+	"duplex":       "half-duplex",
+
+	"linked_interface_name":        "fpu-testee-can5-listen"
+},{
+	"mode":       "listen",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-can2-listen",
+	"interface_type":       "can",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "only_work_at_odd_round",
+	"base_send_func":        "send_packet_can_fpu",
+	"base_receive_func":        "receive_packet_can_fpu",
+	"msg_generator_of_sender":        "generate_fpu_can_test_msg",
+	"initializer_name":        "can_fpu_initializer_normal",
+	"closer_name":        "can_fpu_closer_normal",
+	"can_info":     {
+			"can_id":       3,
+			"baud_rate":    1000
+	},
+	"status":       "receiving",
+	"duplex":       "half-duplex",
+
+	"linked_interface_name":        "fpu-testee-can6-test"
+},{
+	"mode":       "test",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-can2-test",
+	"interface_type":       "can",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "only_work_at_even_round",
+	"base_send_func":        "send_packet_can_fpu",
+	"base_receive_func":        "receive_packet_can_fpu",
+	"msg_generator_of_sender":        "generate_fpu_can_test_msg",
+	"initializer_name":        "can_fpu_initializer_normal",
+	"closer_name":        "can_fpu_closer_normal",
+	"can_info":     {
+			"can_id":       3,
+			"baud_rate":    1000
+	},
+	"status":       "sending",
+	"duplex":       "half-duplex",
+
+	"linked_interface_name":        "fpu-testee-can6-listen"
+},{
+	"mode":       "listen",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-can1-listen",
+	"interface_type":       "can",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "only_work_at_even_round",
+	"base_send_func":        "send_packet_can_fpu",
+	"base_receive_func":        "receive_packet_can_fpu",
+	"msg_generator_of_sender":        "generate_fpu_can_test_msg",
+	"initializer_name":        "can_fpu_initializer_normal",
+	"closer_name":        "can_fpu_closer_normal",
+	"can_info":     {
+			"can_id":       1,
+			"baud_rate":    1000
+	},
+	"status":       "receiving",
+	"duplex":       "half-duplex",
+
+	"linked_interface_name":        "fpu-testee-can5-test"
+},{
+	"mode":       "test",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-can3-test",
+	"interface_type":       "can",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "only_work_at_odd_round",
+	"base_send_func":        "send_packet_can_fpu",
+	"base_receive_func":        "receive_packet_can_fpu",
+	"msg_generator_of_sender":        "generate_fpu_can_test_msg",
+	"initializer_name":        "can_fpu_initializer_normal",
+	"closer_name":        "can_fpu_closer_normal",
+	"can_info":     {
+			"can_id":       5,
+			"baud_rate":    1000
+	},
+	"status":       "sending",
+	"duplex":       "half-duplex",
+
+	"linked_interface_name":        "fpu-testee-can7-listen"
+},{
+	"mode":       "listen",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-can7-listen",
+	"interface_type":       "can",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "only_work_at_odd_round",
+	"base_send_func":        "send_packet_can_fpu",
+	"base_receive_func":        "receive_packet_can_fpu",
+	"msg_generator_of_sender":        "generate_fpu_can_test_msg",
+	"initializer_name":        "can_fpu_initializer_normal",
+	"closer_name":        "can_fpu_closer_normal",
+	"can_info":     {
+			"can_id":       8,
+			"baud_rate":    1000
+	},
+	"status":       "receiving",
+	"duplex":       "half-duplex",
+	
+	"linked_interface_name":        "fpu-testee-can3-test"
+},{
+	"mode":       "test",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-can7-test",
+	"interface_type":       "can",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "only_work_at_even_round",
+	"base_send_func":        "send_packet_can_fpu",
+	"base_receive_func":        "receive_packet_can_fpu",
+	"msg_generator_of_sender":        "generate_fpu_can_test_msg",
+	"initializer_name":        "can_fpu_initializer_normal",
+	"closer_name":        "can_fpu_closer_normal",
+	"can_info":     {
+			"can_id":       8,
+			"baud_rate":    1000
+	},
+	"status":       "sending",
+	"duplex":       "half-duplex",
+
+	"linked_interface_name":        "fpu-testee-can3-listen"
+},{
+	"mode":       "listen",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-can3-listen",
+	"interface_type":       "can",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "only_work_at_even_round",
+	"base_send_func":        "send_packet_can_fpu",
+	"base_receive_func":        "receive_packet_can_fpu",
+	"msg_generator_of_sender":        "generate_fpu_can_test_msg",
+	"initializer_name":        "can_fpu_initializer_normal",
+	"closer_name":        "can_fpu_closer_normal",
+	"can_info":     {
+			"can_id":       5,
+			"baud_rate":    1000
+	},
+	"status":       "receiving",
+	"duplex":       "half-duplex",
+
+	"linked_interface_name":        "fpu-testee-can7-test"
+},{
+	"mode":       "test",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-can5-test",
+	"interface_type":       "can",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "only_work_at_even_round",
+	"base_send_func":        "send_packet_can_fpu",
+	"base_receive_func":        "receive_packet_can_fpu",
+	"msg_generator_of_sender":        "generate_fpu_can_test_msg",
+	"initializer_name":        "can_fpu_initializer_normal",
+	"closer_name":        "can_fpu_closer_normal",
+	"can_info":     {
+			"can_id":       4,
+			"baud_rate":    1000
+	},
+	"status":       "sending",
+	"duplex":       "half-duplex",
+	
+	"linked_interface_name":        "fpu-testee-can1-listen"
+},{
+	"mode":       "listen",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-can6-listen",
+	"interface_type":       "can",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "only_work_at_even_round",
+	"base_send_func":        "send_packet_can_fpu",
+	"base_receive_func":        "receive_packet_can_fpu",
+	"msg_generator_of_sender":        "generate_fpu_can_test_msg",
+	"initializer_name":        "can_fpu_initializer_normal",
+	"closer_name":        "can_fpu_closer_normal",
+	"can_info":     {
+			"can_id":       2,
+			"baud_rate":    1000
+	},
+	"status":       "receiving",
+	"duplex":       "half-duplex",
+
+	"linked_interface_name":        "fpu-testee-can2-test"
+},{
+	"mode":       "test",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-can6-test",
+	"interface_type":       "can",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "only_work_at_odd_round",
+	"base_send_func":        "send_packet_can_fpu",
+	"base_receive_func":        "receive_packet_can_fpu",
+	"msg_generator_of_sender":        "generate_fpu_can_test_msg",
+	"initializer_name":        "can_fpu_initializer_normal",
+	"closer_name":        "can_fpu_closer_normal",
+	"can_info":     {
+			"can_id":       2,
+			"baud_rate":    1000
+	},
+	"status":       "sending",
+	"duplex":       "half-duplex",
+
+	"linked_interface_name":        "fpu-testee-can2-listen"
+},{
+	"mode":       "listen",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-can5-listen",
+	"interface_type":       "can",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "only_work_at_odd_round",
+	"base_send_func":        "send_packet_can_fpu",
+	"base_receive_func":        "receive_packet_can_fpu",
+	"msg_generator_of_sender":        "generate_fpu_can_test_msg",
+	"initializer_name":        "can_fpu_initializer_normal",
+	"closer_name":        "can_fpu_closer_normal",
+	"can_info":     {
+			"can_id":       4,
+			"baud_rate":    1000
+	},
+	"status":       "receiving",
+	"duplex":       "half-duplex",
+
+	"linked_interface_name":        "fpu-testee-can1-test"
+},{
+	"mode":       "test",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-can4-test",
+	"interface_type":       "can",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "only_work_at_odd_round",
+	"base_send_func":        "send_packet_can_fpu",
+	"base_receive_func":        "receive_packet_can_fpu",
+	"msg_generator_of_sender":        "generate_fpu_can_test_msg",
+	"initializer_name":        "can_fpu_initializer_normal",
+	"closer_name":        "can_fpu_closer_normal",
+	"can_info":     {
+			"can_id":       7,
+			"baud_rate":    1000
+	},
+	"status":       "sending",
+	"duplex":       "half-duplex",
+
+	"linked_interface_name":        "fpu-testee-can8-listen"
+},{
+	"mode":       "listen",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-can8-listen",
+	"interface_type":       "can",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "only_work_at_odd_round",
+	"base_send_func":        "send_packet_can_fpu",
+	"base_receive_func":        "receive_packet_can_fpu",
+	"msg_generator_of_sender":        "generate_fpu_can_test_msg",
+	"initializer_name":        "can_fpu_initializer_normal",
+	"closer_name":        "can_fpu_closer_normal",
+	"can_info":     {
+			"can_id":       6,
+			"baud_rate":    1000
+	},
+	"status":       "receiving",
+	"duplex":       "half-duplex",
+	
+	"linked_interface_name":        "fpu-testee-can4-test"
+},{
+	"mode":       "test",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-can8-test",
+	"interface_type":       "can",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "only_work_at_even_round",
+	"base_send_func":        "send_packet_can_fpu",
+	"base_receive_func":        "receive_packet_can_fpu",
+	"msg_generator_of_sender":        "generate_fpu_can_test_msg",
+	"initializer_name":        "can_fpu_initializer_normal",
+	"closer_name":        "can_fpu_closer_normal",
+	"can_info":     {
+			"can_id":       6,
+			"baud_rate":    1000
+	},
+	"status":       "sending",
+	"duplex":       "half-duplex",
+
+	"linked_interface_name":        "fpu-testee-can4-listen"
+},{
+	"mode":       "listen",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-can4-listen",
+	"interface_type":       "can",
+	"center_interface_name":        "fpu-cotestee-GE7-listen",
+	"status_chooser":        "only_work_at_even_round",
+	"base_send_func":        "send_packet_can_fpu",
+	"base_receive_func":        "receive_packet_can_fpu",
+	"msg_generator_of_sender":        "generate_fpu_can_test_msg",
+	"initializer_name":        "can_fpu_initializer_normal",
+	"closer_name":        "can_fpu_closer_normal",
+	"can_info":     {
+			"can_id":       7,
+			"baud_rate":    1000
+	},
+	"status":       "receiving",
+	"duplex":       "half-duplex",
+
+	"linked_interface_name":        "fpu-testee-can8-test"
+}]

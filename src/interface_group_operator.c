@@ -634,7 +634,7 @@ void TLAtOneNodeFromOverallJsonFile(char *current_node_name,char *overall_config
 {
 	//printf("xsaasx\n");
 
-    set_res_file_name(res_file_name);
+    set_res_file_name(res_file_name1);
 
 
     start_info_manager_from_overall_json(current_node_name,overall_config_file_name); 
