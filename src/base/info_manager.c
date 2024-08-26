@@ -78,6 +78,643 @@ char* get_interface_name_by_linked_interface_name(char* linked_interface_name)
 }
 
 
+//查找node子节点中标签为contentName的值
+char* getChildNodeContentWithSpecifiedName(xmlNode *node, const char *contentName) {  
+    xmlNode *curNode = NULL;  
+    for (curNode = node->children; curNode != NULL; curNode = curNode->next) {  
+        if ((!xmlStrcmp(curNode->name, (const xmlChar *)contentName))) {  
+            xmlChar *content = xmlNodeGetContent(curNode);  
+            char *result = (char *)malloc(strlen((const char *)content) + 1);  
+            strcpy(result, (const char *)content);  
+            xmlFree(content);  
+            return result;  
+        }  
+    }  
+    return NULL;  
+}  
+  
+
+
+
+
+/*
+xml 文件分为
+(1) 节点接口定义文件 
+
+<nodes>  
+    <node>  
+        <node_name>fpu-testee</node_name>
+        <interface> 
+            <id>0</id>  
+            <label>GE1</label>  
+            <interface_type>eth</interface_type>  
+            <status_chooser>work_at_each_round</status_chooser>  
+            <base_send_func>send_packet</base_send_func>  
+            <base_receive_func>receive_packet</base_receive_func>  
+            <msg_generator_of_sender>generate_eth_test_msg</msg_generator_of_sender>  
+            <initializer_name>eth_initializer_normal</initializer_name>  
+            <closer_name>eth_closer_normal</closer_name>  
+            <eth_info>  
+                <ip_name>enp3s0</ip_name>  
+                <ip_addr>192.168.1.10</ip_addr>  
+                <net_mask>255.255.255.0</net_mask>  
+                <mac_addr>00:80:0f:74:10:22</mac_addr>  
+            </eth_info>  
+            <status>sending_and_receiving</status>  
+            <duplex>full-duplex</duplex>  
+        </interface>
+
+    </node>
+
+    <node>  
+        <node_name>fpu-cotestee</node_name>
+        <interface> 
+            <id>100</id>  
+            <label>GE7</label>  
+            <interface_type>eth</interface_type>  
+            <status_chooser>work_at_each_round</status_chooser>  
+            <base_send_func>send_packet</base_send_func>  
+            <base_receive_func>receive_packet</base_receive_func>  
+            <msg_generator_of_sender>generate_eth_test_msg</msg_generator_of_sender>  
+            <initializer_name>eth_initializer_normal</initializer_name>  
+            <closer_name>eth_closer_normal</closer_name>  
+            <eth_info>  
+                <ip_name>enp5s0</ip_name>  
+                <ip_addr>192.168.1.12</ip_addr>  
+                <net_mask>255.255.255.0</net_mask>  
+                <mac_addr>00:80:0f:74:10:24</mac_addr>  
+            </eth_info>  
+            <status>sending_and_receiving</status>  
+            <duplex>full-duplex</duplex>  
+        </interface>
+    </node>  
+</nodes>
+
+
+(2) 边link定义文件 
+
+<links>  
+    <link> 
+        <send_if_id>0</send_if_id>
+        <listened_if_id>100</listened_if_id>
+    </link>
+    <link> 
+        <send_if_id>100</send_if_id>
+        <listened_if_id>0</listened_if_id>
+    </link>
+</links>
+
+以上两个文件对应以下json总配置文件:
+[
+{
+	"mode":       "test",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-GE7-100-test",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-100-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp5s0",
+		"ip_addr":     "192.168.1.12",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:10:24"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-cotestee-GE1-0-listen"
+},{
+	"mode":       "listen",
+	"located_node": "fpu-testee",
+	"interface_name":       "fpu-testee-GE7-100-listen",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-100-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp5s0",
+		"ip_addr":     "192.168.1.12",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:10:24"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-cotestee-GE1-0-test"
+},{
+	"mode":       "listen",
+	"located_node": "fpu-cotestee",
+	"interface_name":       "fpu-cotestee-GE1-0-listen",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-100-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp3s0",
+		"ip_addr":     "192.168.1.110",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:30:02"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-testee-GE7-100-test"
+},{
+	"mode":       "test",
+	"located_node": "fpu-cotestee",
+	"interface_name":       "fpu-cotestee-GE1-0-test",
+	"interface_type":       "eth",
+	"center_interface_name":        "fpu-cotestee-GE7-100-listen",
+	"status_chooser":        "work_at_each_round",
+	"base_send_func":        "send_packet",
+	"base_receive_func":        "receive_packet",
+	"msg_generator_of_sender":        "generate_eth_test_msg",
+	"initializer_name":        "eth_initializer_normal",
+	"closer_name":        "eth_closer_normal",
+	"eth_info":     {
+		"ip_name":     "enp3s0",
+		"ip_addr":     "192.168.1.110",
+		"net_mask":     "255.255.255.0",
+		"mac_addr":     "00:80:0f:74:30:02"
+	},
+	"status":       "sending_and_receiving",
+	"duplex":       "full-duplex",
+	
+	"linked_interface_name":        "fpu-testee-GE7-100-listen"
+}]
+
+*/
+char *get_target_if_value_from_node_tree(xmlNode *rootNode_node_if, char *if_id, char *if_property_name) {  
+    for (xmlNode *node_t = rootNode_node_if->children; node_t; node_t = node_t->next) {  
+        xmlNode *interfaceNode = NULL; // 目标接口节点  
+        for (xmlNode *node = node_t->children; node; node = node->next) {  
+            char *id = getChildNodeContentWithSpecifiedName(node, "id");  
+            if (id && strcmp(id, if_id) == 0) {  
+                interfaceNode = node;  
+                break;  
+            }  
+        }  
+          
+        if (interfaceNode) {  
+            // 检查常见属性  
+            if (strcmp(if_property_name, "label") == 0 ||  
+                strcmp(if_property_name, "interface_type") == 0 ||  
+                strcmp(if_property_name, "status_chooser") == 0 ||  
+                strcmp(if_property_name, "base_send_func") == 0 ||  
+                strcmp(if_property_name, "base_receive_func") == 0 ||  
+                strcmp(if_property_name, "msg_generator_of_sender") == 0 ||  
+                strcmp(if_property_name, "initializer_name") == 0 ||  
+                strcmp(if_property_name, "closer_name") == 0 ||  
+                strcmp(if_property_name, "status") == 0 ||  
+                strcmp(if_property_name, "duplex") == 0) {  
+                  
+                char *propertyValue = getChildNodeContentWithSpecifiedName(interfaceNode, if_property_name);  
+                if (propertyValue) {  
+                    return propertyValue;  
+                }  
+            }  
+              
+            // 检查特定属性  
+            if (strcmp(if_property_name, "ip_name") == 0 ||  
+                strcmp(if_property_name, "ip_addr") == 0 ||  
+                strcmp(if_property_name, "net_mask") == 0 ||  
+                strcmp(if_property_name, "mac_addr") == 0) {  
+                  
+                for (xmlNode *node = interfaceNode->children; node; node = node->next) {  
+                    char *if_property_value = getChildNodeContentWithSpecifiedName(node, if_property_name);  
+                    if (if_property_value) {  
+                        return if_property_value;  
+                    }  
+                }  
+            }
+
+			if (strcmp(if_property_name, "rs485_dev_path") == 0 ||  
+                strcmp(if_property_name, "rs485_gpio_number") == 0 ||  
+                strcmp(if_property_name, "baud_rate") == 0 ||  
+                strcmp(if_property_name, "databits") == 0 ||
+                strcmp(if_property_name, "stopbits") == 0 ||
+                strcmp(if_property_name, "paritybits") == 0) {  
+                  
+                for (xmlNode *node = interfaceNode->children; node; node = node->next) {  
+                    char *if_property_value = getChildNodeContentWithSpecifiedName(node, if_property_name);  
+                    if (if_property_value) {  
+                        return if_property_value;  
+                    }  
+                }  
+            } 
+
+			if (strcmp(if_property_name, "can_id") == 0 ||  
+                strcmp(if_property_name, "baud_rate") == 0) {  
+                  
+                for (xmlNode *node = interfaceNode->children; node; node = node->next) {  
+                    char *if_property_value = getChildNodeContentWithSpecifiedName(node, if_property_name);  
+                    if (if_property_value) {  
+                        return if_property_value;  
+                    }  
+                }  
+            } 
+        }  
+    }  
+    return NULL;  
+}
+
+
+char *get_node_name_contain_target_if_from_node_tree(xmlNode *rootNode_node_if, char *if_id) {  
+    for (xmlNode *node_t = rootNode_node_if->children; node_t; node_t = node_t->next) { 
+		char *node_name = getChildNodeContentWithSpecifiedName(node_t, "node_name");
+        for (xmlNode *node = node_t->children; node; node = node->next) {
+            char *id = getChildNodeContentWithSpecifiedName(node, "id");  
+            if (id && strcmp(id, if_id) == 0) {  
+                return node_name;  
+            }  
+        }  
+    }
+    return NULL;  
+}
+
+char* concatenateStringsWithDelimiter(const char* str1, const char* str2, const char* str3, const char* str4) {  
+    // 计算需要的总长度（包括分隔符和结尾的'\0'）  
+    int totalLength = strlen(str1) + strlen(str2) + strlen(str3) + strlen(str4) + 4; 
+  
+    // 分配足够的内存来存储结果字符串  
+    char* result = (char*)malloc(totalLength * sizeof(char));  
+    if (result == NULL) {  
+        printf("内存分配失败");  
+        exit(1); // 终止程序  
+    }  
+  
+    // 使用snprintf安全地拼接字符串  
+    snprintf(result, totalLength, "%s-%s-%s-%s", str1, str2, str3, str4);  
+  
+    return result;  
+}  
+
+
+
+
+
+char* xmlToJson(const char *xmlData_node_if, const char *xmlData_link) {  
+
+	
+    // 解析XML  
+    xmlDocPtr doc_node_if = xmlParseDoc((const xmlChar *)xmlData_node_if);  
+    xmlDocPtr doc_link = xmlParseDoc((const xmlChar *)xmlData_link);  
+  
+    xmlNode *rootNode_node_if = xmlDocGetRootElement(doc_node_if);  
+    xmlNode *rootNode_link = xmlDocGetRootElement(doc_link);  
+
+	
+  
+    // 创建一个JSON数组  
+    cJSON *jsonArray = cJSON_CreateArray();  
+
+
+
+    // 遍历link节点  
+    for (xmlNode *linkNode = rootNode_link->children; linkNode; linkNode = linkNode->next) 
+	{    //遍历 rootNode_link 的子节点，就是一个个<link></link>区间
+        if (linkNode->type == XML_ELEMENT_NODE) 
+		{    
+            char *ifIdStr = getChildNodeContentWithSpecifiedName(linkNode, "send_if_id");  
+            char *listenIfIdStr = getChildNodeContentWithSpecifiedName(linkNode, "listened_if_id");
+			char *centerIfIdStr = getChildNodeContentWithSpecifiedName(linkNode, "center_if_id");
+
+	        cJSON *jsonObject_test = cJSON_CreateObject();  
+
+			char *center_node = get_node_name_contain_target_if_from_node_tree(rootNode_node_if,centerIfIdStr);
+			char *center_label = get_target_if_value_from_node_tree(rootNode_node_if,centerIfIdStr, "label");
+			char *center_interface_name = concatenateStringsWithDelimiter(center_node,center_label,centerIfIdStr,"listen");
+
+
+			char *located_node = get_node_name_contain_target_if_from_node_tree(rootNode_node_if,ifIdStr);
+
+
+
+			char *label = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "label");
+			char* interface_name = concatenateStringsWithDelimiter(located_node,label,ifIdStr,"test");
+			char* interface_type = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "interface_type");
+			char* status_chooser = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "status_chooser");
+			char* base_send_func = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "base_send_func");
+			char* base_receive_func = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "base_receive_func");
+			char* msg_generator_of_sender = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "msg_generator_of_sender");
+			char* initializer_name = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "initializer_name");
+			char* closer_name = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "closer_name");
+			char* status = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "status");
+			char* duplex = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "duplex");
+
+
+			char *listened_node = get_node_name_contain_target_if_from_node_tree(rootNode_node_if,listenIfIdStr);
+
+
+			char *listened_label = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "label");
+			char* listened_interface_name = concatenateStringsWithDelimiter(listened_node,listened_label,listenIfIdStr,"listen");
+			
+			char* listened_interface_type = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "interface_type");
+			char* listened_status_chooser = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "status_chooser");
+			char* listened_base_send_func = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "base_send_func");
+			char* listened_base_receive_func = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "base_receive_func");
+			char* listened_msg_generator_of_sender = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "msg_generator_of_sender");
+			char* listened_initializer_name = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "initializer_name");
+			char* listened_closer_name = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "closer_name");
+			char* listened_status = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "status");
+			char* listened_duplex = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "duplex");
+	  
+
+			char* ip_name = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "ip_name");
+			char* ip_addr = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "ip_addr");
+			char* net_mask = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "net_mask");
+			char* mac_addr = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "mac_addr");
+
+
+			char* rs485_dev_path = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "rs485_dev_path");
+			char* rs485_gpio_number = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "rs485_gpio_number");
+			char* rs485_baud_rate = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "baud_rate");
+			char* databits = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "databits");
+			char* stopbits = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "stopbits");
+			char* paritybits = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "paritybits");
+
+
+			char* can_id = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "can_id");
+			char* can_baud_rate = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "baud_rate");
+			
+
+			char* listened_ip_name = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "ip_name");
+			char* listened_ip_addr = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "ip_addr");
+			char* listened_net_mask = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "net_mask");
+			char* listened_mac_addr = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "mac_addr");
+
+
+			char* listened_rs485_dev_path = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "rs485_dev_path");
+			char* listened_rs485_gpio_number = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "rs485_gpio_number");
+			char* listened_rs485_baud_rate = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "baud_rate");
+			char* listened_databits = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "databits");
+			char* listened_stopbits = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "stopbits");
+			char* listened_paritybits = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "paritybits");
+
+
+			char* listened_can_id = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "can_id");
+			char* listened_can_baud_rate = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "baud_rate");
+			
+
+			
+	        // 添加属性  
+	        cJSON_AddStringToObject(jsonObject_test, "mode", "test");  
+	        cJSON_AddStringToObject(jsonObject_test, "located_node", located_node); 
+	        cJSON_AddStringToObject(jsonObject_test, "interface_name", interface_name);  
+	        cJSON_AddStringToObject(jsonObject_test, "interface_type", interface_type); 
+			cJSON_AddStringToObject(jsonObject_test, "center_interface_name", center_interface_name);
+			cJSON_AddStringToObject(jsonObject_test, "status_chooser", status_chooser);
+			cJSON_AddStringToObject(jsonObject_test, "base_send_func", base_send_func);
+			cJSON_AddStringToObject(jsonObject_test, "base_receive_func", base_receive_func);
+			cJSON_AddStringToObject(jsonObject_test, "msg_generator_of_sender", msg_generator_of_sender);
+			cJSON_AddStringToObject(jsonObject_test, "initializer_name", initializer_name);
+			cJSON_AddStringToObject(jsonObject_test, "closer_name", closer_name);
+			cJSON_AddStringToObject(jsonObject_test, "status", status);
+			cJSON_AddStringToObject(jsonObject_test, "duplex", duplex);
+
+
+
+	  		if(strcmp(interface_type,"eth")==0)
+	  		{
+		        // 处理eth_info  
+		        cJSON *ethInfo = cJSON_CreateObject();  
+		        cJSON_AddStringToObject(ethInfo, "ip_name", ip_name);  
+		        cJSON_AddStringToObject(ethInfo, "ip_addr", ip_addr);  
+		        cJSON_AddStringToObject(ethInfo, "net_mask", net_mask);  
+		        cJSON_AddStringToObject(ethInfo, "mac_addr", mac_addr);  
+		        cJSON_AddItemToObject(jsonObject_test, "eth_info", ethInfo);  
+	  		}
+
+
+	  		if(strcmp(interface_type,"rs485")==0)
+	  		{
+		        // 处理eth_info  
+		        cJSON *rs485Info = cJSON_CreateObject();  
+		        cJSON_AddStringToObject(rs485Info, "rs485_dev_path", rs485_dev_path);  
+		        cJSON_AddStringToObject(rs485Info, "rs485_gpio_number", rs485_gpio_number);  
+		        cJSON_AddStringToObject(rs485Info, "baud_rate", rs485_baud_rate);  
+		        cJSON_AddStringToObject(rs485Info, "databits", databits);  
+				cJSON_AddStringToObject(rs485Info, "stopbits", stopbits);  
+		        cJSON_AddStringToObject(rs485Info, "paritybits", paritybits);  
+		        cJSON_AddItemToObject(jsonObject_test, "rs485_info", rs485Info);  
+	  		}
+
+
+	  		if(strcmp(interface_type,"can")==0)
+	  		{
+		        // 处理eth_info  
+		        cJSON *canInfo = cJSON_CreateObject();  
+		        cJSON_AddStringToObject(canInfo, "can_id", can_id);  
+		        cJSON_AddStringToObject(canInfo, "baud_rate", can_baud_rate);  
+		        cJSON_AddItemToObject(jsonObject_test, "can_info", canInfo);  
+	  		}
+
+
+			 
+			cJSON_AddStringToObject(jsonObject_test, "linked_interface_name", listened_interface_name);
+
+	        cJSON_AddItemToArray(jsonArray, jsonObject_test);  
+
+			
+			//----------------------------------------------------------------
+
+			cJSON *jsonObject_listen = cJSON_CreateObject();  
+			
+			// 添加属性  
+			cJSON_AddStringToObject(jsonObject_listen, "mode", "listen");  
+			cJSON_AddStringToObject(jsonObject_listen, "located_node", listened_node); 
+			cJSON_AddStringToObject(jsonObject_listen, "interface_name", listened_interface_name);  
+			cJSON_AddStringToObject(jsonObject_listen, "interface_type", listened_interface_type);	
+			cJSON_AddStringToObject(jsonObject_listen, "center_interface_name", center_interface_name);
+			cJSON_AddStringToObject(jsonObject_listen, "status_chooser", listened_status_chooser);
+			cJSON_AddStringToObject(jsonObject_listen, "base_send_func", listened_base_send_func);
+			cJSON_AddStringToObject(jsonObject_listen, "base_receive_func", listened_base_receive_func);
+			cJSON_AddStringToObject(jsonObject_listen, "msg_generator_of_sender", listened_msg_generator_of_sender);
+			cJSON_AddStringToObject(jsonObject_listen, "initializer_name", listened_initializer_name);
+			cJSON_AddStringToObject(jsonObject_listen, "closer_name", listened_closer_name);
+			cJSON_AddStringToObject(jsonObject_listen, "status", listened_status);
+			cJSON_AddStringToObject(jsonObject_listen, "duplex", listened_duplex);
+			
+
+			if(strcmp(listened_interface_type,"eth")==0)
+			{
+				// 处理eth_info  
+				cJSON *ethInfo = cJSON_CreateObject();	
+		        cJSON_AddStringToObject(ethInfo, "ip_name", listened_ip_name);  
+		        cJSON_AddStringToObject(ethInfo, "ip_addr", listened_ip_addr);  
+		        cJSON_AddStringToObject(ethInfo, "net_mask", listened_net_mask);  
+		        cJSON_AddStringToObject(ethInfo, "mac_addr", listened_mac_addr);   
+				cJSON_AddItemToObject(jsonObject_listen, "eth_info", ethInfo);  
+			}
+
+
+			
+	  		if(strcmp(listened_interface_type,"rs485")==0)
+	  		{
+		        // 处理eth_info  
+		        cJSON *rs485Info = cJSON_CreateObject();  
+		        cJSON_AddStringToObject(rs485Info, "rs485_dev_path", listened_rs485_dev_path);  
+		        cJSON_AddStringToObject(rs485Info, "rs485_gpio_number", listened_rs485_gpio_number);  
+		        cJSON_AddStringToObject(rs485Info, "baud_rate", listened_rs485_baud_rate);  
+		        cJSON_AddStringToObject(rs485Info, "databits", listened_databits);  
+				cJSON_AddStringToObject(rs485Info, "stopbits", listened_stopbits);  
+		        cJSON_AddStringToObject(rs485Info, "paritybits", listened_paritybits);  
+		        cJSON_AddItemToObject(jsonObject_test, "rs485_info", rs485Info);  
+	  		}
+
+
+	  		if(strcmp(listened_interface_type,"can")==0)
+	  		{
+		        // 处理eth_info  
+		        cJSON *canInfo = cJSON_CreateObject();  
+		        cJSON_AddStringToObject(canInfo, "can_id", listened_can_id);  
+		        cJSON_AddStringToObject(canInfo, "baud_rate", listened_can_baud_rate);  
+		        cJSON_AddItemToObject(jsonObject_test, "can_info", canInfo);  
+	  		}
+			 
+			cJSON_AddStringToObject(jsonObject_listen, "linked_interface_name", interface_name);
+			
+			cJSON_AddItemToArray(jsonArray, jsonObject_listen);  
+
+
+			free(ifIdStr);
+			free(listenIfIdStr);
+			free(centerIfIdStr);
+					
+			free(center_interface_name);
+			free(center_node);
+			free(center_label);
+
+
+			free(interface_name);
+			free(located_node);
+			free(label);
+			
+			free(listened_interface_name);
+			free(listened_node);
+			free(listened_label);
+			
+			
+			free(interface_type);
+			free(status_chooser);
+			free(base_send_func);
+			free(base_receive_func);
+			free(msg_generator_of_sender);
+			free(initializer_name);
+			free(closer_name);
+			free(status);
+			free(duplex);
+			free(ip_name);
+			free(ip_addr);
+			free(net_mask);
+			free(mac_addr);
+			free(rs485_dev_path);
+			free(rs485_gpio_number);
+			free(rs485_baud_rate);
+			free(databits);
+			free(stopbits);
+			free(paritybits);
+			free(can_id);
+			free(can_baud_rate);
+
+			
+			free(listened_interface_type);
+			free(listened_status_chooser);
+			free(listened_base_send_func);
+			free(listened_base_receive_func);
+			free(listened_msg_generator_of_sender);
+			free(listened_initializer_name);
+			free(listened_closer_name);
+			free(listened_status);
+			free(listened_duplex);
+			free(listened_ip_name);
+			free(listened_ip_addr);
+			free(listened_net_mask);
+			free(listened_mac_addr);
+			free(listened_rs485_dev_path);
+			free(listened_rs485_gpio_number);
+			free(listened_rs485_baud_rate);
+			free(listened_databits);
+			free(listened_stopbits);
+			free(listened_paritybits);
+			free(listened_can_id);
+			free(listened_can_baud_rate);
+
+			
+        }  
+    }  
+
+    // 将cJSON对象转换为字符串  
+    char *jsonString = cJSON_Print(jsonArray);  
+    cJSON_Delete(jsonArray);  
+  
+    // 清理XML文档  
+    xmlFreeDoc(doc_node_if);  
+    xmlFreeDoc(doc_link);  
+  
+    return jsonString;  
+}  
+
+
+void convert_xml_config_to_overall_json_config(char *xml_config_path_node_if, char *xml_config_path_node_link, char *overall_topology_json_config_path) {
+	char buffer1[BUFFER_SIZE];
+	FILE *file = fopen(xml_config_path_node_if, "r");  
+    if (file == NULL) {  
+        printf("open failed\n");  
+        return _ERROR;  
+    }  
+    int i = 0;  
+    while (i < BUFFER_SIZE - 1 && fscanf(file, "%c", &buffer1[i]) == 1) {
+        i++;  
+    }
+	if (i < BUFFER_SIZE) { 
+		buffer1[i] = '\0';  
+    }  
+	fclose(file);
+
+
+	char buffer2[BUFFER_SIZE];
+	file = fopen(xml_config_path_node_link, "r");  
+    if (file == NULL) {  
+        printf("open failed\n");  
+        return _ERROR;  
+    }  
+    i = 0;  
+    while (i < BUFFER_SIZE - 1 && fscanf(file, "%c", &buffer2[i]) == 1) {
+        i++;  
+    }
+	if (i < BUFFER_SIZE) { 
+		buffer2[i] = '\0';  
+    }  
+	fclose(file);
+
+	
+	char *overall_topology_json_str = xmlToJson(buffer1,buffer2);
+
+	file = fopen(overall_topology_json_config_path, "w");  
+    if (!file) {  
+        fprintf(stderr, "Failed to open file %s\n", overall_topology_json_config_path);   
+        return;  
+    } 
+	fprintf(file, "%s", overall_topology_json_str);
+	free(overall_topology_json_str); // 释放由cJSON_Print分配的字符串  
+    fclose(file);  
+	
+}
+
 
 
 void write_communication_info_array_to_json(const char* filename)

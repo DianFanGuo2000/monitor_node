@@ -1,0 +1,48 @@
+<nodes>  
+    <node>  
+        <node_name>fpu-testee</node_name>
+        <interface> 
+            <id>0</id>  
+            <label>GE1</label>  
+            <interface_type>eth</interface_type>  
+            <status_chooser>work_at_each_round</status_chooser>  
+            <base_send_func>send_packet</base_send_func>  
+            <base_receive_func>receive_packet</base_receive_func>  
+            <msg_generator_of_sender>generate_eth_test_msg</msg_generator_of_sender>  
+            <initializer_name>eth_initializer_normal</initializer_name>  
+            <closer_name>eth_closer_normal</closer_name>  
+            <eth_info>  
+                <ip_name>enp3s0</ip_name>  
+                <ip_addr>192.168.1.10</ip_addr>  
+                <net_mask>255.255.255.0</net_mask>  
+                <mac_addr>00:80:0f:74:10:22</mac_addr>  
+            </eth_info>  
+            <status>sending_and_receiving</status>  
+            <duplex>full-duplex</duplex>  
+        </interface>
+
+    </node>
+
+    <node>  
+        <node_name>fpu-cotestee</node_name>
+        <interface> 
+            <id>100</id>  
+            <label>GE7</label>  
+            <interface_type>eth</interface_type>  
+            <status_chooser>work_at_each_round</status_chooser>  
+            <base_send_func>send_packet</base_send_func>  
+            <base_receive_func>receive_packet</base_receive_func>  
+            <msg_generator_of_sender>generate_eth_test_msg</msg_generator_of_sender>  
+            <initializer_name>eth_initializer_normal</initializer_name>  
+            <closer_name>eth_closer_normal</closer_name>  
+            <eth_info>  
+                <ip_name>enp5s0</ip_name>  
+                <ip_addr>192.168.1.12</ip_addr>  
+                <net_mask>255.255.255.0</net_mask>  
+                <mac_addr>00:80:0f:74:10:24</mac_addr>  
+            </eth_info>  
+            <status>sending_and_receiving</status>  
+            <duplex>full-duplex</duplex>  
+        </interface>
+    </node>  
+</nodes>

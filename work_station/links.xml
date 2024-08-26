@@ -1,0 +1,12 @@
+<links>  
+    <link> 
+        <send_if_id>0</send_if_id>
+        <listened_if_id>100</listened_if_id>
+        <center_if_id>100</center_if_id>
+    </link>
+    <link> 
+        <send_if_id>100</send_if_id>
+        <listened_if_id>0</listened_if_id>
+        <center_if_id>100</center_if_id>
+    </link>
+</links>

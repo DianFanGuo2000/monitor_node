@@ -602,6 +602,24 @@ int check_params_for_cmd_split_into_target(char *current_node_name, char *overal
 
 
 
+int check_params_for_cmd_xml_to_json(char *xml_config_path_node_if, char *xml_config_path_node_link, char *overall_topology_json_config_path) {  
+    // 假设 is_valid_filename 是一个验证文件名有效性的函数  
+    if (!is_valid_filename(xml_config_path_node_if)) {  
+        fprintf(stderr, "Invalid parameter '%s', which is node if xml config path. It should be a valid file path.\n", xml_config_path_node_if);  
+        return 0;  
+    }  
+	if (!is_valid_filename(xml_config_path_node_link)) {  
+        fprintf(stderr, "Invalid parameter '%s', which is link xml config path. It should be a valid file path.\n", xml_config_path_node_link);  
+        return 0;  
+    }  
+    if (!is_valid_filename(overall_topology_json_config_path)) {  
+        fprintf(stderr, "Invalid parameter '%s', which is overall topology json config path. It should be a valid file path.\n", overall_topology_json_config_path);  
+        return 0;  
+    }  
+    return 1;  
+}
+
+
 
 
 void TLAtOneNodeFromSplitJsonFile(char *split_config_file_name,char *res_file_name1)
@@ -666,6 +684,10 @@ void split_into_target(char *current_node_name,char *overall_config_file_name,ch
 
 
 
+
+
+
+
 int main(int argc, char *argv[]) {  
 	char *parts[3];  
     size_t parts_size[3] = {50, 50, 50};  
@@ -678,13 +700,15 @@ int main(int argc, char *argv[]) {
     printf("welcome to communication test program...\n\n");  
     printf("TLAtOneNodeFromSplitJsonFile\t-- start to send, receive and record communication results at one node based on a split topology configure json file\n");  
 	printf("TLAtOneNodeFromOverallJsonFile\t-- start to send, receive and record communication results at one node based on a overall topology configure json file\n");  
-	printf("split_into_target\t-- split overall configure topology json file into target split topology configure json file at target node\n\n");  
-  
+	printf("split_into_target\t-- split overall configure topology json file into target split topology configure json file at target node\n"); 
+	printf("xml_to_json\t-- convert xml configs to overall json config\n\n"); 
+
+  	
     while (1) {  
         printf("[cmd]: ");  
         input_split_and_copy(delimiter,3, parts, parts_size);
         if (strcmp(parts[0], "TLAtOneNodeFromSplitJsonFile") == 0) {  
-            printf("\TLAtOneNodeFromSplitJsonFile Input reminder: <split_topology_config_file_name> <communication_info_file_save_path>\n"); 
+            printf("TLAtOneNodeFromSplitJsonFile Input reminder: <split_topology_config_file_name> <communication_info_file_save_path>\n"); 
 			printf("[args for TLAtOneNodeFromSplitJsonFile]: ");
             input_split_and_copy(delimiter,3, parts, parts_size);
             while (check_params_for_cmd_TLAtOneNodeFromSplitJsonFile(parts[0], parts[1]) == 0)
@@ -694,7 +718,7 @@ int main(int argc, char *argv[]) {
             }
             TLAtOneNodeFromSplitJsonFile(parts[0], parts[1]);  
         } else if (strcmp(parts[0], "TLAtOneNodeFromOverallJsonFile") == 0) {  
-            printf("\TLAtOneNodeFromOverallJsonFile Input reminder:<current_node_name> <overall_topology_config_file_name> <communication_info_file_save_path>\n"); 
+            printf("TLAtOneNodeFromOverallJsonFile Input reminder:<current_node_name> <overall_topology_config_file_name> <communication_info_file_save_path>\n"); 
 			printf("[args for TLAtOneNodeFromOverallJsonFile]: ");
             input_split_and_copy(delimiter,3, parts, parts_size);
             while (check_params_for_cmd_TLAtOneNodeFromOverallJsonFile(parts[0], parts[1],parts[2]) == 0)
@@ -704,7 +728,7 @@ int main(int argc, char *argv[]) {
             }
             TLAtOneNodeFromOverallJsonFile(parts[0], parts[1],parts[2]);  
         } else if (strcmp(parts[0], "split_into_target") == 0) {  
-			printf("\split_into_target Input reminder:<current_node_name> <overall_topology_config_file_name> <target_split_config_file_save_path>\n"); 
+			printf("split_into_target Input reminder:<current_node_name> <overall_topology_config_file_name> <target_split_config_file_save_path>\n"); 
 			printf("[args for split_into_target]: ");
             input_split_and_copy(delimiter,3, parts, parts_size);
 		    while (check_params_for_cmd_split_into_target(parts[0], parts[1], parts[2]) == 0)
@@ -713,6 +737,16 @@ int main(int argc, char *argv[]) {
             	input_split_and_copy(delimiter,3, parts, parts_size);
             }
 			split_into_target(parts[0], parts[1],parts[2]);
+        } else if (strcmp(parts[0], "xml_to_json") == 0) {  
+			printf("xml_to_json Input reminder: <xml_config_path_node_if> <xml_config_path_node_link> <overall_topology_json_config_path>\n"); 
+			printf("[args for xml_to_json]: ");
+            input_split_and_copy(delimiter,3, parts, parts_size);
+		    while (check_params_for_cmd_xml_to_json(parts[0], parts[1], parts[2]) == 0)
+            {
+            	printf("[args for xml_to_json]: ");
+            	input_split_and_copy(delimiter,3, parts, parts_size);
+            }
+			convert_xml_config_to_overall_json_config(parts[0], parts[1], parts[2]);
         } 
     }  
 

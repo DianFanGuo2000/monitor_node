@@ -11,12 +11,14 @@
 #include <stdio.h>  
 #include <stdlib.h>  
 #include <string.h>  
-#include <cjson/cJSON.h> /*��Ҫ��װcJSON */
+#include <cjson/cJSON.h> 
 #include <stdbool.h>  
 #include <sys/types.h>  
 #include <sys/socket.h>  
 #include <linux/if_packet.h>
 
+#include <libxml/parser.h>
+#include <libxml/tree.h>
 
 
 
@@ -101,6 +103,12 @@ int interface_cnt;
 
 time_t test_begin_time; 
 
+
+void convert_xml_config_to_overall_json_config(char *xml_config_path_node_if, char *xml_config_path_node_link, char *overall_topology_json_config_path);
+
+
+
+  
 
 void initialize_communication_info_lock();
 

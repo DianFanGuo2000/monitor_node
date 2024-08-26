@@ -15,7 +15,8 @@ BASE_OBJS=$(BASE_SRCS:.c=.o)
 TARGET=myapp  
   
 # 依赖的库  
-LIBS=-lpthread -lcjson 
+LIBS=-lpthread -lcjson -lxml2
+
   
 # 默认目标  
 all: $(TARGET)  
