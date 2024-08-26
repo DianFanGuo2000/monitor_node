@@ -602,10 +602,11 @@
 		"duplex":	"half-duplex",
 		"rs485_info":	{
 			"rs485_dev_path":	"/dev/ttyS4",
-			"rs485_gpio_number":	"482",
-			"baud_rate":	"115200",
-			"stopbits":	"1",
-			"paritybits":	"78"
+			"rs485_gpio_number":	482,
+			"baud_rate":	115200,
+			"databits":	8,
+			"stopbits":	1,
+			"paritybits":	78
 		},
 		"linked_interface_name":	"fpu-cotestee-485-1-109-listen"
 	}, {
@@ -624,10 +625,11 @@
 		"duplex":	"half-duplex",
 		"rs485_info":	{
 			"rs485_dev_path":	"/dev/ttyS4",
-			"rs485_gpio_number":	"482",
-			"baud_rate":	"115200",
-			"stopbits":	"1",
-			"paritybits":	"78"
+			"rs485_gpio_number":	482,
+			"baud_rate":	115200,
+			"databits":	8,
+			"stopbits":	1,
+			"paritybits":	78
 		},
 		"linked_interface_name":	"fpu-testee-485-1-9-test"
 	}, {
@@ -646,10 +648,11 @@
 		"duplex":	"half-duplex",
 		"rs485_info":	{
 			"rs485_dev_path":	"/dev/ttyS4",
-			"rs485_gpio_number":	"482",
-			"baud_rate":	"115200",
-			"stopbits":	"1",
-			"paritybits":	"78"
+			"rs485_gpio_number":	482,
+			"baud_rate":	115200,
+			"databits":	8,
+			"stopbits":	1,
+			"paritybits":	78
 		},
 		"linked_interface_name":	"fpu-testee-485-2-10-listen"
 	}, {
@@ -668,10 +671,11 @@
 		"duplex":	"half-duplex",
 		"rs485_info":	{
 			"rs485_dev_path":	"/dev/ttyS4",
-			"rs485_gpio_number":	"482",
-			"baud_rate":	"115200",
-			"stopbits":	"1",
-			"paritybits":	"78"
+			"rs485_gpio_number":	482,
+			"baud_rate":	115200,
+			"databits":	8,
+			"stopbits":	1,
+			"paritybits":	78
 		},
 		"linked_interface_name":	"fpu-cotestee-485-2-110-test"
 	}, {
@@ -689,8 +693,8 @@
 		"status":	"sending",
 		"duplex":	"half-duplex",
 		"can_info":	{
-			"can_id":	"1",
-			"baud_rate":	"1000"
+			"can_id":	1,
+			"baud_rate":	1000
 		},
 		"linked_interface_name":	"fpu-testee-can5-1-19-listen"
 	}, {
@@ -708,8 +712,8 @@
 		"status":	"sending",
 		"duplex":	"half-duplex",
 		"can_info":	{
-			"can_id":	"4",
-			"baud_rate":	"1000"
+			"can_id":	4,
+			"baud_rate":	1000
 		},
 		"linked_interface_name":	"fpu-testee-can1-1-11-test"
 	}, {
@@ -727,8 +731,8 @@
 		"status":	"sending",
 		"duplex":	"half-duplex",
 		"can_info":	{
-			"can_id":	"4",
-			"baud_rate":	"1000"
+			"can_id":	4,
+			"baud_rate":	1000
 		},
 		"linked_interface_name":	"fpu-testee-can1-2-12-listen"
 	}, {
@@ -746,8 +750,8 @@
 		"status":	"sending",
 		"duplex":	"half-duplex",
 		"can_info":	{
-			"can_id":	"1",
-			"baud_rate":	"1000"
+			"can_id":	1,
+			"baud_rate":	1000
 		},
 		"linked_interface_name":	"fpu-testee-can5-2-20-test"
 	}, {
@@ -765,8 +769,8 @@
 		"status":	"sending",
 		"duplex":	"half-duplex",
 		"can_info":	{
-			"can_id":	"3",
-			"baud_rate":	"1000"
+			"can_id":	3,
+			"baud_rate":	1000
 		},
 		"linked_interface_name":	"fpu-testee-can6-1-21-listen"
 	}, {
@@ -784,8 +788,8 @@
 		"status":	"sending",
 		"duplex":	"half-duplex",
 		"can_info":	{
-			"can_id":	"2",
-			"baud_rate":	"1000"
+			"can_id":	2,
+			"baud_rate":	1000
 		},
 		"linked_interface_name":	"fpu-testee-can2-1-13-test"
 	}, {
@@ -803,8 +807,8 @@
 		"status":	"sending",
 		"duplex":	"half-duplex",
 		"can_info":	{
-			"can_id":	"2",
-			"baud_rate":	"1000"
+			"can_id":	2,
+			"baud_rate":	1000
 		},
 		"linked_interface_name":	"fpu-testee-can2-2-14-listen"
 	}, {
@@ -822,8 +826,8 @@
 		"status":	"sending",
 		"duplex":	"half-duplex",
 		"can_info":	{
-			"can_id":	"3",
-			"baud_rate":	"1000"
+			"can_id":	3,
+			"baud_rate":	1000
 		},
 		"linked_interface_name":	"fpu-testee-can6-2-22-test"
 	}, {
@@ -841,8 +845,8 @@
 		"status":	"sending",
 		"duplex":	"half-duplex",
 		"can_info":	{
-			"can_id":	"5",
-			"baud_rate":	"1000"
+			"can_id":	5,
+			"baud_rate":	1000
 		},
 		"linked_interface_name":	"fpu-testee-can7-1-23-listen"
 	}, {
@@ -860,8 +864,8 @@
 		"status":	"sending",
 		"duplex":	"half-duplex",
 		"can_info":	{
-			"can_id":	"8",
-			"baud_rate":	"1000"
+			"can_id":	8,
+			"baud_rate":	1000
 		},
 		"linked_interface_name":	"fpu-testee-can3-1-15-test"
 	}, {
@@ -879,8 +883,8 @@
 		"status":	"sending",
 		"duplex":	"half-duplex",
 		"can_info":	{
-			"can_id":	"8",
-			"baud_rate":	"1000"
+			"can_id":	8,
+			"baud_rate":	1000
 		},
 		"linked_interface_name":	"fpu-testee-can3-2-16-listen"
 	}, {
@@ -898,8 +902,8 @@
 		"status":	"sending",
 		"duplex":	"half-duplex",
 		"can_info":	{
-			"can_id":	"5",
-			"baud_rate":	"1000"
+			"can_id":	5,
+			"baud_rate":	1000
 		},
 		"linked_interface_name":	"fpu-testee-can7-2-24-test"
 	}, {
@@ -917,8 +921,8 @@
 		"status":	"sending",
 		"duplex":	"half-duplex",
 		"can_info":	{
-			"can_id":	"7",
-			"baud_rate":	"1000"
+			"can_id":	7,
+			"baud_rate":	1000
 		},
 		"linked_interface_name":	"fpu-testee-can8-1-25-listen"
 	}, {
@@ -936,8 +940,8 @@
 		"status":	"sending",
 		"duplex":	"half-duplex",
 		"can_info":	{
-			"can_id":	"6",
-			"baud_rate":	"1000"
+			"can_id":	6,
+			"baud_rate":	1000
 		},
 		"linked_interface_name":	"fpu-testee-can4-1-17-test"
 	}, {
@@ -955,8 +959,8 @@
 		"status":	"sending",
 		"duplex":	"half-duplex",
 		"can_info":	{
-			"can_id":	"6",
-			"baud_rate":	"1000"
+			"can_id":	6,
+			"baud_rate":	1000
 		},
 		"linked_interface_name":	"fpu-testee-can4-2-18-listen"
 	}, {
@@ -974,8 +978,8 @@
 		"status":	"sending",
 		"duplex":	"half-duplex",
 		"can_info":	{
-			"can_id":	"7",
-			"baud_rate":	"1000"
+			"can_id":	7,
+			"baud_rate":	1000
 		},
 		"linked_interface_name":	"fpu-testee-can8-2-26-test"
 	}]

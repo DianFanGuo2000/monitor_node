@@ -170,6 +170,7 @@
                 <rs485_dev_path>/dev/ttyS4</rs485_dev_path>  
                 <rs485_gpio_number>482</rs485_gpio_number>  
                 <baud_rate>115200</baud_rate>  
+                <databits>8</databits> 
                 <stopbits>1</stopbits>  
                 <paritybits>78</paritybits>  
             </rs485_info>  
@@ -190,6 +191,7 @@
                 <rs485_dev_path>/dev/ttyS4</rs485_dev_path>  
                 <rs485_gpio_number>482</rs485_gpio_number>  
                 <baud_rate>115200</baud_rate>  
+                <databits>8</databits> 
                 <stopbits>1</stopbits>  
                 <paritybits>78</paritybits>  
             </rs485_info>  
@@ -644,6 +646,7 @@
                 <rs485_dev_path>/dev/ttyS4</rs485_dev_path>  
                 <rs485_gpio_number>482</rs485_gpio_number>  
                 <baud_rate>115200</baud_rate>  
+                <databits>8</databits> 
                 <stopbits>1</stopbits>  
                 <paritybits>78</paritybits>  
             </rs485_info>  
@@ -664,6 +667,7 @@
                 <rs485_dev_path>/dev/ttyS4</rs485_dev_path>  
                 <rs485_gpio_number>482</rs485_gpio_number>  
                 <baud_rate>115200</baud_rate>  
+                <databits>8</databits> 
                 <stopbits>1</stopbits>  
                 <paritybits>78</paritybits>  
             </rs485_info>  

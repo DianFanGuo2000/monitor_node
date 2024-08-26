@@ -45,6 +45,20 @@ int time_t_to_string(time_t time_val, char* buffer, size_t buffer_size) {
     return _SUCCESS; // 成功  
 }  
 
+
+void string_to_unsigned_long(const char* str, unsigned long* result) {  
+    *result = strtoul(str, NULL, 10); // 使用标准库函数转换  
+}  
+
+
+void string_to_int(const char* str, int* result) 
+{
+	// 使用标准库函数 strtol 将字符串转换为 int 类型      
+	*result = strtol(str, NULL, 10);  
+}
+
+
+
 int get_initialized_flag_by_index(int i)
 {
 	return interface_info_array[i].initialized_flag;
@@ -499,17 +513,40 @@ char* xmlToJson(const char *xmlData_node_if, const char *xmlData_link) {
 	  		}
 
 
+
+
 	  		if(strcmp(interface_type,"rs485")==0)
 	  		{
-		        // 处理eth_info  
 		        cJSON *rs485Info = cJSON_CreateObject();  
 		        cJSON_AddStringToObject(rs485Info, "rs485_dev_path", rs485_dev_path);  
-		        cJSON_AddStringToObject(rs485Info, "rs485_gpio_number", rs485_gpio_number);  
-		        cJSON_AddStringToObject(rs485Info, "baud_rate", rs485_baud_rate);  
-		        cJSON_AddStringToObject(rs485Info, "databits", databits);  
-				cJSON_AddStringToObject(rs485Info, "stopbits", stopbits);  
-		        cJSON_AddStringToObject(rs485Info, "paritybits", paritybits);  
+
+				
+				
+				int t_;
+				string_to_int(rs485_gpio_number,&t_);
+				//printf("%s %d\n",rs485_gpio_number,t_);
+		        cJSON_AddNumberToObject(rs485Info, "rs485_gpio_number", t_);  
+
+				string_to_int(rs485_baud_rate,&t_);
+				//printf("%s %d\n",rs485_baud_rate,t_);
+		        cJSON_AddNumberToObject(rs485Info, "baud_rate", t_);  
+
+				string_to_int(databits,&t_);
+				//printf("%s %d\n",databits,t_);
+		        cJSON_AddNumberToObject(rs485Info, "databits", t_);  
+
+				string_to_int(stopbits,&t_);
+				//printf("%s %d\n",stopbits,t_);
+				cJSON_AddNumberToObject(rs485Info, "stopbits", t_); 
+
+				string_to_int(paritybits,&t_);
+				//printf("%s %d\n",paritybits,t_);
+		        cJSON_AddNumberToObject(rs485Info, "paritybits", t_);  
+
+				
 		        cJSON_AddItemToObject(jsonObject_test, "rs485_info", rs485Info);  
+
+				
 	  		}
 
 
@@ -517,8 +554,16 @@ char* xmlToJson(const char *xmlData_node_if, const char *xmlData_link) {
 	  		{
 		        // 处理eth_info  
 		        cJSON *canInfo = cJSON_CreateObject();  
-		        cJSON_AddStringToObject(canInfo, "can_id", can_id);  
-		        cJSON_AddStringToObject(canInfo, "baud_rate", can_baud_rate);  
+
+				int t_;
+				string_to_int(can_id,&t_);
+				//printf("%s %d\n",can_id,t_);
+		        cJSON_AddNumberToObject(canInfo, "can_id", t_);  
+
+				string_to_int(can_baud_rate,&t_);
+				//printf("%s %d\n",can_baud_rate,t_);
+		        cJSON_AddNumberToObject(canInfo, "baud_rate", t_); 
+				
 		        cJSON_AddItemToObject(jsonObject_test, "can_info", canInfo);  
 	  		}
 
@@ -548,7 +593,7 @@ char* xmlToJson(const char *xmlData_node_if, const char *xmlData_link) {
 			cJSON_AddStringToObject(jsonObject_listen, "status", listened_status);
 			cJSON_AddStringToObject(jsonObject_listen, "duplex", listened_duplex);
 			
-
+			
 			if(strcmp(listened_interface_type,"eth")==0)
 			{
 				// 处理eth_info  
@@ -567,21 +612,40 @@ char* xmlToJson(const char *xmlData_node_if, const char *xmlData_link) {
 		        // 处理eth_info  
 		        cJSON *rs485Info = cJSON_CreateObject();  
 		        cJSON_AddStringToObject(rs485Info, "rs485_dev_path", listened_rs485_dev_path);  
-		        cJSON_AddStringToObject(rs485Info, "rs485_gpio_number", listened_rs485_gpio_number);  
-		        cJSON_AddStringToObject(rs485Info, "baud_rate", listened_rs485_baud_rate);  
-		        cJSON_AddStringToObject(rs485Info, "databits", listened_databits);  
-				cJSON_AddStringToObject(rs485Info, "stopbits", listened_stopbits);  
-		        cJSON_AddStringToObject(rs485Info, "paritybits", listened_paritybits);  
+
+
+				int t_;
+				string_to_int(listened_rs485_gpio_number,&t_);
+		        cJSON_AddNumberToObject(rs485Info, "rs485_gpio_number", t_);  
+
+				string_to_int(listened_rs485_baud_rate,&t_);
+		        cJSON_AddNumberToObject(rs485Info, "baud_rate", t_);  
+
+				string_to_int(listened_databits,&t_);
+		        cJSON_AddNumberToObject(rs485Info, "databits", t_);  
+
+				string_to_int(listened_stopbits,&t_);
+				cJSON_AddNumberToObject(rs485Info, "stopbits", t_); 
+
+				string_to_int(listened_paritybits,&t_);
+		        cJSON_AddNumberToObject(rs485Info, "paritybits", t_); 
+
+				
 		        cJSON_AddItemToObject(jsonObject_listen, "rs485_info", rs485Info);  
 	  		}
 
 
 	  		if(strcmp(listened_interface_type,"can")==0)
 	  		{
-		        // 处理eth_info  
 		        cJSON *canInfo = cJSON_CreateObject();  
-		        cJSON_AddStringToObject(canInfo, "can_id", listened_can_id);  
-		        cJSON_AddStringToObject(canInfo, "baud_rate", listened_can_baud_rate);  
+				
+				int t_;
+				string_to_int(listened_can_id,&t_);
+		        cJSON_AddNumberToObject(canInfo, "can_id", t_);  
+
+				string_to_int(listened_can_baud_rate,&t_);
+		        cJSON_AddNumberToObject(canInfo, "baud_rate", t_); 
+				
 		        cJSON_AddItemToObject(jsonObject_listen, "can_info", canInfo);  
 	  		}
 			 
@@ -670,6 +734,9 @@ char* xmlToJson(const char *xmlData_node_if, const char *xmlData_link) {
 
 
 void convert_xml_config_to_overall_json_config(char *xml_config_path_node_if, char *xml_config_path_node_link, char *overall_topology_json_config_path) {
+
+	printf("***********************************start to convert xml config(path from: %s, %s) to overall json config(path to:%s)\n",xml_config_path_node_if,xml_config_path_node_link,overall_topology_json_config_path);
+
 	char buffer1[BUFFER_SIZE];
 	FILE *file = fopen(xml_config_path_node_if, "r");  
     if (file == NULL) {  
@@ -712,6 +779,8 @@ void convert_xml_config_to_overall_json_config(char *xml_config_path_node_if, ch
 	fprintf(file, "%s", overall_topology_json_str);
 	free(overall_topology_json_str); // 释放由cJSON_Print分配的字符串  
     fclose(file);  
+
+	printf("***********************************converted successfully\n");
 	
 }
 
@@ -903,16 +972,6 @@ int update_communication_info_array(char* linked_node,char* interface_name,time_
 }
 
 
-void string_to_unsigned_long(const char* str, unsigned long* result) {  
-    *result = strtoul(str, NULL, 10); // 使用标准库函数转换  
-}  
-
-
-void string_to_int(const char* str, int* result) 
-{
-	// 使用标准库函数 strtol 将字符串转换为 int 类型      
-	*result = strtol(str, NULL, 10);  
-}
 
 
   
@@ -1147,6 +1206,7 @@ void write_interface_info_array_to_json(const char *filename, struct interface_i
 			cJSON_AddStringToObject(rs485_info, "rs485_dev_path", array[i].rs485_info.rs485_dev_path);
 		}  
 		cJSON_AddItemToObject(interface, "rs485_info", rs485_info); 
+		
 
 
 
