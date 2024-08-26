@@ -572,7 +572,7 @@ char* xmlToJson(const char *xmlData_node_if, const char *xmlData_link) {
 		        cJSON_AddStringToObject(rs485Info, "databits", listened_databits);  
 				cJSON_AddStringToObject(rs485Info, "stopbits", listened_stopbits);  
 		        cJSON_AddStringToObject(rs485Info, "paritybits", listened_paritybits);  
-		        cJSON_AddItemToObject(jsonObject_test, "rs485_info", rs485Info);  
+		        cJSON_AddItemToObject(jsonObject_listen, "rs485_info", rs485Info);  
 	  		}
 
 
@@ -582,7 +582,7 @@ char* xmlToJson(const char *xmlData_node_if, const char *xmlData_link) {
 		        cJSON *canInfo = cJSON_CreateObject();  
 		        cJSON_AddStringToObject(canInfo, "can_id", listened_can_id);  
 		        cJSON_AddStringToObject(canInfo, "baud_rate", listened_can_baud_rate);  
-		        cJSON_AddItemToObject(jsonObject_test, "can_info", canInfo);  
+		        cJSON_AddItemToObject(jsonObject_listen, "can_info", canInfo);  
 	  		}
 			 
 			cJSON_AddStringToObject(jsonObject_listen, "linked_interface_name", interface_name);

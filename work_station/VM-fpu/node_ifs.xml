@@ -1,9 +1,9 @@
 <nodes>  
     <node>  
-        <node_name>fpu-testee</node_name>
+        <node_name>fpu</node_name>
         <interface> 
-            <id>0</id>  
-            <label>GE1</label>  
+            <id>fpu-enp3s0</id>  
+            <label>enp3s0</label>  
             <interface_type>eth</interface_type>  
             <status_chooser>work_at_each_round</status_chooser>  
             <base_send_func>send_packet</base_send_func>  
@@ -24,10 +24,10 @@
     </node>
 
     <node>  
-        <node_name>fpu-cotestee</node_name>
+        <node_name>VM</node_name>
         <interface> 
-            <id>100</id>  
-            <label>GE7</label>  
+            <id>VM-ens33</id>  
+            <label>ens33</label>  
             <interface_type>eth</interface_type>  
             <status_chooser>work_at_each_round</status_chooser>  
             <base_send_func>send_packet</base_send_func>  
@@ -36,10 +36,10 @@
             <initializer_name>eth_initializer_normal</initializer_name>  
             <closer_name>eth_closer_normal</closer_name>  
             <eth_info>  
-                <ip_name>enp5s0</ip_name>  
-                <ip_addr>192.168.1.12</ip_addr>  
+                <ip_name>ens33</ip_name>  
+                <ip_addr>192.168.1.51</ip_addr>  
                 <net_mask>255.255.255.0</net_mask>  
-                <mac_addr>00:80:0f:74:10:24</mac_addr>  
+                <mac_addr>00:0c:29:8e:5f:92</mac_addr>  
             </eth_info>  
             <status>sending_and_receiving</status>  
             <duplex>full-duplex</duplex>  

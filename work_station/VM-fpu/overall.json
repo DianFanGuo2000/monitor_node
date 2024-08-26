@@ -1,9 +1,9 @@
 [{
 		"mode":	"test",
-		"located_node":	"fpu-testee",
-		"interface_name":	"fpu-testee-GE1-0-test",
+		"located_node":	"fpu",
+		"interface_name":	"fpu-enp3s0-fpu-enp3s0-test",
 		"interface_type":	"eth",
-		"center_interface_name":	"fpu-cotestee-GE7-100-listen",
+		"center_interface_name":	"VM-ens33-VM-ens33-listen",
 		"status_chooser":	"work_at_each_round",
 		"base_send_func":	"send_packet",
 		"base_receive_func":	"receive_packet",
@@ -18,13 +18,13 @@
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:10:22"
 		},
-		"linked_interface_name":	"fpu-cotestee-GE7-100-listen"
+		"linked_interface_name":	"VM-ens33-VM-ens33-listen"
 	}, {
 		"mode":	"listen",
-		"located_node":	"fpu-cotestee",
-		"interface_name":	"fpu-cotestee-GE7-100-listen",
+		"located_node":	"VM",
+		"interface_name":	"VM-ens33-VM-ens33-listen",
 		"interface_type":	"eth",
-		"center_interface_name":	"fpu-cotestee-GE7-100-listen",
+		"center_interface_name":	"VM-ens33-VM-ens33-listen",
 		"status_chooser":	"work_at_each_round",
 		"base_send_func":	"send_packet",
 		"base_receive_func":	"receive_packet",
@@ -34,18 +34,18 @@
 		"status":	"sending_and_receiving",
 		"duplex":	"full-duplex",
 		"eth_info":	{
-			"ip_name":	"enp5s0",
-			"ip_addr":	"192.168.1.12",
+			"ip_name":	"ens33",
+			"ip_addr":	"192.168.1.51",
 			"net_mask":	"255.255.255.0",
-			"mac_addr":	"00:80:0f:74:10:24"
+			"mac_addr":	"00:0c:29:8e:5f:92"
 		},
-		"linked_interface_name":	"fpu-testee-GE1-0-test"
+		"linked_interface_name":	"fpu-enp3s0-fpu-enp3s0-test"
 	}, {
 		"mode":	"test",
-		"located_node":	"fpu-cotestee",
-		"interface_name":	"fpu-cotestee-GE7-100-test",
+		"located_node":	"VM",
+		"interface_name":	"VM-ens33-VM-ens33-test",
 		"interface_type":	"eth",
-		"center_interface_name":	"fpu-cotestee-GE7-100-listen",
+		"center_interface_name":	"VM-ens33-VM-ens33-listen",
 		"status_chooser":	"work_at_each_round",
 		"base_send_func":	"send_packet",
 		"base_receive_func":	"receive_packet",
@@ -55,18 +55,18 @@
 		"status":	"sending_and_receiving",
 		"duplex":	"full-duplex",
 		"eth_info":	{
-			"ip_name":	"enp5s0",
-			"ip_addr":	"192.168.1.12",
+			"ip_name":	"ens33",
+			"ip_addr":	"192.168.1.51",
 			"net_mask":	"255.255.255.0",
-			"mac_addr":	"00:80:0f:74:10:24"
+			"mac_addr":	"00:0c:29:8e:5f:92"
 		},
-		"linked_interface_name":	"fpu-testee-GE1-0-listen"
+		"linked_interface_name":	"fpu-enp3s0-fpu-enp3s0-listen"
 	}, {
 		"mode":	"listen",
-		"located_node":	"fpu-testee",
-		"interface_name":	"fpu-testee-GE1-0-listen",
+		"located_node":	"fpu",
+		"interface_name":	"fpu-enp3s0-fpu-enp3s0-listen",
 		"interface_type":	"eth",
-		"center_interface_name":	"fpu-cotestee-GE7-100-listen",
+		"center_interface_name":	"VM-ens33-VM-ens33-listen",
 		"status_chooser":	"work_at_each_round",
 		"base_send_func":	"send_packet",
 		"base_receive_func":	"receive_packet",
@@ -81,5 +81,5 @@
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:10:22"
 		},
-		"linked_interface_name":	"fpu-cotestee-GE7-100-test"
+		"linked_interface_name":	"VM-ens33-VM-ens33-test"
 	}]
