@@ -13,8 +13,8 @@
 		"status":	"sending_and_receiving",
 		"duplex":	"full-duplex",
 		"eth_info":	{
-			"ip_name":	"enp3s0",
-			"ip_addr":	"192.168.1.10",
+			"ip_name":	"enp3s0:0",
+			"ip_addr":	"192.168.31.10",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:10:22"
 		},
@@ -35,7 +35,7 @@
 		"duplex":	"full-duplex",
 		"eth_info":	{
 			"ip_name":	"enp5s0",
-			"ip_addr":	"192.168.1.112",
+			"ip_addr":	"192.168.31.112",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:30:04"
 		},
@@ -56,7 +56,7 @@
 		"duplex":	"full-duplex",
 		"eth_info":	{
 			"ip_name":	"enp5s0",
-			"ip_addr":	"192.168.1.112",
+			"ip_addr":	"192.168.31.112",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:30:04"
 		},
@@ -76,8 +76,8 @@
 		"status":	"sending_and_receiving",
 		"duplex":	"full-duplex",
 		"eth_info":	{
-			"ip_name":	"enp3s0",
-			"ip_addr":	"192.168.1.10",
+			"ip_name":	"enp3s0:0",
+			"ip_addr":	"192.168.31.10",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:10:22"
 		},
@@ -98,7 +98,7 @@
 		"duplex":	"full-duplex",
 		"eth_info":	{
 			"ip_name":	"enp1s0",
-			"ip_addr":	"192.168.1.8",
+			"ip_addr":	"192.168.11.10",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:10:20"
 		},
@@ -118,8 +118,8 @@
 		"status":	"sending_and_receiving",
 		"duplex":	"full-duplex",
 		"eth_info":	{
-			"ip_name":	"enp3s0",
-			"ip_addr":	"192.168.1.110",
+			"ip_name":	"enp3s0:2",
+			"ip_addr":	"192.168.11.110",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:30:02"
 		},
@@ -139,8 +139,8 @@
 		"status":	"sending_and_receiving",
 		"duplex":	"full-duplex",
 		"eth_info":	{
-			"ip_name":	"enp3s0",
-			"ip_addr":	"192.168.1.110",
+			"ip_name":	"enp3s0:2",
+			"ip_addr":	"192.168.11.110",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:30:02"
 		},
@@ -161,7 +161,7 @@
 		"duplex":	"full-duplex",
 		"eth_info":	{
 			"ip_name":	"enp1s0",
-			"ip_addr":	"192.168.1.8",
+			"ip_addr":	"192.168.11.10",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:10:20"
 		},
@@ -182,7 +182,7 @@
 		"duplex":	"full-duplex",
 		"eth_info":	{
 			"ip_name":	"enp4s0",
-			"ip_addr":	"192.168.1.11",
+			"ip_addr":	"192.168.4.10",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:10:23"
 		},
@@ -203,7 +203,7 @@
 		"duplex":	"full-duplex",
 		"eth_info":	{
 			"ip_name":	"enp4s0",
-			"ip_addr":	"192.168.1.111",
+			"ip_addr":	"192.168.4.111",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:30:03"
 		},
@@ -224,7 +224,7 @@
 		"duplex":	"full-duplex",
 		"eth_info":	{
 			"ip_name":	"enp4s0",
-			"ip_addr":	"192.168.1.111",
+			"ip_addr":	"192.168.4.111",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:30:03"
 		},
@@ -245,7 +245,7 @@
 		"duplex":	"full-duplex",
 		"eth_info":	{
 			"ip_name":	"enp4s0",
-			"ip_addr":	"192.168.1.11",
+			"ip_addr":	"192.168.4.10",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:10:23"
 		},
@@ -265,8 +265,8 @@
 		"status":	"sending_and_receiving",
 		"duplex":	"full-duplex",
 		"eth_info":	{
-			"ip_name":	"enp3s0",
-			"ip_addr":	"192.168.1.10",
+			"ip_name":	"enp3s0:1",
+			"ip_addr":	"192.168.13.10",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:10:22"
 		},
@@ -287,7 +287,7 @@
 		"duplex":	"full-duplex",
 		"eth_info":	{
 			"ip_name":	"enp2s0",
-			"ip_addr":	"192.168.1.109",
+			"ip_addr":	"192.168.13.109",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:30:01"
 		},
@@ -308,7 +308,7 @@
 		"duplex":	"full-duplex",
 		"eth_info":	{
 			"ip_name":	"enp2s0",
-			"ip_addr":	"192.168.1.109",
+			"ip_addr":	"192.168.13.109",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:30:01"
 		},
@@ -328,8 +328,8 @@
 		"status":	"sending_and_receiving",
 		"duplex":	"full-duplex",
 		"eth_info":	{
-			"ip_name":	"enp3s0",
-			"ip_addr":	"192.168.1.10",
+			"ip_name":	"enp3s0:1",
+			"ip_addr":	"192.168.13.10",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:10:22"
 		},
@@ -349,8 +349,8 @@
 		"status":	"sending_and_receiving",
 		"duplex":	"full-duplex",
 		"eth_info":	{
-			"ip_name":	"enp3s0",
-			"ip_addr":	"192.168.1.10",
+			"ip_name":	"enp3s0:2",
+			"ip_addr":	"192.168.133.10",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:10:22"
 		},
@@ -371,7 +371,7 @@
 		"duplex":	"full-duplex",
 		"eth_info":	{
 			"ip_name":	"enp1s0",
-			"ip_addr":	"192.168.1.108",
+			"ip_addr":	"192.168.133.108",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:30:00"
 		},
@@ -392,7 +392,7 @@
 		"duplex":	"full-duplex",
 		"eth_info":	{
 			"ip_name":	"enp1s0",
-			"ip_addr":	"192.168.1.108",
+			"ip_addr":	"192.168.133.108",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:30:00"
 		},
@@ -412,8 +412,8 @@
 		"status":	"sending_and_receiving",
 		"duplex":	"full-duplex",
 		"eth_info":	{
-			"ip_name":	"enp3s0",
-			"ip_addr":	"192.168.1.10",
+			"ip_name":	"enp3s0:2",
+			"ip_addr":	"192.168.133.10",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:10:22"
 		},
@@ -434,7 +434,7 @@
 		"duplex":	"full-duplex",
 		"eth_info":	{
 			"ip_name":	"enp5s0",
-			"ip_addr":	"192.168.1.12",
+			"ip_addr":	"192.168.5.10",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:10:24"
 		},
@@ -454,8 +454,8 @@
 		"status":	"sending_and_receiving",
 		"duplex":	"full-duplex",
 		"eth_info":	{
-			"ip_name":	"enp3s0",
-			"ip_addr":	"192.168.1.110",
+			"ip_name":	"enp3s0:0",
+			"ip_addr":	"192.168.5.110",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:30:02"
 		},
@@ -475,8 +475,8 @@
 		"status":	"sending_and_receiving",
 		"duplex":	"full-duplex",
 		"eth_info":	{
-			"ip_name":	"enp3s0",
-			"ip_addr":	"192.168.1.110",
+			"ip_name":	"enp3s0:0",
+			"ip_addr":	"192.168.5.110",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:30:02"
 		},
@@ -497,7 +497,7 @@
 		"duplex":	"full-duplex",
 		"eth_info":	{
 			"ip_name":	"enp5s0",
-			"ip_addr":	"192.168.1.12",
+			"ip_addr":	"192.168.5.10",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:10:24"
 		},
@@ -518,7 +518,7 @@
 		"duplex":	"full-duplex",
 		"eth_info":	{
 			"ip_name":	"enp2s0",
-			"ip_addr":	"192.168.1.9",
+			"ip_addr":	"192.168.2.10",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:10:21"
 		},
@@ -538,8 +538,8 @@
 		"status":	"sending_and_receiving",
 		"duplex":	"full-duplex",
 		"eth_info":	{
-			"ip_name":	"enp3s0",
-			"ip_addr":	"192.168.1.110",
+			"ip_name":	"enp3s0:1",
+			"ip_addr":	"192.168.2.110",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:30:02"
 		},
@@ -559,8 +559,8 @@
 		"status":	"sending_and_receiving",
 		"duplex":	"full-duplex",
 		"eth_info":	{
-			"ip_name":	"enp3s0",
-			"ip_addr":	"192.168.1.110",
+			"ip_name":	"enp3s0:1",
+			"ip_addr":	"192.168.2.110",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:30:02"
 		},
@@ -581,7 +581,7 @@
 		"duplex":	"full-duplex",
 		"eth_info":	{
 			"ip_name":	"enp2s0",
-			"ip_addr":	"192.168.1.9",
+			"ip_addr":	"192.168.2.10",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:10:21"
 		},
