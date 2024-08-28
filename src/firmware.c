@@ -3,22 +3,6 @@
 
 
 
-int assigned_flag = 0;
-pthread_mutex_t assigned_flag_lock;
-
-
-// 在程序初始化时创建锁  
-void initialize_assigned_flag_lock() {  
-    pthread_mutex_init(&assigned_flag_lock, NULL);  
-}  
-  
-// 在程序结束时销毁锁  
-void destroy_assigned_flag_lock() {  
-    pthread_mutex_destroy(&assigned_flag_lock);  
-}
-
-
-
 
 // 线程函数，用于异步处理消息  
 void* deal_async(void* arg) {  
@@ -42,18 +26,12 @@ void* deal_async(void* arg) {
 		printf("[ERROR] deal_async got a NULL data->msg!\n");
 		return ;
 	}
-	char TEMP_NODE[MAX_IF_LEN];
-	char TEMP_INF[MAX_IF_LEN];
-	char TEMP_MSG[MAX_RES_LEN];
 
-	//printf("xsaasxa\n");
+    data->deal_func(data->linked_node,data->listened_interface,data->msg); // 调用 deal 函数处理消息  
 
-	strncpy(TEMP_NODE,data->linked_node , MAX_IF_LEN); 
-	strncpy(TEMP_INF, data->listened_interface, MAX_IF_LEN); 
-	strncpy(TEMP_MSG, data->msg, MAX_RES_LEN); 
-
-    assigned_flag = 1; // 发送信号通知父线程已结束赋值了
-    data->deal_func(TEMP_NODE,TEMP_INF,TEMP_MSG); // 调用 deal 函数处理消息  
+	free(data->linked_node);
+	free(data->listened_interface);
+	free(data->msg);
 }  
 
 
@@ -88,9 +66,9 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
     // Check if the interface type is "eth"  
     if (strcmp(base_receive_func, "receive_packet") == 0) {   
 		DealData data;
-		data.deal_func = deal; // 将 deal 函数指针保存到结构体中
-		data.linked_node = linked_node;
-		data.listened_interface = source_interface;
+		data.deal_func = deal; // 将 deal 函数指针保存到结构体中，这个不会自动析构
+		data.linked_node = strdup(linked_node);//拷贝副本，避免在当前函数结束后，形参转为NULL的时候，这个变量也被转为NULL，导致处理线程里的变量也变成NULL
+		data.listened_interface = strdup(source_interface);//拷贝副本，避免在当前函数结束后，形参转为NULL的时候，这个变量也被转为NULL，导致处理线程里的变量也变成NULL
 		
 	    // Attempt to receive a packet from the source interface  
 		char TEMP_MSG[MAX_ETH_DATA_LENGTH]={0};
@@ -100,27 +78,23 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 			printf("TEMP_MSG:%s\n",TEMP_MSG);
 			return _ERROR;	  
 		}	 
-		strncpy(data.msg, TEMP_MSG, MAX_ETH_DATA_LENGTH); // 不直接拿data.msg作为形参，防止其随着原函数声明周期结束而被析构
+		data.msg = strdup(TEMP_MSG);//拷贝副本，避免在当前函数结束后，形参转为NULL的时候，这个变量也被转为NULL，导致处理线程里的变量也变成NULL
 
-		pthread_mutex_lock(&assigned_flag_lock);  
         pthread_t thread_id;  
         if (pthread_create(&thread_id, NULL, deal_async, &data) != 0) {  
             // 线程创建失败处理，返回错误  
             return _ERROR;  
         }  
-		
-		while(!assigned_flag);
-		assigned_flag = 0;	
-		pthread_mutex_unlock(&assigned_flag_lock);	
+
 
 	    return _SUCCESS;    
     }
 
     if (strcmp(base_receive_func, "receive_packet_xy") == 0) {   
 		DealData data;
-		data.deal_func = deal; // 将 deal 函数指针保存到结构体中
-		data.linked_node = linked_node;
-		data.listened_interface = source_interface;
+		data.deal_func = deal; // 将 deal 函数指针保存到结构体中，这个不会自动析构
+		data.linked_node = strdup(linked_node);//拷贝副本，避免在当前函数结束后，形参转为NULL的时候，这个变量也被转为NULL，导致处理线程里的变量也变成NULL
+		data.listened_interface = strdup(source_interface);//拷贝副本，避免在当前函数结束后，形参转为NULL的时候，这个变量也被转为NULL，导致处理线程里的变量也变成NULL
 		
 	    // Attempt to receive a packet from the source interface  
 		char TEMP_MSG[MAX_ETH_DATA_LENGTH]={0};
@@ -130,19 +104,14 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 			printf("TEMP_MSG:%s\n",TEMP_MSG);
 			return _ERROR;	  
 		}	 
-		strncpy(data.msg, TEMP_MSG, MAX_ETH_DATA_LENGTH); // 不直接拿data.msg作为形参，防止其随着原函数声明周期结束而被析构
+		data.msg = strdup(TEMP_MSG);//拷贝副本，避免在当前函数结束后，形参转为NULL的时候，这个变量也被转为NULL，导致处理线程里的变量也变成NULL
 
-		pthread_mutex_lock(&assigned_flag_lock);  
         pthread_t thread_id;  
         if (pthread_create(&thread_id, NULL, deal_async, &data) != 0) {  
             // 线程创建失败处理，返回错误  
             return _ERROR;  
         }  
 		
-		while(!assigned_flag);
-		assigned_flag = 0;	
-		pthread_mutex_unlock(&assigned_flag_lock);	
-
 	    return _SUCCESS;    
     }
 
@@ -150,10 +119,10 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 
     if (strcmp(base_receive_func, "receive_packet_can_fpu") == 0) { 
 		DealData data;
-		data.deal_func = deal; // 将 deal 函数指针保存到结构体中
-		data.linked_node = linked_node;
-		data.listened_interface = source_interface;
-
+		data.deal_func = deal; // 将 deal 函数指针保存到结构体中，这个不会自动析构
+		data.linked_node = strdup(linked_node);//拷贝副本，避免在当前函数结束后，形参转为NULL的时候，这个变量也被转为NULL，导致处理线程里的变量也变成NULL
+		data.listened_interface = strdup(source_interface);//拷贝副本，避免在当前函数结束后，形参转为NULL的时候，这个变量也被转为NULL，导致处理线程里的变量也变成NULL
+		
 		
 		int can_id = get_channel_id_by_index(index);
 	    // Attempt to receive a packet from the source interface    
@@ -163,20 +132,13 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 			printf("TEMP_MSG:%s\n",TEMP_MSG);
 			return _ERROR;	  
 		}	 
-		strncpy(data.msg, TEMP_MSG, MAX_CAN_DATA_LENGTH); // 不直接拿data.msg作为形参，防止其随着原函数声明周期结束而被析构
-
-		pthread_mutex_lock(&assigned_flag_lock);  
+		data.msg = strdup(TEMP_MSG);//拷贝副本，避免在当前函数结束后，形参转为NULL的时候，这个变量也被转为NULL，导致处理线程里的变量也变成NULL
+ 
         pthread_t thread_id;  
         if (pthread_create(&thread_id, NULL, deal_async, &data) != 0) {  
             // 线程创建失败处理，返回错误  
             return _ERROR;  
         }  
-
-		
-		while(!assigned_flag);
-		assigned_flag = 0;	
-		pthread_mutex_unlock(&assigned_flag_lock);	
-
 
 	    return _SUCCESS;    
     }
@@ -184,9 +146,11 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 
 	if (strcmp(base_receive_func, "receive_packet_can_gpu") == 0) {
 		DealData data;
-		data.deal_func = deal; // 将 deal 函数指针保存到结构体中
-		data.linked_node = linked_node;
-		data.listened_interface = source_interface;
+		data.deal_func = deal; // 将 deal 函数指针保存到结构体中，这个不会自动析构
+		data.linked_node = strdup(linked_node);//拷贝副本，避免在当前函数结束后，形参转为NULL的时候，这个变量也被转为NULL，导致处理线程里的变量也变成NULL
+		data.listened_interface = strdup(source_interface);//拷贝副本，避免在当前函数结束后，形参转为NULL的时候，这个变量也被转为NULL，导致处理线程里的变量也变成NULL
+		
+
     //printf("date_node: %s, data_listened:%s\n", data.linked_node, data.listened_interface);
 		
 		int can_id = get_channel_id_by_index(index);
@@ -197,9 +161,8 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 			printf("TEMP_MSG:%s\n",TEMP_MSG);
 			return _ERROR;	  
 		}	 
-		strncpy(data.msg, TEMP_MSG, MAX_CAN_DATA_LENGTH); // 不直接拿data.msg作为形参，防止其随着原函数声明周期结束而被析构
+		data.msg = strdup(TEMP_MSG);//拷贝副本，避免在当前函数结束后，形参转为NULL的时候，这个变量也被转为NULL，导致处理线程里的变量也变成NULL
 
-		pthread_mutex_lock(&assigned_flag_lock);  
         pthread_t thread_id;  
         if (pthread_create(&thread_id, NULL, deal_async, &data) != 0) {  
             // 线程创建失败处理，返回错误  
@@ -207,11 +170,6 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
         }  
 
 		
-		while(!assigned_flag);
-		assigned_flag = 0;	
-		pthread_mutex_unlock(&assigned_flag_lock);	
-
-
 	    return _SUCCESS;    
     }
 
@@ -219,9 +177,10 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 	
 	if (strcmp(base_receive_func, "receive_packet_rs485") == 0) {	 
 			DealData data;
-			data.deal_func = deal; // 将 deal 函数指针保存到结构体中
-			data.linked_node = linked_node;
-			data.listened_interface = source_interface;
+			data.deal_func = deal; // 将 deal 函数指针保存到结构体中，这个不会自动析构
+			data.linked_node = strdup(linked_node);//拷贝副本，避免在当前函数结束后，形参转为NULL的时候，这个变量也被转为NULL，导致处理线程里的变量也变成NULL
+			data.listened_interface = strdup(source_interface);//拷贝副本，避免在当前函数结束后，形参转为NULL的时候，这个变量也被转为NULL，导致处理线程里的变量也变成NULL
+			
 
 			int fd = get_temporary_fd(index);
 			//printAllInfo();
@@ -233,22 +192,19 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 				printf("TEMP_MSG:%s\n",TEMP_MSG);
 				return _ERROR;	  
 			}	 
-			strncpy(data.msg, TEMP_MSG, MAX_RS485_DATA_LENGTH); // 不直接拿data.msg作为形参，防止其随着原函数声明周期结束而被析构
+			data.msg = strdup(TEMP_MSG);//拷贝副本，避免在当前函数结束后，形参转为NULL的时候，这个变量也被转为NULL，导致处理线程里的变量也变成NULL
 
 			
 			//printAllInfo();
 
 			//printf("%s\n",data.msg);
-			pthread_mutex_lock(&assigned_flag_lock);  
+
 			pthread_t thread_id;  
 			if (pthread_create(&thread_id, NULL, deal_async, &data) != 0) {  
 				// 线程创建失败处理，返回错误  
 				return _ERROR;	
 			}  
 			
-			while(!assigned_flag);
-			assigned_flag = 0;  
-			pthread_mutex_unlock(&assigned_flag_lock);  
 
 			return _SUCCESS;	
 	}	 

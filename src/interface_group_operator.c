@@ -632,14 +632,10 @@ void TLAtOneNodeFromSplitJsonFile(char *split_config_file_name,char *res_file_na
 		
 	init_test_or_listen_record_arrays();
 
-	initialize_assigned_flag_lock();
-
-	
-		
 		// 下面开始循环测试各个配置好的物理通信接口
 	test_or_listen_upon_interface_group();
 
-	destroy_assigned_flag_lock();
+
 		
 	free_test_or_listen_record_arrays();	
 
@@ -660,13 +656,11 @@ void TLAtOneNodeFromOverallJsonFile(char *current_node_name,char *overall_config
 		
 	init_test_or_listen_record_arrays();
 
-	initialize_assigned_flag_lock();
 
 		
 	// 下面开始循环测试各个配置好的物理通信接口
 	test_or_listen_upon_interface_group();
 
-	destroy_assigned_flag_lock();
 		
 	free_test_or_listen_record_arrays();	
 
