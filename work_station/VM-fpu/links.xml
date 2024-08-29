@@ -9,4 +9,16 @@
         <listened_if_id>fpu-enp3s0</listened_if_id>
         <center_if_id>VM-ens33</center_if_id>
     </link>
+
+    <link> 
+        <send_if_id>fpu-enp6s0</send_if_id>
+        <listened_if_id>VM-ens36</listened_if_id>
+        <center_if_id>VM-ens33</center_if_id>
+    </link>
+    <link> 
+        <send_if_id>VM-ens36</send_if_id>
+        <listened_if_id>fpu-enp6s0</listened_if_id>
+        <center_if_id>VM-ens33</center_if_id>
+    </link>
+
 </links>

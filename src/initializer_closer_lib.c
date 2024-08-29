@@ -168,6 +168,30 @@ int eth_initializer_normal(const char *interface_name)
 	char cmd_addr[256];  
 	snprintf(cmd_addr, sizeof(cmd_addr), "ifconfig %s %s netmask %s", ip_name, ip_addr, mask);  
 	system(cmd_addr);  
+
+	char ip_t[16];
+	int cnt=0;
+	for(i=0;i<strlen(ip_addr);i++)
+	{
+		if(ip_addr[i]!='.')
+		{
+			ip_t[i]=ip_addr[i];
+		}else
+		{
+			ip_t[i]=ip_addr[i];
+			cnt++;
+		}
+		if(cnt==3)
+		{
+			ip_t[i+1]='0';
+			ip_t[i+2]='\0';
+			break;
+		}
+	}
+	//printf("ip_t:%s\n",ip_t);
+	snprintf(cmd_addr, sizeof(cmd_addr), "sudo route add -net %s netmask %s dev %s", ip_t, mask, ip_name);  
+	system(cmd_addr);  
+
 	
 	printf("ip_name:%s, ip_addr:%s, mask:%s\n",ip_name,ip_addr,mask);
 

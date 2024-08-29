@@ -117,7 +117,7 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 	
 			// Attempt to receive a packet from the source interface  
 			char TEMP_MSG[MAX_ETH_DATA_LENGTH]={0};
-			if (receive_packet_by_ip_addr(get_ip_addr_by_index(index),get_listened_port_id_by_index(index),TEMP_MSG,max_waiting_time)<0) {	
+			if (receive_packet_by_ip_addr(get_ip_name_by_index(index),get_ip_addr_by_index(index),get_port_id_by_index(index),TEMP_MSG,max_waiting_time)<0) {	
 				//usleep(3000000);
 				printf("failed to got message from \"%s\"!\n",source_interface);
 				printf("TEMP_MSG:%s\n",TEMP_MSG);
@@ -449,7 +449,7 @@ int send_message(const char *source_interface,const char *message)
     // Check if the interface type is "eth" (could be removed if not needed)    
     if (strcmp(base_send_func, "send_packet_by_ip_addr") == 0) {    
         // Check if MAC addresses were retrieved and packet can be sent    
-        if (send_packet_by_ip_addr(get_linked_ip_addr_by_index(index), get_linked_listened_port_id_by_index(index),message) < 0) {    
+        if (send_packet_by_ip_addr(get_ip_name_by_index(index),get_linked_ip_addr_by_index(index), get_linked_port_id_by_index(index),message) < 0) {    
         	printf("send failed!\n");
         	return _ERROR; // Retry sending    
         }    

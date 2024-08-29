@@ -17,7 +17,7 @@
 			"ip_addr":	"192.168.1.10",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:10:22",
-			"listened_port_id":	1000
+			"port_id":	2000
 		},
 		"linked_interface_name":	"VM-ens33-VM-ens33-listen"
 	}, {
@@ -39,7 +39,7 @@
 			"ip_addr":	"192.168.1.51",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:0c:29:8e:5f:92",
-			"listened_port_id":	1001
+			"port_id":	1001
 		},
 		"linked_interface_name":	"fpu-enp3s0-fpu-enp3s0-test"
 	}, {
@@ -61,7 +61,7 @@
 			"ip_addr":	"192.168.1.51",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:0c:29:8e:5f:92",
-			"listened_port_id":	1001
+			"port_id":	1001
 		},
 		"linked_interface_name":	"fpu-enp3s0-fpu-enp3s0-listen"
 	}, {
@@ -83,7 +83,95 @@
 			"ip_addr":	"192.168.1.10",
 			"net_mask":	"255.255.255.0",
 			"mac_addr":	"00:80:0f:74:10:22",
-			"listened_port_id":	1000
+			"port_id":	2000
 		},
 		"linked_interface_name":	"VM-ens33-VM-ens33-test"
+	}, {
+		"mode":	"test",
+		"located_node":	"fpu",
+		"interface_name":	"fpu-enp6s0-fpu-enp6s0-test",
+		"interface_type":	"eth",
+		"center_interface_name":	"VM-ens33-VM-ens33-listen",
+		"status_chooser":	"work_at_each_round",
+		"base_send_func":	"send_packet_by_ip_addr",
+		"base_receive_func":	"receive_packet_by_ip_addr",
+		"msg_generator_of_sender":	"generate_eth_test_msg",
+		"initializer_name":	"eth_initializer_normal",
+		"closer_name":	"eth_closer_normal",
+		"status":	"sending_and_receiving",
+		"duplex":	"full-duplex",
+		"eth_info":	{
+			"ip_name":	"enp6s0",
+			"ip_addr":	"192.168.2.10",
+			"net_mask":	"255.255.255.0",
+			"mac_addr":	"00:80:0f:74:10:25",
+			"port_id":	2003
+		},
+		"linked_interface_name":	"VM-ens36-VM-ens36-listen"
+	}, {
+		"mode":	"listen",
+		"located_node":	"VM",
+		"interface_name":	"VM-ens36-VM-ens36-listen",
+		"interface_type":	"eth",
+		"center_interface_name":	"VM-ens33-VM-ens33-listen",
+		"status_chooser":	"work_at_each_round",
+		"base_send_func":	"send_packet_by_ip_addr",
+		"base_receive_func":	"receive_packet_by_ip_addr",
+		"msg_generator_of_sender":	"generate_eth_test_msg",
+		"initializer_name":	"eth_initializer_normal",
+		"closer_name":	"eth_closer_normal",
+		"status":	"sending_and_receiving",
+		"duplex":	"full-duplex",
+		"eth_info":	{
+			"ip_name":	"ens36",
+			"ip_addr":	"192.168.2.51",
+			"net_mask":	"255.255.255.0",
+			"mac_addr":	"00:0c:29:8e:5f:9c",
+			"port_id":	1002
+		},
+		"linked_interface_name":	"fpu-enp6s0-fpu-enp6s0-test"
+	}, {
+		"mode":	"test",
+		"located_node":	"VM",
+		"interface_name":	"VM-ens36-VM-ens36-test",
+		"interface_type":	"eth",
+		"center_interface_name":	"VM-ens33-VM-ens33-listen",
+		"status_chooser":	"work_at_each_round",
+		"base_send_func":	"send_packet_by_ip_addr",
+		"base_receive_func":	"receive_packet_by_ip_addr",
+		"msg_generator_of_sender":	"generate_eth_test_msg",
+		"initializer_name":	"eth_initializer_normal",
+		"closer_name":	"eth_closer_normal",
+		"status":	"sending_and_receiving",
+		"duplex":	"full-duplex",
+		"eth_info":	{
+			"ip_name":	"ens36",
+			"ip_addr":	"192.168.2.51",
+			"net_mask":	"255.255.255.0",
+			"mac_addr":	"00:0c:29:8e:5f:9c",
+			"port_id":	1002
+		},
+		"linked_interface_name":	"fpu-enp6s0-fpu-enp6s0-listen"
+	}, {
+		"mode":	"listen",
+		"located_node":	"fpu",
+		"interface_name":	"fpu-enp6s0-fpu-enp6s0-listen",
+		"interface_type":	"eth",
+		"center_interface_name":	"VM-ens33-VM-ens33-listen",
+		"status_chooser":	"work_at_each_round",
+		"base_send_func":	"send_packet_by_ip_addr",
+		"base_receive_func":	"receive_packet_by_ip_addr",
+		"msg_generator_of_sender":	"generate_eth_test_msg",
+		"initializer_name":	"eth_initializer_normal",
+		"closer_name":	"eth_closer_normal",
+		"status":	"sending_and_receiving",
+		"duplex":	"full-duplex",
+		"eth_info":	{
+			"ip_name":	"enp6s0",
+			"ip_addr":	"192.168.2.10",
+			"net_mask":	"255.255.255.0",
+			"mac_addr":	"00:80:0f:74:10:25",
+			"port_id":	2003
+		},
+		"linked_interface_name":	"VM-ens36-VM-ens36-test"
 	}]

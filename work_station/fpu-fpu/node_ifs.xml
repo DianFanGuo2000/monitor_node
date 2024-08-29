@@ -7,8 +7,8 @@
             <label>GE1</label>  
             <interface_type>eth</interface_type>  
             <status_chooser>work_at_each_round</status_chooser>  
-            <base_send_func>send_packet</base_send_func>  
-            <base_receive_func>receive_packet</base_receive_func>  
+            <base_send_func>send_packet_by_ip_addr</base_send_func>  
+            <base_receive_func>receive_packet_by_ip_addr</base_receive_func>  
             <msg_generator_of_sender>generate_eth_test_msg</msg_generator_of_sender>  
             <initializer_name>eth_initializer_normal</initializer_name>  
             <closer_name>eth_closer_normal</closer_name>  
@@ -17,6 +17,7 @@
                 <ip_addr>192.168.31.10</ip_addr>  
                 <net_mask>255.255.255.0</net_mask>  
                 <mac_addr>00:80:0f:74:10:22</mac_addr>  
+		<port_id>2001</port_id>
             </eth_info>  
             <status>sending_and_receiving</status>  
             <duplex>full-duplex</duplex>  
@@ -26,8 +27,8 @@
             <label>GE2</label>  
             <interface_type>eth</interface_type>  
             <status_chooser>work_at_each_round</status_chooser>  
-            <base_send_func>send_packet</base_send_func>  
-            <base_receive_func>receive_packet</base_receive_func>  
+            <base_send_func>send_packet_by_ip_addr</base_send_func>  
+            <base_receive_func>receive_packet_by_ip_addr</base_receive_func>  
             <msg_generator_of_sender>generate_eth_test_msg</msg_generator_of_sender>  
             <initializer_name>eth_initializer_normal</initializer_name>  
             <closer_name>eth_closer_normal</closer_name>  
@@ -35,7 +36,8 @@
                 <ip_name>enp6s0</ip_name>  
                 <ip_addr>192.168.6.10</ip_addr>  
                 <net_mask>255.255.255.0</net_mask>  
-                <mac_addr>00:80:0f:74:10:25</mac_addr>  
+                <mac_addr>00:80:0f:74:10:25</mac_addr>
+		<port_id>2002</port_id>  
             </eth_info>  
             <status>sending_and_receiving</status>  
             <duplex>full-duplex</duplex>  
@@ -45,8 +47,8 @@
             <label>GE3</label>  
             <interface_type>eth</interface_type>  
             <status_chooser>work_at_each_round</status_chooser>  
-            <base_send_func>send_packet</base_send_func>  
-            <base_receive_func>receive_packet</base_receive_func>  
+            <base_send_func>send_packet_by_ip_addr</base_send_func>  
+            <base_receive_func>receive_packet_by_ip_addr</base_receive_func>  
             <msg_generator_of_sender>generate_eth_test_msg</msg_generator_of_sender>  
             <initializer_name>eth_initializer_normal</initializer_name>  
             <closer_name>eth_closer_normal</closer_name>  
@@ -55,6 +57,7 @@
                 <ip_addr>192.168.11.10</ip_addr>  
                 <net_mask>255.255.255.0</net_mask>  
                 <mac_addr>00:80:0f:74:10:20</mac_addr>  
+		<port_id>2003</port_id>
             </eth_info>  
             <status>sending_and_receiving</status>  
             <duplex>full-duplex</duplex>  
@@ -64,8 +67,8 @@
             <label>GE4</label>  
             <interface_type>eth</interface_type>  
             <status_chooser>work_at_each_round</status_chooser>  
-            <base_send_func>send_packet</base_send_func>  
-            <base_receive_func>receive_packet</base_receive_func>  
+            <base_send_func>send_packet_by_ip_addr</base_send_func>  
+            <base_receive_func>receive_packet_by_ip_addr</base_receive_func>  
             <msg_generator_of_sender>generate_eth_test_msg</msg_generator_of_sender>  
             <initializer_name>eth_initializer_normal</initializer_name>  
             <closer_name>eth_closer_normal</closer_name>  
@@ -73,7 +76,8 @@
                 <ip_name>enp4s0</ip_name>  
                 <ip_addr>192.168.4.10</ip_addr>  
                 <net_mask>255.255.255.0</net_mask>  
-                <mac_addr>00:80:0f:74:10:23</mac_addr>  
+                <mac_addr>00:80:0f:74:10:23</mac_addr>
+		<port_id>2004</port_id>  
             </eth_info>  
             <status>sending_and_receiving</status>  
             <duplex>full-duplex</duplex>  
@@ -83,8 +87,8 @@
             <label>GE5</label>  
             <interface_type>eth</interface_type>  
             <status_chooser>work_at_each_round</status_chooser>  
-            <base_send_func>send_packet</base_send_func>  
-            <base_receive_func>receive_packet</base_receive_func>  
+            <base_send_func>send_packet_by_ip_addr</base_send_func>  
+            <base_receive_func>receive_packet_by_ip_addr</base_receive_func>  
             <msg_generator_of_sender>generate_eth_test_msg</msg_generator_of_sender>  
             <initializer_name>eth_initializer_normal</initializer_name>  
             <closer_name>eth_closer_normal</closer_name>  
@@ -92,7 +96,8 @@
                 <ip_name>enp3s0:1</ip_name>  
                 <ip_addr>192.168.13.10</ip_addr>  
                 <net_mask>255.255.255.0</net_mask>  
-                <mac_addr>00:80:0f:74:10:22</mac_addr>  
+                <mac_addr>00:80:0f:74:10:22</mac_addr> 
+		<port_id>2005</port_id> 
             </eth_info>  
             <status>sending_and_receiving</status>  
             <duplex>full-duplex</duplex>  
@@ -102,8 +107,8 @@
             <label>GE6</label>  
             <interface_type>eth</interface_type>  
             <status_chooser>work_at_each_round</status_chooser>  
-            <base_send_func>send_packet</base_send_func>  
-            <base_receive_func>receive_packet</base_receive_func>  
+            <base_send_func>send_packet_by_ip_addr</base_send_func>  
+            <base_receive_func>receive_packet_by_ip_addr</base_receive_func>  
             <msg_generator_of_sender>generate_eth_test_msg</msg_generator_of_sender>  
             <initializer_name>eth_initializer_normal</initializer_name>  
             <closer_name>eth_closer_normal</closer_name>  
@@ -111,7 +116,8 @@
                 <ip_name>enp3s0:2</ip_name>  
                 <ip_addr>192.168.133.10</ip_addr>  
                 <net_mask>255.255.255.0</net_mask>  
-                <mac_addr>00:80:0f:74:10:22</mac_addr>  
+                <mac_addr>00:80:0f:74:10:22</mac_addr>
+		<port_id>2006</port_id>  
             </eth_info>  
             <status>sending_and_receiving</status>  
             <duplex>full-duplex</duplex>  
@@ -121,8 +127,8 @@
             <label>GE7</label>  
             <interface_type>eth</interface_type>  
             <status_chooser>work_at_each_round</status_chooser>  
-            <base_send_func>send_packet</base_send_func>  
-            <base_receive_func>receive_packet</base_receive_func>  
+            <base_send_func>send_packet_by_ip_addr</base_send_func>  
+            <base_receive_func>receive_packet_by_ip_addr</base_receive_func>  
             <msg_generator_of_sender>generate_eth_test_msg</msg_generator_of_sender>  
             <initializer_name>eth_initializer_normal</initializer_name>  
             <closer_name>eth_closer_normal</closer_name>  
@@ -130,7 +136,8 @@
                 <ip_name>enp5s0</ip_name>  
                 <ip_addr>192.168.5.10</ip_addr>  
                 <net_mask>255.255.255.0</net_mask>  
-                <mac_addr>00:80:0f:74:10:24</mac_addr>  
+                <mac_addr>00:80:0f:74:10:24</mac_addr> 
+		<port_id>2007</port_id> 
             </eth_info>  
             <status>sending_and_receiving</status>  
             <duplex>full-duplex</duplex>  
@@ -140,8 +147,8 @@
             <label>GE8</label>  
             <interface_type>eth</interface_type>  
             <status_chooser>work_at_each_round</status_chooser>  
-            <base_send_func>send_packet</base_send_func>  
-            <base_receive_func>receive_packet</base_receive_func>  
+            <base_send_func>send_packet_by_ip_addr</base_send_func>  
+            <base_receive_func>receive_packet_by_ip_addr</base_receive_func>  
             <msg_generator_of_sender>generate_eth_test_msg</msg_generator_of_sender>  
             <initializer_name>eth_initializer_normal</initializer_name>  
             <closer_name>eth_closer_normal</closer_name>  
@@ -149,7 +156,8 @@
                 <ip_name>enp2s0</ip_name>  
                 <ip_addr>192.168.2.10</ip_addr>  
                 <net_mask>255.255.255.0</net_mask>  
-                <mac_addr>00:80:0f:74:10:21</mac_addr>  
+                <mac_addr>00:80:0f:74:10:21</mac_addr> 
+		<port_id>2008</port_id> 
             </eth_info>  
             <status>sending_and_receiving</status>  
             <duplex>full-duplex</duplex>  
@@ -483,8 +491,8 @@
             <label>GE1</label>  
             <interface_type>eth</interface_type>  
             <status_chooser>work_at_each_round</status_chooser>  
-            <base_send_func>send_packet</base_send_func>  
-            <base_receive_func>receive_packet</base_receive_func>  
+            <base_send_func>send_packet_by_ip_addr</base_send_func>  
+            <base_receive_func>receive_packet_by_ip_addr</base_receive_func>  
             <msg_generator_of_sender>generate_eth_test_msg</msg_generator_of_sender>  
             <initializer_name>eth_initializer_normal</initializer_name>  
             <closer_name>eth_closer_normal</closer_name>  
@@ -492,7 +500,8 @@
                 <ip_name>enp3s0:0</ip_name>  
                 <ip_addr>192.168.5.110</ip_addr>  
                 <net_mask>255.255.255.0</net_mask>  
-                <mac_addr>00:80:0f:74:30:02</mac_addr>  
+                <mac_addr>00:80:0f:74:30:02</mac_addr>
+		<port_id>3001</port_id>  
             </eth_info>  
             <status>sending_and_receiving</status>  
             <duplex>full-duplex</duplex>  
@@ -502,8 +511,8 @@
             <label>GE2</label>  
             <interface_type>eth</interface_type>  
             <status_chooser>work_at_each_round</status_chooser>  
-            <base_send_func>send_packet</base_send_func>  
-            <base_receive_func>receive_packet</base_receive_func>  
+            <base_send_func>send_packet_by_ip_addr</base_send_func>  
+            <base_receive_func>receive_packet_by_ip_addr</base_receive_func>  
             <msg_generator_of_sender>generate_eth_test_msg</msg_generator_of_sender>  
             <initializer_name>eth_initializer_normal</initializer_name>  
             <closer_name>eth_closer_normal</closer_name>  
@@ -512,6 +521,7 @@
                 <ip_addr>192.168.6.113</ip_addr>  
                 <net_mask>255.255.255.0</net_mask>  
                 <mac_addr>00:80:0f:74:30:05</mac_addr>  
+		<port_id>3002</port_id>  
             </eth_info>  
             <status>sending_and_receiving</status>  
             <duplex>full-duplex</duplex>  
@@ -521,8 +531,8 @@
             <label>GE3</label>  
             <interface_type>eth</interface_type>  
             <status_chooser>work_at_each_round</status_chooser>  
-            <base_send_func>send_packet</base_send_func>  
-            <base_receive_func>receive_packet</base_receive_func>  
+            <base_send_func>send_packet_by_ip_addr</base_send_func>  
+            <base_receive_func>receive_packet_by_ip_addr</base_receive_func>  
             <msg_generator_of_sender>generate_eth_test_msg</msg_generator_of_sender>  
             <initializer_name>eth_initializer_normal</initializer_name>  
             <closer_name>eth_closer_normal</closer_name>  
@@ -531,6 +541,7 @@
                 <ip_addr>192.168.133.108</ip_addr>  
                 <net_mask>255.255.255.0</net_mask>  
                 <mac_addr>00:80:0f:74:30:00</mac_addr>  
+		<port_id>3003</port_id>  
             </eth_info>  
             <status>sending_and_receiving</status>  
             <duplex>full-duplex</duplex>  
@@ -540,8 +551,8 @@
             <label>GE4</label>  
             <interface_type>eth</interface_type>  
             <status_chooser>work_at_each_round</status_chooser>  
-            <base_send_func>send_packet</base_send_func>  
-            <base_receive_func>receive_packet</base_receive_func>  
+            <base_send_func>send_packet_by_ip_addr</base_send_func>  
+            <base_receive_func>receive_packet_by_ip_addr</base_receive_func>  
             <msg_generator_of_sender>generate_eth_test_msg</msg_generator_of_sender>  
             <initializer_name>eth_initializer_normal</initializer_name>  
             <closer_name>eth_closer_normal</closer_name>  
@@ -550,6 +561,7 @@
                 <ip_addr>192.168.4.111</ip_addr>  
                 <net_mask>255.255.255.0</net_mask>  
                 <mac_addr>00:80:0f:74:30:03</mac_addr>  
+		<port_id>3004</port_id>  
             </eth_info>  
             <status>sending_and_receiving</status>  
             <duplex>full-duplex</duplex>  
@@ -559,8 +571,8 @@
             <label>GE5</label>  
             <interface_type>eth</interface_type>  
             <status_chooser>work_at_each_round</status_chooser>  
-            <base_send_func>send_packet</base_send_func>  
-            <base_receive_func>receive_packet</base_receive_func>  
+            <base_send_func>send_packet_by_ip_addr</base_send_func>  
+            <base_receive_func>receive_packet_by_ip_addr</base_receive_func>  
             <msg_generator_of_sender>generate_eth_test_msg</msg_generator_of_sender>  
             <initializer_name>eth_initializer_normal</initializer_name>  
             <closer_name>eth_closer_normal</closer_name>  
@@ -569,6 +581,7 @@
                 <ip_addr>192.168.2.110</ip_addr>  
                 <net_mask>255.255.255.0</net_mask>  
                 <mac_addr>00:80:0f:74:30:02</mac_addr>  
+		<port_id>3005</port_id>  
             </eth_info>  
             <status>sending_and_receiving</status>  
             <duplex>full-duplex</duplex>  
@@ -578,8 +591,8 @@
             <label>GE6</label>  
             <interface_type>eth</interface_type>  
             <status_chooser>work_at_each_round</status_chooser>  
-            <base_send_func>send_packet</base_send_func>  
-            <base_receive_func>receive_packet</base_receive_func>  
+            <base_send_func>send_packet_by_ip_addr</base_send_func>  
+            <base_receive_func>receive_packet_by_ip_addr</base_receive_func>  
             <msg_generator_of_sender>generate_eth_test_msg</msg_generator_of_sender>  
             <initializer_name>eth_initializer_normal</initializer_name>  
             <closer_name>eth_closer_normal</closer_name>  
@@ -587,7 +600,8 @@
                 <ip_name>enp3s0:2</ip_name>  
                 <ip_addr>192.168.11.110</ip_addr>  
                 <net_mask>255.255.255.0</net_mask>  
-                <mac_addr>00:80:0f:74:30:02</mac_addr>  
+                <mac_addr>00:80:0f:74:30:02</mac_addr> 
+		<port_id>3006</port_id>   
             </eth_info>  
             <status>sending_and_receiving</status>  
             <duplex>full-duplex</duplex>  
@@ -597,8 +611,8 @@
             <label>GE7</label>  
             <interface_type>eth</interface_type>  
             <status_chooser>work_at_each_round</status_chooser>  
-            <base_send_func>send_packet</base_send_func>  
-            <base_receive_func>receive_packet</base_receive_func>  
+            <base_send_func>send_packet_by_ip_addr</base_send_func>  
+            <base_receive_func>receive_packet_by_ip_addr</base_receive_func>  
             <msg_generator_of_sender>generate_eth_test_msg</msg_generator_of_sender>  
             <initializer_name>eth_initializer_normal</initializer_name>  
             <closer_name>eth_closer_normal</closer_name>  
@@ -607,6 +621,7 @@
                 <ip_addr>192.168.31.112</ip_addr>  
                 <net_mask>255.255.255.0</net_mask>  
                 <mac_addr>00:80:0f:74:30:04</mac_addr>  
+		<port_id>3007</port_id>  
             </eth_info>  
             <status>sending_and_receiving</status>  
             <duplex>full-duplex</duplex>  
@@ -616,8 +631,8 @@
             <label>GE8</label>  
             <interface_type>eth</interface_type>  
             <status_chooser>work_at_each_round</status_chooser>  
-            <base_send_func>send_packet</base_send_func>  
-            <base_receive_func>receive_packet</base_receive_func>  
+            <base_send_func>send_packet_by_ip_addr</base_send_func>  
+            <base_receive_func>receive_packet_by_ip_addr</base_receive_func>  
             <msg_generator_of_sender>generate_eth_test_msg</msg_generator_of_sender>  
             <initializer_name>eth_initializer_normal</initializer_name>  
             <closer_name>eth_closer_normal</closer_name>  
@@ -625,7 +640,8 @@
                 <ip_name>enp2s0</ip_name>  
                 <ip_addr>192.168.13.109</ip_addr>  
                 <net_mask>255.255.255.0</net_mask>  
-                <mac_addr>00:80:0f:74:30:01</mac_addr>  
+                <mac_addr>00:80:0f:74:30:01</mac_addr> 
+		<port_id>3008</port_id>   
             </eth_info>  
             <status>sending_and_receiving</status>  
             <duplex>full-duplex</duplex>  

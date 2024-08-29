@@ -16,12 +16,31 @@
                 <ip_addr>192.168.1.10</ip_addr>  
                 <net_mask>255.255.255.0</net_mask>  
                 <mac_addr>00:80:0f:74:10:22</mac_addr>  
-                <listened_port_id>1000</listened_port_id>  
+                <port_id>2000</port_id>  
             </eth_info>  
             <status>sending_and_receiving</status>  
             <duplex>full-duplex</duplex>  
         </interface>
-
+        <interface> 
+            <id>fpu-enp6s0</id>  
+            <label>enp6s0</label>  
+            <interface_type>eth</interface_type>  
+            <status_chooser>work_at_each_round</status_chooser>  
+            <base_send_func>send_packet_by_ip_addr</base_send_func>  
+            <base_receive_func>receive_packet_by_ip_addr</base_receive_func>  
+            <msg_generator_of_sender>generate_eth_test_msg</msg_generator_of_sender>  
+            <initializer_name>eth_initializer_normal</initializer_name>  
+            <closer_name>eth_closer_normal</closer_name>  
+            <eth_info>  
+                <ip_name>enp6s0</ip_name>  
+                <ip_addr>192.168.2.10</ip_addr>  
+                <net_mask>255.255.255.0</net_mask>  
+                <mac_addr>00:80:0f:74:10:25</mac_addr>  
+                <port_id>2003</port_id>  
+            </eth_info>  
+            <status>sending_and_receiving</status>  
+            <duplex>full-duplex</duplex>  
+        </interface>
     </node>
 
     <node>  
@@ -41,7 +60,27 @@
                 <ip_addr>192.168.1.51</ip_addr>  
                 <net_mask>255.255.255.0</net_mask>  
                 <mac_addr>00:0c:29:8e:5f:92</mac_addr>  
-                <listened_port_id>1001</listened_port_id>  
+                <port_id>1001</port_id>  
+            </eth_info>  
+            <status>sending_and_receiving</status>  
+            <duplex>full-duplex</duplex>  
+        </interface>
+        <interface> 
+            <id>VM-ens36</id>  
+            <label>ens36</label>  
+            <interface_type>eth</interface_type>  
+            <status_chooser>work_at_each_round</status_chooser>  
+            <base_send_func>send_packet_by_ip_addr</base_send_func>  
+            <base_receive_func>receive_packet_by_ip_addr</base_receive_func>  
+            <msg_generator_of_sender>generate_eth_test_msg</msg_generator_of_sender>  
+            <initializer_name>eth_initializer_normal</initializer_name>  
+            <closer_name>eth_closer_normal</closer_name>  
+            <eth_info>  
+                <ip_name>ens36</ip_name>  
+                <ip_addr>192.168.2.51</ip_addr>  
+                <net_mask>255.255.255.0</net_mask>  
+                <mac_addr>00:0c:29:8e:5f:9c</mac_addr>  
+                <port_id>1002</port_id>  
             </eth_info>  
             <status>sending_and_receiving</status>  
             <duplex>full-duplex</duplex>  

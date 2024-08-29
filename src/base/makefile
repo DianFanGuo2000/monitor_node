@@ -7,8 +7,9 @@ CFLAGS=-I.
 # 定义链接选项（这里留空）  
 LDFLAGS=  
   
-# 定义目标文件  
-OBJECTS=eth_recv_send.o rs485_recv_send.o can_recv_send.o  
+# 使用自动变量来获取当前目录下的所有.c文件，并为它们生成.o文件  
+SOURCES=$(wildcard *.c)  
+OBJECTS=$(SOURCES:.c=.o)  
   
 # 默认目标  
 all: $(OBJECTS)  
@@ -19,4 +20,4 @@ all: $(OBJECTS)
   
 # 清理编译生成的文件  
 clean:  
-	rm -f $(OBJECTS)  
+	rm -f $(OBJECTS)

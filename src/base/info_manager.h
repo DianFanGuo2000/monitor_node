@@ -21,14 +21,13 @@
 #include <libxml/tree.h>
 
 
-
 struct eth_info { 
 	char* ip_name;
 	char *ip_addr;  
 	char *net_mask;  
 
     char *mac_addr;  
-	int listened_port_id;  
+	int port_id;  
 
 	int temporary_sockfd;
 	struct sockaddr_ll *sock_addr; 
@@ -105,15 +104,25 @@ int interface_cnt;
 time_t test_begin_time; 
 
 
+
+
+int check_single_send_base_func_legal(const struct interface_info *info);
+int check_all_send_base_func_legal(const struct interface_info *array,int size);
+
+
+int check_single_recv_base_func_legal(const struct interface_info *info);
+
+int check_all_recv_base_func_legal(const struct interface_info *array,int size);
+
 void convert_xml_config_to_overall_json_config(char *xml_config_path_node_if, char *xml_config_path_node_link, char *overall_topology_json_config_path);
 
 char* get_mac_addr_by_index(int i);
 
 char* get_linked_mac_addr_by_index(int i);
 
-int get_listened_port_id_by_index(int i);
+int get_port_id_by_index(int i);
 
-int get_linked_listened_port_id_by_index(int i);
+int get_linked_port_id_by_index(int i);
 
 
 char* get_linked_ip_addr_by_index(int i);

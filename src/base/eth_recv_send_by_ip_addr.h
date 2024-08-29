@@ -28,8 +28,8 @@ void initialize_eth_by_ip_addr_lock();
 void destroy_eth_by_ip_addr_lock();
 
 
-int receive_packet_by_ip_addr(const char *listened_ip_addr,int listened_port_id, unsigned char *msg, long max_waiting_time);
-int send_packet_by_ip_addr(const char *target_ip, int target_port_id,const char *message);
+int receive_packet_by_ip_addr(const char *listened_ip_name,const char *listened_ip_addr,int listened_port_id, unsigned char *msg, long max_waiting_time);
+int send_packet_by_ip_addr(const char *target_ip_name,const char *target_ip_addr, int target_port_id,const char *message);
 
 
 

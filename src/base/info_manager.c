@@ -306,7 +306,7 @@ char *get_target_if_value_from_node_tree(xmlNode *rootNode_node_if, char *if_id,
                 strcmp(if_property_name, "ip_addr") == 0 ||  
                 strcmp(if_property_name, "net_mask") == 0 ||  
                 strcmp(if_property_name, "mac_addr") == 0 ||
-                strcmp(if_property_name, "listened_port_id") == 0) {  
+                strcmp(if_property_name, "port_id") == 0) {  
                   
                 for (xmlNode *node = interfaceNode->children; node; node = node->next) {  
                     char *if_property_value = getChildNodeContentWithSpecifiedName(node, if_property_name);  
@@ -452,7 +452,7 @@ char* xmlToJson(const char *xmlData_node_if, const char *xmlData_link) {
 			char* ip_addr = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "ip_addr");
 			char* net_mask = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "net_mask");
 			char* mac_addr = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "mac_addr");
-			char* l_port_id = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "listened_port_id");
+			char* l_port_id = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "port_id");
 
 
 			char* rs485_dev_path = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "rs485_dev_path");
@@ -472,7 +472,7 @@ char* xmlToJson(const char *xmlData_node_if, const char *xmlData_link) {
 			char* listened_ip_addr = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "ip_addr");
 			char* listened_net_mask = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "net_mask");
 			char* listened_mac_addr = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "mac_addr");
-			char* l_l_port_id = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "listened_port_id");
+			char* l_l_port_id = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "port_id");
 
 
 			char* listened_rs485_dev_path = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "rs485_dev_path");
@@ -516,7 +516,7 @@ char* xmlToJson(const char *xmlData_node_if, const char *xmlData_link) {
 		        cJSON_AddStringToObject(ethInfo, "mac_addr", mac_addr);  
 				int t_;
 				string_to_int(l_port_id,&t_);
-				cJSON_AddNumberToObject(ethInfo, "listened_port_id", t_); 
+				cJSON_AddNumberToObject(ethInfo, "port_id", t_); 
 		        cJSON_AddItemToObject(jsonObject_test, "eth_info", ethInfo);  
 	  		}
 
@@ -612,7 +612,7 @@ char* xmlToJson(const char *xmlData_node_if, const char *xmlData_link) {
 		        cJSON_AddStringToObject(ethInfo, "mac_addr", listened_mac_addr);   
 				int t_;
 				string_to_int(l_l_port_id,&t_);
-				cJSON_AddNumberToObject(ethInfo, "listened_port_id", t_); 
+				cJSON_AddNumberToObject(ethInfo, "port_id", t_); 
 				cJSON_AddItemToObject(jsonObject_listen, "eth_info", ethInfo);  
 			}
 
@@ -1184,7 +1184,7 @@ void write_interface_info_array_to_json(const char *filename, struct interface_i
 			cJSON_AddStringToObject(eth_info, "net_mask", array[i].eth_info.net_mask);  
 			cJSON_AddStringToObject(eth_info, "mac_addr", array[i].eth_info.mac_addr); 
 			cJSON_AddStringToObject(eth_info, "ip_name", array[i].eth_info.ip_name); 
-			cJSON_AddNumberToObject(eth_info, "listened_port_id", array[i].eth_info.listened_port_id); 
+			cJSON_AddNumberToObject(eth_info, "port_id", array[i].eth_info.port_id); 
 		}  
 		cJSON_AddItemToObject(interface, "eth_info", eth_info);  
 
@@ -1195,7 +1195,7 @@ void write_interface_info_array_to_json(const char *filename, struct interface_i
 			cJSON_AddStringToObject(linked_eth_info, "net_mask", array[i].linked_eth_info.net_mask);
 		    cJSON_AddStringToObject(linked_eth_info, "mac_addr", array[i].linked_eth_info.mac_addr);  
 			cJSON_AddStringToObject(linked_eth_info, "ip_name", array[i].linked_eth_info.ip_name);  
-			cJSON_AddNumberToObject(linked_eth_info, "listened_port_id", array[i].linked_eth_info.listened_port_id); 
+			cJSON_AddNumberToObject(linked_eth_info, "port_id", array[i].linked_eth_info.port_id); 
 		}  
 		cJSON_AddItemToObject(interface, "linked_eth_info", linked_eth_info); 
 
@@ -1424,6 +1424,57 @@ int get_all_node_name_from_overall_json(const char *filename, const char *curren
 
 
 
+int check_single_send_base_func_legal(const struct interface_info *info)
+{
+	char *send_func_name_array[] = {"send_packet_by_ip_addr", "send_packet_by_mac_addr", "send_packet_xy", "send_packet_rs485", "send_packet_can_fpu", "send_packet_can_gpu"};	
+	int send_func_num = 6;
+	
+
+    for (int i = 0; i < send_func_num; i++) {  
+        if (strcmp(info->base_send_func, send_func_name_array[i]) == 0) {  
+            return _SUCCESS;
+        }  
+    }  
+    return _ERROR;  
+}
+
+int check_all_send_base_func_legal(const struct interface_info *array,int size)
+{
+
+	
+	for(int i=0;i<size;i++)
+	{
+		if(check_single_send_base_func_legal(&array[i])==_ERROR)
+			return -i;
+	}
+	return _SUCCESS;
+}
+
+
+int check_single_recv_base_func_legal(const struct interface_info *info)
+{
+	char *recv_func_name_array[] = {"receive_packet_by_ip_addr", "receive_packet_by_mac_addr", "receive_packet_xy", "receive_packet_rs485", "receive_packet_can_fpu","receive_packet_can_gpu"};  
+	int recv_func_num = 6;	
+
+    for (int i = 0; i < recv_func_num; i++) {  
+        if (strcmp(info->base_send_func, recv_func_name_array[i]) == 0) {  
+            return _SUCCESS;
+        }  
+    }  
+    return _ERROR;  
+}
+
+int check_all_recv_base_func_legal(const struct interface_info *array,int size)
+{
+	for(int i=0;i<size;i++)
+	{
+		if(check_single_recv_base_func_legal(&array[i])==_ERROR)
+			return -i;
+	}
+	return _SUCCESS;
+}
+
+
 void    read_interface_info_array_from_split_json(const char *filename, struct interface_info *array) {
 	cJSON *json, *interfaces, *interface, *tmp; 
 	char buffer[BUFFER_SIZE];
@@ -1523,11 +1574,11 @@ void    read_interface_info_array_from_split_json(const char *filename, struct i
 			}  
 
 
-			cJSON *listened_port_id_item = cJSON_GetObjectItem(tmp, "listened_port_id");  
-			if (listened_port_id_item && cJSON_IsNumber(listened_port_id_item)) {  
-				array[i].eth_info.listened_port_id = listened_port_id_item->valuedouble;  
+			cJSON *port_id_item = cJSON_GetObjectItem(tmp, "port_id");  
+			if (port_id_item && cJSON_IsNumber(port_id_item)) {  
+				array[i].eth_info.port_id = port_id_item->valuedouble;  
 			} else {  
-				array[i].eth_info.listened_port_id = -1;	
+				array[i].eth_info.port_id = -1;	
 			}  
 			
 		} else {  
@@ -1535,7 +1586,7 @@ void    read_interface_info_array_from_split_json(const char *filename, struct i
 			array[i].eth_info.ip_addr = NULL;
 			array[i].eth_info.net_mask = NULL;
 			array[i].eth_info.mac_addr = NULL;	
-			array[i].eth_info.listened_port_id = -1;
+			array[i].eth_info.port_id = -1;
 		}  
 
 		// Fill linked_eth_info  
@@ -1570,11 +1621,11 @@ void    read_interface_info_array_from_split_json(const char *filename, struct i
 				array[i].linked_eth_info.mac_addr = NULL;	
 			}  
 
-			cJSON *listened_port_id_item = cJSON_GetObjectItem(tmp, "listened_port_id");  
-			if (listened_port_id_item && cJSON_IsNumber(listened_port_id_item)) {  
-				array[i].linked_eth_info.listened_port_id = listened_port_id_item->valuedouble;  
+			cJSON *port_id_item = cJSON_GetObjectItem(tmp, "port_id");  
+			if (port_id_item && cJSON_IsNumber(port_id_item)) {  
+				array[i].linked_eth_info.port_id = port_id_item->valuedouble;  
 			} else {  
-				array[i].linked_eth_info.listened_port_id = -1;	
+				array[i].linked_eth_info.port_id = -1;	
 			}  
 			
 		} else {  
@@ -1582,7 +1633,7 @@ void    read_interface_info_array_from_split_json(const char *filename, struct i
 			array[i].linked_eth_info.ip_addr = NULL;
 			array[i].linked_eth_info.net_mask = NULL;
 			array[i].linked_eth_info.mac_addr = NULL;	
-			array[i].linked_eth_info.listened_port_id = -1;
+			array[i].linked_eth_info.port_id = -1;
 		} 
 
 
@@ -1871,18 +1922,18 @@ void  read_interface_info_array_from_overall_json(const char *current_node_name,
 				array[cnt].eth_info.mac_addr = NULL;	
 			}  
 
-			cJSON *listened_port_id_item = cJSON_GetObjectItem(tmp, "listened_port_id");  
-			if (listened_port_id_item && cJSON_IsNumber(listened_port_id_item)) {  
-				array[cnt].eth_info.listened_port_id= listened_port_id_item->valuedouble;  
+			cJSON *port_id_item = cJSON_GetObjectItem(tmp, "port_id");  
+			if (port_id_item && cJSON_IsNumber(port_id_item)) {  
+				array[cnt].eth_info.port_id= port_id_item->valuedouble;  
 			} else {  
-				array[cnt].eth_info.listened_port_id = -1;	
+				array[cnt].eth_info.port_id = -1;	
 			}  
 		} else {  
 			array[cnt].eth_info.ip_name = NULL;
 			array[cnt].eth_info.ip_addr = NULL;
 			array[cnt].eth_info.net_mask = NULL;
 			array[cnt].eth_info.mac_addr = NULL;	
-			array[cnt].eth_info.listened_port_id = -1;	
+			array[cnt].eth_info.port_id = -1;	
 		}  
 
 		// Fill linked_eth_info  
@@ -1918,18 +1969,18 @@ void  read_interface_info_array_from_overall_json(const char *current_node_name,
 			}  
 
 
-			cJSON *listened_port_id_item = cJSON_GetObjectItem(tmp, "listened_port_id");  
-			if (listened_port_id_item && cJSON_IsNumber(listened_port_id_item)) {  
-				array[cnt].linked_eth_info.listened_port_id= listened_port_id_item->valuedouble;  
+			cJSON *port_id_item = cJSON_GetObjectItem(tmp, "port_id");  
+			if (port_id_item && cJSON_IsNumber(port_id_item)) {  
+				array[cnt].linked_eth_info.port_id= port_id_item->valuedouble;  
 			} else {  
-				array[cnt].linked_eth_info.listened_port_id = -1;	
+				array[cnt].linked_eth_info.port_id = -1;	
 			}  
 		} else {  
 			array[cnt].linked_eth_info.ip_name = NULL;
 			array[cnt].linked_eth_info.ip_addr = NULL;
 			array[cnt].linked_eth_info.net_mask = NULL;
 			array[cnt].linked_eth_info.mac_addr = NULL;		
-			array[cnt].linked_eth_info.listened_port_id = -1;	
+			array[cnt].linked_eth_info.port_id = -1;	
 		} 
 
 
@@ -2191,12 +2242,7 @@ void start_info_manager_from_split_json(const char *filename)
 	//free_interface_info_array();
 	malloc_interface_info_array(size);
 	read_interface_info_array_from_split_json(filename,interface_info_array);
-	printf("***********************************interface information loaded\n");
 
-	
-	printf("***********************************loading communication information......\n");
-	initialize_communication_info_lock();
-	
 	int count=0;
 	for(int i=0;i<size;i++)
 	{
@@ -2205,6 +2251,35 @@ void start_info_manager_from_split_json(const char *filename)
 		if(strcmp(interface_info_array[i].interface_type,"eth")==0)
 			interface_info_array[i].eth_info.sock_addr = (struct sockaddr_ll*)malloc(sizeof(struct sockaddr_ll));
 	}
+
+
+	printf("***********************************interface information loaded\n");
+
+
+
+	ret = check_all_recv_base_func_legal(interface_info_array,size);
+	if(ret<0)
+	{
+		printf("interface \"%s\"'s recv func is configured wrongly, which is %s\n",interface_info_array[-ret].interface_name,interface_info_array[-ret].base_receive_func);
+		free_interface_info_array();
+		return;
+	}
+	
+
+	ret = check_all_send_base_func_legal(interface_info_array,size);
+	if(ret<0)
+	{
+		printf("interface \"%s\"'s recv func is configured wrongly, which is %s\n",interface_info_array[-ret].interface_name,interface_info_array[-ret].base_send_func);
+		free_interface_info_array();
+		return;
+	}
+	
+
+	
+	printf("***********************************loading communication information......\n");
+	initialize_communication_info_lock();
+
+
 
 	//free_communication_info_array();
 	communication_info_cnt = count;
@@ -2346,14 +2421,14 @@ int get_interface_cnt()
 }
 
 
-int get_listened_port_id_by_index(int i)
+int get_port_id_by_index(int i)
 {
-	return interface_info_array[i].eth_info.listened_port_id;
+	return interface_info_array[i].eth_info.port_id;
 }
 
-int get_linked_listened_port_id_by_index(int i)
+int get_linked_port_id_by_index(int i)
 {
-	return interface_info_array[i].linked_eth_info.listened_port_id;
+	return interface_info_array[i].linked_eth_info.port_id;
 }
 
 
@@ -2769,14 +2844,18 @@ void print_interface_info(const struct interface_info *info) {
     printf("Status: %s\n", info->status);
 
     printf("Ethernet Info:\n");  
+	printf("\tIP Name: %s\n", info->eth_info.ip_name); 
     printf("\tIP Address: %s\n", info->eth_info.ip_addr);  
     printf("\tNet Mask: %s\n", info->eth_info.net_mask);  
     printf("\tMAC Address: %s\n", info->eth_info.mac_addr);  
+	printf("\tPort Id: %d\n", info->eth_info.port_id);  
   
     printf("Linked Ethernet Info:\n");  
+	printf("\tIP Name: %s\n", info->linked_eth_info.ip_name); 
     printf("\tIP Address: %s\n", info->linked_eth_info.ip_addr);  
     printf("\tNet Mask: %s\n", info->linked_eth_info.net_mask);  
-    printf("\tMAC Address: %s\n", info->linked_eth_info.mac_addr);  
+    printf("\tMAC Address: %s\n", info->linked_eth_info.mac_addr); 
+	printf("\tPort Id: %d\n", info->linked_eth_info.port_id); 
   
     printf("CAN Info:\n");  
     printf("\tCAN ID: %d\n", info->can_info.can_id);  
@@ -2787,6 +2866,7 @@ void print_interface_info(const struct interface_info *info) {
 	printf("\tCAN baud_rate: %d\n", info->linked_can_info.baud_rate);
   
     printf("RS485 Info:\n");  
+	printf("\tRS485 Dev Path: %s\n", info->rs485_info.rs485_dev_path);  
     printf("\tGPIO Number: %d\n", info->rs485_info.rs485_gpio_number);  
     printf("\tData Bits: %d\n", info->rs485_info.databits);  
     printf("\tStop Bits: %d\n", info->rs485_info.stopbits);  
@@ -2795,6 +2875,7 @@ void print_interface_info(const struct interface_info *info) {
     printf("\tTemporary FD: %d\n", info->rs485_info.temporary_fd);  
   
     printf("Linked RS485 Info:\n");  
+	printf("\tRS485 Dev Path: %s\n", info->linked_rs485_info.rs485_dev_path);  
     printf("\tGPIO Number: %d\n", info->linked_rs485_info.rs485_gpio_number);  
     printf("\tData Bits: %d\n", info->linked_rs485_info.databits);  
     printf("\tStop Bits: %d\n", info->linked_rs485_info.stopbits);  
