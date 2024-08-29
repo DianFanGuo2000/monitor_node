@@ -135,7 +135,8 @@ int closer_transfer(char *closer_name, const char *interface_name)
 
 int eth_initializer_normal(const char *interface_name)
 {
-	initialize_eth_lock();
+	initialize_eth_by_ip_addr_lock();
+	initialize_eth_by_mac_addr_lock();
 
 	int i = get_interface_index(interface_name);
 	int initialized_flag = get_initialized_flag_by_index(i);
@@ -185,7 +186,7 @@ int eth_initializer_normal(const char *interface_name)
 
 int eth_initializer_xy(const char *interface_name)
 {
-	initialize_eth_lock();
+	initialize_eth_lock_xy();
 
 	int i = get_interface_index(interface_name);
 	int initialized_flag = get_initialized_flag_by_index(i);
@@ -373,7 +374,7 @@ int can_gpu_initializer_normal(const char *interface_name)
 int eth_closer_xy(const char *interface_name)
 {
 
-	destroy_eth_lock();
+	destroy_eth_lock_xy();
 
 	int i = get_interface_index(interface_name);
 	int initialized_flag = get_initialized_flag_by_index(i);
@@ -410,7 +411,8 @@ int eth_closer_xy(const char *interface_name)
 int eth_closer_normal(const char *interface_name)
 {
 
-	destroy_eth_lock();
+	destroy_eth_by_ip_addr_lock();
+	destroy_eth_by_mac_addr_lock();
 
 	int i = get_interface_index(interface_name);
 	int initialized_flag = get_initialized_flag_by_index(i);

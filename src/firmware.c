@@ -65,11 +65,11 @@ int receive_message(const char *linked_node,const char *source_interface,Dealer 
 	time_t begin_time = time(NULL); // Initialize start time  
 
     // Check if the interface type is "eth"  
-    if (strcmp(base_receive_func, "receive_packet") == 0) {   
+    if (strcmp(base_receive_func, "receive_packet_by_mac_addr") == 0) {   
 
 	    // Attempt to receive a packet from the source interface  
 		char TEMP_MSG[MAX_ETH_DATA_LENGTH]={0};
-		if (receive_packet(get_ip_name_by_index(index),TEMP_MSG,max_waiting_time)<0) {  
+		if (receive_packet_by_mac_addr(get_ip_name_by_index(index),TEMP_MSG,max_waiting_time)<0) {  
 			//usleep(3000000);
 			printf("failed to got message from \"%s\"!\n",source_interface);
 			printf("TEMP_MSG:%s\n",TEMP_MSG);
@@ -431,13 +431,13 @@ int send_message(const char *source_interface,const char *message)
 
 
     // Check if the interface type is "eth" (could be removed if not needed)    
-    if (strcmp(base_send_func, "send_packet") == 0) {    
+    if (strcmp(base_send_func, "send_packet_by_mac_addr") == 0) {    
         // Retrieve the MAC addresses    
         const char *src_mac = get_mac_addr_by_index(index);    
         const char *dest_mac = get_linked_mac_addr_by_index(index);  
 
         // Check if MAC addresses were retrieved and packet can be sent    
-        if (send_packet(get_ip_name_by_index(index),message, src_mac, dest_mac) < 0) {    
+        if (send_packet_by_mac_addr(get_ip_name_by_index(index),message, src_mac, dest_mac) < 0) {    
         	printf("send failed!\n");
         	return _ERROR; // Retry sending    
         }    
@@ -599,7 +599,7 @@ int set_status(const char *source_interface, const char *status)
     }  
 
 
-    if (strcmp(base_send_func, "send_packet") == 0 && strcmp(base_receive_func, "receive_packet") == 0) {  
+    if (strcmp(base_send_func, "send_packet_by_mac_addr") == 0 && strcmp(base_receive_func, "receive_packet_by_mac_addr") == 0) {  
         // Compare the status string correctly using strcmp  
        /* if (strcmp(status, "sending") == 0 || strcmp(status, "receiving") == 0) {  
             printf("eth cannot be set as 'sending' or 'receiving'\n");  

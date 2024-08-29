@@ -1,8 +1,15 @@
 [{
 		"linked_node":	"fpu",
 		"interface_name":	"VM-ens33-VM-ens33-listen",
-		"updated_time":	"Wed Aug 28 09:55:35 2024",
+		"updated_time":	"Thu Aug 29 14:56:25 2024",
 		"tx":	"20",
-		"rx":	"0",
-		"current_round":	"0"
+		"rx":	"20",
+		"current_round":	"24631"
+	}, {
+		"linked_node":	"",
+		"interface_name":	"fpu-enp3s0-fpu-enp3s0-listen",
+		"updated_time":	"Thu Aug 29 14:56:15 2024",
+		"tx":	"20",
+		"rx":	"20",
+		"current_round":	"24630"
 	}]

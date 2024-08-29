@@ -970,7 +970,8 @@ int update_communication_info_array(char* linked_node,char* interface_name,time_
 	
 	for (size_t i = 0; i < communication_info_cnt; i++) {
         if (strcmp(communication_info_array[i].interface_name, interface_name) == 0) {
-			communication_info_array[i].linked_node = linked_node;
+			free(communication_info_array[i].linked_node);
+			communication_info_array[i].linked_node = strdup(linked_node);
 			communication_info_array[i].updated_time = updated_time;
 			communication_info_array[i].tx = tx;
 			communication_info_array[i].rx = rx;
@@ -2276,9 +2277,10 @@ void start_info_manager_from_overall_json(const char* current_node_name, const c
 	//free_interface_info_array();
 	malloc_interface_info_array(size);
 	read_interface_info_array_from_overall_json(current_node_name,filename,interface_info_array);
-	printf("***********************************interface information loaded\n");
+	printf("***********************************interface information loaded as below:\n\n\n");
 
-	//printAllInfo();
+	printAllInfo();
+	printf("\n\n");
 
 	
 	printf("***********************************loading communication information......\n");
@@ -2316,9 +2318,10 @@ void start_info_manager_from_overall_json(const char* current_node_name, const c
 		}
 	}
 
-	//printAllCommucationInfo();
 
-	printf("***********************************communication information loaded\n");
+	printf("***********************************communication information loaded as below:\n\n\n");
+	printAllCommucationInfo();
+	printf("\n\n");
 	
 }
 

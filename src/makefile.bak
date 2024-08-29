@@ -3,7 +3,7 @@ CC=gcc
 CFLAGS=-I. -Wall  
 LDFLAGS=-L/usr/local/lib  
   
-CPPTEST=/home/cjy/work/parasoft/cpptest/10.4/cpptestscan --cpptestscanOutputFile=/home/cjy/work/test.bdf --cpptestscanProjectName=MD 
+CPPTEST=/home/cjy/work/parasoft/cpptest/10.4/cpptestscan --cpptestscanOutputFile=/home/cjy/work/test.bdf --cpptestscanProjectName=MMDD 
 CC_WITH_CPPTEST = $(CPPTEST) $(CC)  
   
 # 定义源文件和目标文件（包括当前目录和base目录下的.c文件）  

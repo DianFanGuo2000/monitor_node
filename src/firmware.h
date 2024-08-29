@@ -4,7 +4,7 @@
 #include <string.h> // For strcmp  
 #include <time.h> // For time functions  
 
-#include "./base/eth_recv_send.h"
+#include "./base/eth_recv_send_by_mac_addr.h"
 #include "./base/eth_recv_send_xy.h"
 #include "./base/eth_recv_send_by_ip_addr.h"
 

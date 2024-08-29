@@ -28,7 +28,7 @@ all: $(TARGET)
 # 主目标，依赖于所有.o文件  
 $(TARGET): $(OBJS) $(BASE_OBJS) $(CAN_OBJS)  
 	@echo "Building $(TARGET) from: $(OBJS) $(BASE_OBJS) $(CAN_OBJS)"  
-	$(CC_WITH_CPPTEST) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)  
+	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)  
   
 # 清理编译生成的文件  
 clean:  

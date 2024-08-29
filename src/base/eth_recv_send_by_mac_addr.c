@@ -1,16 +1,16 @@
 
-#include "eth_recv_send.h"
+#include "eth_recv_send_by_mac_addr.h"
 
 
 
 // �ڳ����ʼ��ʱ������  
-void initialize_eth_lock() {  
-    pthread_mutex_init(&eth_lock, NULL);  
+void initialize_eth_by_mac_addr_lock() {  
+    pthread_mutex_init(&eth_by_mac_addr_lock, NULL);  
 }  
   
 // �ڳ������ʱ������  
-void destroy_eth_lock() {  
-    pthread_mutex_destroy(&eth_lock);  
+void destroy_eth_by_mac_addr_lock() {  
+    pthread_mutex_destroy(&eth_by_mac_addr_lock);  
 }
 
 
@@ -25,7 +25,7 @@ void destroy_eth_lock() {
  * unsigned char msg[100];
  * receive_packet("eth1", msg);  
  */  
-int receive_packet(const char *interface_name, unsigned char *msg,long max_waiting_time)  
+int receive_packet_by_mac_addr(const char *interface_name, unsigned char *msg,long max_waiting_time)  
 {  
 	if(interface_name==NULL)
 	{
@@ -199,7 +199,7 @@ int stringToMacAddress(const char* macStr, unsigned char* macAddr) {
  * @param message   The message to be sent as the payload of the packet.  
  * @usage send_packet("eth1", "eth1 is good", "\x3A\x0F\x58\xF4\x95\x89", "\x20\x7B\xD2\x3C\xF2\x9D");  
  */  
-int send_packet(const char *interface_name, const char *message, const char *ether_shost, const char *ether_dhost)  
+int send_packet_by_mac_addr(const char *interface_name, const char *message, const char *ether_shost, const char *ether_dhost)  
 {  
 
 	if(interface_name==NULL)
