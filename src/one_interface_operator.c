@@ -167,6 +167,7 @@ void free_test_or_listen_record_arrays() {
 }  
 
 void deal_with_mnt(const char* linked_node,const char* listened_interface, const char* msg) {  
+	printf("deal with msg from interface %s whose node is %s\n",listened_interface,linked_node);
 	//printf("linked_node:%s listened_interface:%s msg:%s \n",linked_node,listened_interface,msg);
 	int ind = get_interface_index(listened_interface);
 	time_t current_time = time(NULL);  
@@ -181,6 +182,7 @@ void deal_with_mnt(const char* linked_node,const char* listened_interface, const
 	if(ret<0)
 	{
 		printf("cannot recover the sended msg for listened_interface: %s!\n",listened_interface);
+		pthread_mutex_unlock(&cnt_mutex_array[ind]);
 		return;
 	}
 

@@ -6,6 +6,9 @@
 
 #include "./base/eth_recv_send.h"
 #include "./base/eth_recv_send_xy.h"
+#include "./base/eth_recv_send_by_ip_addr.h"
+
+
 
 #include "./base/rs485_recv_send.h"
 #include "./base/can_fpu_recv_send.h"

@@ -265,6 +265,7 @@ typedef struct {
 
 
 void *listen_thread_function(void *arg) {  
+	pthread_detach(pthread_self());/*将当前线程与主线程分离，避免该线程结束后，线程栈和id并没有被释放*/
     listen_thread_args *ta = (listen_thread_args *)arg;  
 	while(1)
 	{
@@ -297,7 +298,8 @@ void listen_upon_one_interface_in_test_case(char *linked_node, char *listened_in
 
 
 // 线程函数  
-void* interface_thread(void* arg) {  
+void* interface_thread(void* arg) {
+	pthread_detach(pthread_self());/*将当前线程与主线程分离，避免该线程结束后，线程栈和id并没有被释放*/
     int index = *(int*)arg;  
     int ret = initializer_transfer(get_initializer_name_by_index(index),get_interface_name_by_index(index)); 
 

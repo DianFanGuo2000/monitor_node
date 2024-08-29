@@ -305,7 +305,8 @@ char *get_target_if_value_from_node_tree(xmlNode *rootNode_node_if, char *if_id,
             if (strcmp(if_property_name, "ip_name") == 0 ||  
                 strcmp(if_property_name, "ip_addr") == 0 ||  
                 strcmp(if_property_name, "net_mask") == 0 ||  
-                strcmp(if_property_name, "mac_addr") == 0) {  
+                strcmp(if_property_name, "mac_addr") == 0 ||
+                strcmp(if_property_name, "listened_port_id") == 0) {  
                   
                 for (xmlNode *node = interfaceNode->children; node; node = node->next) {  
                     char *if_property_value = getChildNodeContentWithSpecifiedName(node, if_property_name);  
@@ -451,6 +452,7 @@ char* xmlToJson(const char *xmlData_node_if, const char *xmlData_link) {
 			char* ip_addr = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "ip_addr");
 			char* net_mask = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "net_mask");
 			char* mac_addr = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "mac_addr");
+			char* l_port_id = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "listened_port_id");
 
 
 			char* rs485_dev_path = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "rs485_dev_path");
@@ -459,6 +461,7 @@ char* xmlToJson(const char *xmlData_node_if, const char *xmlData_link) {
 			char* databits = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "databits");
 			char* stopbits = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "stopbits");
 			char* paritybits = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "paritybits");
+			
 
 
 			char* can_id = get_target_if_value_from_node_tree(rootNode_node_if,ifIdStr, "can_id");
@@ -469,6 +472,7 @@ char* xmlToJson(const char *xmlData_node_if, const char *xmlData_link) {
 			char* listened_ip_addr = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "ip_addr");
 			char* listened_net_mask = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "net_mask");
 			char* listened_mac_addr = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "mac_addr");
+			char* l_l_port_id = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "listened_port_id");
 
 
 			char* listened_rs485_dev_path = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "rs485_dev_path");
@@ -483,6 +487,7 @@ char* xmlToJson(const char *xmlData_node_if, const char *xmlData_link) {
 			char* listened_can_baud_rate = get_target_if_value_from_node_tree(rootNode_node_if,listenIfIdStr, "baud_rate");
 			
 
+			//printf("%s %s\n",l_port_id,l_l_port_id);
 			
 	        // Ìí¼ÓÊôĞÔ  
 	        cJSON_AddStringToObject(jsonObject_test, "mode", "test");  
@@ -509,6 +514,9 @@ char* xmlToJson(const char *xmlData_node_if, const char *xmlData_link) {
 		        cJSON_AddStringToObject(ethInfo, "ip_addr", ip_addr);  
 		        cJSON_AddStringToObject(ethInfo, "net_mask", net_mask);  
 		        cJSON_AddStringToObject(ethInfo, "mac_addr", mac_addr);  
+				int t_;
+				string_to_int(l_port_id,&t_);
+				cJSON_AddNumberToObject(ethInfo, "listened_port_id", t_); 
 		        cJSON_AddItemToObject(jsonObject_test, "eth_info", ethInfo);  
 	  		}
 
@@ -602,6 +610,9 @@ char* xmlToJson(const char *xmlData_node_if, const char *xmlData_link) {
 		        cJSON_AddStringToObject(ethInfo, "ip_addr", listened_ip_addr);  
 		        cJSON_AddStringToObject(ethInfo, "net_mask", listened_net_mask);  
 		        cJSON_AddStringToObject(ethInfo, "mac_addr", listened_mac_addr);   
+				int t_;
+				string_to_int(l_l_port_id,&t_);
+				cJSON_AddNumberToObject(ethInfo, "listened_port_id", t_); 
 				cJSON_AddItemToObject(jsonObject_listen, "eth_info", ethInfo);  
 			}
 
@@ -653,7 +664,6 @@ char* xmlToJson(const char *xmlData_node_if, const char *xmlData_link) {
 			
 			cJSON_AddItemToArray(jsonArray, jsonObject_listen);  
 
-
 			free(ifIdStr);
 			free(listenIfIdStr);
 			free(centerIfIdStr);
@@ -685,6 +695,7 @@ char* xmlToJson(const char *xmlData_node_if, const char *xmlData_link) {
 			free(ip_addr);
 			free(net_mask);
 			free(mac_addr);
+			free(l_port_id);
 			free(rs485_dev_path);
 			free(rs485_gpio_number);
 			free(rs485_baud_rate);
@@ -708,6 +719,7 @@ char* xmlToJson(const char *xmlData_node_if, const char *xmlData_link) {
 			free(listened_ip_addr);
 			free(listened_net_mask);
 			free(listened_mac_addr);
+			free(l_l_port_id);
 			free(listened_rs485_dev_path);
 			free(listened_rs485_gpio_number);
 			free(listened_rs485_baud_rate);
@@ -717,7 +729,6 @@ char* xmlToJson(const char *xmlData_node_if, const char *xmlData_link) {
 			free(listened_can_id);
 			free(listened_can_baud_rate);
 
-			
         }  
     }  
 
@@ -1172,6 +1183,7 @@ void write_interface_info_array_to_json(const char *filename, struct interface_i
 			cJSON_AddStringToObject(eth_info, "net_mask", array[i].eth_info.net_mask);  
 			cJSON_AddStringToObject(eth_info, "mac_addr", array[i].eth_info.mac_addr); 
 			cJSON_AddStringToObject(eth_info, "ip_name", array[i].eth_info.ip_name); 
+			cJSON_AddNumberToObject(eth_info, "listened_port_id", array[i].eth_info.listened_port_id); 
 		}  
 		cJSON_AddItemToObject(interface, "eth_info", eth_info);  
 
@@ -1182,6 +1194,7 @@ void write_interface_info_array_to_json(const char *filename, struct interface_i
 			cJSON_AddStringToObject(linked_eth_info, "net_mask", array[i].linked_eth_info.net_mask);
 		    cJSON_AddStringToObject(linked_eth_info, "mac_addr", array[i].linked_eth_info.mac_addr);  
 			cJSON_AddStringToObject(linked_eth_info, "ip_name", array[i].linked_eth_info.ip_name);  
+			cJSON_AddNumberToObject(linked_eth_info, "listened_port_id", array[i].linked_eth_info.listened_port_id); 
 		}  
 		cJSON_AddItemToObject(interface, "linked_eth_info", linked_eth_info); 
 
@@ -1507,11 +1520,21 @@ void    read_interface_info_array_from_split_json(const char *filename, struct i
 			} else {  
 				array[i].eth_info.mac_addr = NULL;	
 			}  
+
+
+			cJSON *listened_port_id_item = cJSON_GetObjectItem(tmp, "listened_port_id");  
+			if (listened_port_id_item && cJSON_IsNumber(listened_port_id_item)) {  
+				array[i].eth_info.listened_port_id = listened_port_id_item->valuedouble;  
+			} else {  
+				array[i].eth_info.listened_port_id = -1;	
+			}  
+			
 		} else {  
 			array[i].eth_info.ip_name = NULL;
 			array[i].eth_info.ip_addr = NULL;
 			array[i].eth_info.net_mask = NULL;
 			array[i].eth_info.mac_addr = NULL;	
+			array[i].eth_info.listened_port_id = -1;
 		}  
 
 		// Fill linked_eth_info  
@@ -1545,11 +1568,20 @@ void    read_interface_info_array_from_split_json(const char *filename, struct i
 			} else {  
 				array[i].linked_eth_info.mac_addr = NULL;	
 			}  
+
+			cJSON *listened_port_id_item = cJSON_GetObjectItem(tmp, "listened_port_id");  
+			if (listened_port_id_item && cJSON_IsNumber(listened_port_id_item)) {  
+				array[i].linked_eth_info.listened_port_id = listened_port_id_item->valuedouble;  
+			} else {  
+				array[i].linked_eth_info.listened_port_id = -1;	
+			}  
+			
 		} else {  
 			array[i].linked_eth_info.ip_name = NULL;
 			array[i].linked_eth_info.ip_addr = NULL;
 			array[i].linked_eth_info.net_mask = NULL;
-			array[i].linked_eth_info.mac_addr = NULL;		
+			array[i].linked_eth_info.mac_addr = NULL;	
+			array[i].linked_eth_info.listened_port_id = -1;
 		} 
 
 
@@ -1837,11 +1869,19 @@ void  read_interface_info_array_from_overall_json(const char *current_node_name,
 			} else {  
 				array[cnt].eth_info.mac_addr = NULL;	
 			}  
+
+			cJSON *listened_port_id_item = cJSON_GetObjectItem(tmp, "listened_port_id");  
+			if (listened_port_id_item && cJSON_IsNumber(listened_port_id_item)) {  
+				array[cnt].eth_info.listened_port_id= listened_port_id_item->valuedouble;  
+			} else {  
+				array[cnt].eth_info.listened_port_id = -1;	
+			}  
 		} else {  
 			array[cnt].eth_info.ip_name = NULL;
 			array[cnt].eth_info.ip_addr = NULL;
 			array[cnt].eth_info.net_mask = NULL;
 			array[cnt].eth_info.mac_addr = NULL;	
+			array[cnt].eth_info.listened_port_id = -1;	
 		}  
 
 		// Fill linked_eth_info  
@@ -1875,11 +1915,20 @@ void  read_interface_info_array_from_overall_json(const char *current_node_name,
 			} else {  
 				array[cnt].linked_eth_info.mac_addr = NULL;	
 			}  
+
+
+			cJSON *listened_port_id_item = cJSON_GetObjectItem(tmp, "listened_port_id");  
+			if (listened_port_id_item && cJSON_IsNumber(listened_port_id_item)) {  
+				array[cnt].linked_eth_info.listened_port_id= listened_port_id_item->valuedouble;  
+			} else {  
+				array[cnt].linked_eth_info.listened_port_id = -1;	
+			}  
 		} else {  
 			array[cnt].linked_eth_info.ip_name = NULL;
 			array[cnt].linked_eth_info.ip_addr = NULL;
 			array[cnt].linked_eth_info.net_mask = NULL;
 			array[cnt].linked_eth_info.mac_addr = NULL;		
+			array[cnt].linked_eth_info.listened_port_id = -1;	
 		} 
 
 
@@ -2294,7 +2343,15 @@ int get_interface_cnt()
 }
 
 
+int get_listened_port_id_by_index(int i)
+{
+	return interface_info_array[i].eth_info.listened_port_id;
+}
 
+int get_linked_listened_port_id_by_index(int i)
+{
+	return interface_info_array[i].linked_eth_info.listened_port_id;
+}
 
 
 char *get_located_node(int i)
@@ -2480,6 +2537,11 @@ char* get_ip_addr_by_index(int i)
 	return interface_info_array[i].eth_info.ip_addr;
 }
 
+char* get_linked_ip_addr_by_index(int i)
+{
+	return interface_info_array[i].linked_eth_info.ip_addr;
+}
+
 
 char* get_net_mask_by_index(int i)
 {
@@ -2554,6 +2616,9 @@ char* get_mac_addr(const char *interface_name) {
     return NULL;
 }
 
+
+
+
 char* get_linked_mac_addr(const char *interface_name) {
     for (size_t i = 0; i < interface_cnt; i++) {
         if (strcmp(interface_info_array[i].interface_name, interface_name) == 0) {
@@ -2564,6 +2629,15 @@ char* get_linked_mac_addr(const char *interface_name) {
     }
     return NULL;
 }
+
+char* get_mac_addr_by_index(int i) {
+    return interface_info_array[i].eth_info.mac_addr;
+}
+
+char* get_linked_mac_addr_by_index(int i) {
+    return interface_info_array[i].linked_eth_info.mac_addr;
+}
+
 
 char* get_interface_type_by_index(int i)
 {

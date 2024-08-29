@@ -28,6 +28,7 @@ struct eth_info {
 	char *net_mask;  
 
     char *mac_addr;  
+	int listened_port_id;  
 
 	int temporary_sockfd;
 	struct sockaddr_ll *sock_addr; 
@@ -106,9 +107,17 @@ time_t test_begin_time;
 
 void convert_xml_config_to_overall_json_config(char *xml_config_path_node_if, char *xml_config_path_node_link, char *overall_topology_json_config_path);
 
+char* get_mac_addr_by_index(int i);
+
+char* get_linked_mac_addr_by_index(int i);
+
+int get_listened_port_id_by_index(int i);
+
+int get_linked_listened_port_id_by_index(int i);
 
 
-  
+char* get_linked_ip_addr_by_index(int i);
+
 
 void initialize_communication_info_lock();
 
