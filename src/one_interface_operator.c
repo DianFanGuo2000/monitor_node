@@ -203,12 +203,12 @@ void deal_with_mnt(const char* linked_node,const char* listened_interface, const
 
 
 		if (current_round > round_array[ind]) {
-			printf("round changed! ");
-			printf("current_round is %d, current listened interface is %s, the cnt of this interface after this listen time is %d\n",current_round,listened_interface,1);
+			printf("round changed at interface \"%s\"! ",listened_interface);
+			printf("current_round is %d, last round is %d. the cnt of this  after this listen time is %d\n",current_round,round_array[ind],1);
 		}else
 		{
-			printf("round stay the same! ");
-			printf("current_round is %d, current listened interface is %s, the cnt of this interface after this listen time is %d\n",current_round,listened_interface,cnt_array[ind]+1);
+			printf("round stay the same at interface \"%s\". ",listened_interface);
+			printf("current_round is %d, the cnt of this interface after this listen time is %d\n",current_round,cnt_array[ind]+1);
 		}
 
 
@@ -227,7 +227,7 @@ void deal_with_mnt(const char* linked_node,const char* listened_interface, const
 			printf("the interface \"%s\" got an error ratio value with %s ( tx:%d rx:%d)\n",listened_interface,result,PAKCAGES_NUM_ONE_TIME,cnt_array[ind]); 
 			free(result);	*/
 
-			update_communication_info_array(linked_node,listened_interface,time(NULL),PAKCAGES_NUM_ONE_TIME,cnt_array[ind],current_round);
+			update_communication_info_array(linked_node,listened_interface,time(NULL),PAKCAGES_NUM_ONE_TIME,cnt_array[ind],round_array[ind]);
 			printf("the newest listened result at the listened interface \"%s\" is below:\n",listened_interface);
 			printCertainCommucationInfo(listened_interface);
             cnt_array[ind] = 1; // ÖØÖÃ¼ÆÊıÆ÷  
@@ -291,6 +291,8 @@ void test_upon_one_interface_in_one_time(const char *test_interface,int packages
 	}
 
 	if (current_round > round_array[ind]) { 
+		round_array[ind]=current_round;
+		
 		printf("current round is %d and current sending interface is %s\n",current_round,test_interface);
 		update_status_in_current_round(test_interface,"test",current_round);
 
@@ -361,8 +363,6 @@ void test_upon_one_interface_in_one_time(const char *test_interface,int packages
 			}
 			free(communication_info_array_json_str);
 		}
-
-		round_array[ind]=current_round;
 	}
 }  
 
