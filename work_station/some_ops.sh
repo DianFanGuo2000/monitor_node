@@ -20,3 +20,17 @@ sudo ./myapp 2 fpu-cotestee ./fpu-fpu/overall.json ./fpu-fpu/fpu-cotestee.json #
 
 sudo ./myapp 0 gpu1.json res.json # ¥”json∑÷Õÿ∆À≈‰÷√∆Ù∂Ø
 
+sudo bash reset_snmpd.sh \
+/home/work/monitor_nodeV8.9/work_station/snmp_work_station/snmpd_bash/get_data.sh \
+/home/work/monitor_nodeV8.9/work_station/snmp_work_station/snmpd_bash/bash_base/get_status.sh \
+/home/work/monitor_nodeV8.9/work_station/snmp_work_station/snmpd_bash/bash_base/get_result.sh \
+/home/work/monitor_nodeV8.9/work_station/snmp_work_station/oid_configs.json \
+/home/work/monitor_nodeV8.9/work_station/snmp_work_station/snmpd.conf \
+/etc/snmp/snmpd.conf \
+/home/work/monitor_nodeV8.9/work_station/res.json
+
+ # snmpd data parser bash file path
+ # oid config json file path
+ # the original snmpd.conf file path
+ # current snmpd conf file with snmpd service
+ # the path of result file from monitor node application

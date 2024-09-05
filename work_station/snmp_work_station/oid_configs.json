@@ -1,0 +1,286 @@
+[  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.1.1.9",  
+        "if_id": "active",  
+        "if_name": "fpu",  
+        "if_property": "if_active"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.5.2.1.1",  
+        "if_id": "E1",  
+        "if_name": "fpu-testee-GE1-1-listen",  
+        "if_property": "id"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.5.2.1.2",  
+        "if_id": "E1",  
+        "if_name": "fpu-testee-GE1-1-listen",  
+        "if_property": "rx"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.5.2.1.3",  
+        "if_id": "E1",  
+        "if_name": "fpu-testee-GE1-1-listen",  
+        "if_property": "tx"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.5.2.3.1",  
+        "if_id": "E3",  
+        "if_name": "fpu-testee-GE3-3-listen",  
+        "if_property": "id"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.5.2.3.2",  
+        "if_id": "E3",  
+        "if_name": "fpu-testee-GE3-3-listen",  
+        "if_property": "rx"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.5.2.3.3",  
+        "if_id": "E3",  
+        "if_name": "fpu-testee-GE3-3-listen",  
+        "if_property": "tx"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.5.2.4.1",  
+        "if_id": "E4",  
+        "if_name": "fpu-testee-GE4-4-listen",  
+        "if_property": "id"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.5.2.4.2",  
+        "if_id": "E4",  
+        "if_name": "fpu-testee-GE4-4-listen",  
+        "if_property": "rx"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.5.2.4.3",  
+        "if_id": "E4",  
+        "if_name": "fpu-testee-GE4-4-listen",  
+        "if_property": "tx"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.5.2.5.1",  
+        "if_id": "E5",  
+        "if_name": "fpu-testee-GE5-5-listen",  
+        "if_property": "id"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.5.2.5.2",  
+        "if_id": "E5",  
+        "if_name": "fpu-testee-GE5-5-listen",  
+        "if_property": "rx"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.5.2.5.3",  
+        "if_id": "E5",  
+        "if_name": "fpu-testee-GE5-5-listen",  
+        "if_property": "tx"  
+    },{  
+        "oid": ".1.3.6.1.4.1.37720.4.5.2.6.1",  
+        "if_id": "E6",  
+        "if_name": "fpu-testee-GE6-6-listen",  
+        "if_property": "id"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.5.2.6.2",  
+        "if_id": "E6",  
+        "if_name": "fpu-testee-GE6-6-listen",  
+        "if_property": "rx"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.5.2.6.3",  
+        "if_id": "E6",  
+        "if_name": "fpu-testee-GE6-6-listen",  
+        "if_property": "tx"  
+    },{  
+        "oid": ".1.3.6.1.4.1.37720.4.5.2.7.1",  
+        "if_id": "E7",  
+        "if_name": "fpu-testee-GE7-7-listen",  
+        "if_property": "id"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.5.2.7.2",  
+        "if_id": "E7",  
+        "if_name": "fpu-testee-GE7-7-listen",  
+        "if_property": "rx"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.5.2.7.3",  
+        "if_id": "E7",  
+        "if_name": "fpu-testee-GE7-7-listen",  
+        "if_property": "tx"  
+    },{  
+        "oid": ".1.3.6.1.4.1.37720.4.5.2.8.1",  
+        "if_id": "E8",  
+        "if_name": "fpu-testee-GE8-8-listen",  
+        "if_property": "id"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.5.2.8.2",  
+        "if_id": "E8",  
+        "if_name": "fpu-testee-GE8-8-listen",  
+        "if_property": "rx"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.5.2.8.3",  
+        "if_id": "E8",  
+        "if_name": "fpu-testee-GE8-8-listen",  
+        "if_property": "tx"  
+    },{  
+        "oid": ".1.3.6.1.4.1.37720.4.4.2.1.1",  
+        "if_id": "C1",  
+        "if_name": "fpu-testee-can1-2-12-listen",  
+        "if_property": "id"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.4.2.1.2",  
+        "if_id": "C1",  
+        "if_name": "fpu-testee-can1-2-12-listen",  
+        "if_property": "rx"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.4.2.1.3",  
+        "if_id": "C1",  
+        "if_name": "fpu-testee-can1-2-12-listen",  
+        "if_property": "tx"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.4.2.2.1",  
+        "if_id": "C2",  
+        "if_name": "fpu-testee-can2-2-14-listen",  
+        "if_property": "id"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.4.2.2.2",  
+        "if_id": "C2",  
+        "if_name": "fpu-testee-can2-2-14-listen",  
+        "if_property": "rx"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.4.2.2.3",  
+        "if_id": "C2",  
+        "if_name": "fpu-testee-can2-2-14-listen",  
+        "if_property": "tx"  
+    },{  
+        "oid": ".1.3.6.1.4.1.37720.4.4.2.3.1",  
+        "if_id": "C3",  
+        "if_name": "fpu-testee-can3-2-16-listen",  
+        "if_property": "id"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.4.2.3.2",  
+        "if_id": "C3",  
+        "if_name": "fpu-testee-can3-2-16-listen",  
+        "if_property": "rx"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.4.2.3.3",  
+        "if_id": "C3",  
+        "if_name": "fpu-testee-can3-2-16-listen",  
+        "if_property": "tx"  
+    },{  
+        "oid": ".1.3.6.1.4.1.37720.4.4.2.4.1",  
+        "if_id": "C4",  
+        "if_name": "fpu-testee-can4-2-18-listen",  
+        "if_property": "id"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.4.2.4.2",  
+        "if_id": "C4",  
+        "if_name": "fpu-testee-can4-2-18-listen",  
+        "if_property": "rx"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.4.2.4.3",  
+        "if_id": "C4",  
+        "if_name": "fpu-testee-can4-2-18-listen",  
+        "if_property": "tx"  
+    },{  
+        "oid": ".1.3.6.1.4.1.37720.4.4.2.5.1",  
+        "if_id": "C5",  
+        "if_name": "fpu-testee-can5-1-19-listen",  
+        "if_property": "id"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.4.2.5.2",  
+        "if_id": "C5",  
+        "if_name": "fpu-testee-can5-1-19-listen",  
+        "if_property": "rx"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.4.2.5.3",  
+        "if_id": "C5",  
+        "if_name": "fpu-testee-can5-1-19-listen",  
+        "if_property": "tx"  
+    },{  
+        "oid": ".1.3.6.1.4.1.37720.4.4.2.6.1",  
+        "if_id": "C6",  
+        "if_name": "fpu-testee-can6-1-21-listen",  
+        "if_property": "id"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.4.2.6.2",  
+        "if_id": "C6",  
+        "if_name": "fpu-testee-can6-1-21-listen",  
+        "if_property": "rx"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.4.2.6.3",  
+        "if_id": "C6",  
+        "if_name": "fpu-testee-can6-1-21-listen",  
+        "if_property": "tx"  
+    },{  
+        "oid": ".1.3.6.1.4.1.37720.4.4.2.7.1",  
+        "if_id": "C7",  
+        "if_name": "fpu-testee-can7-1-23-listen",  
+        "if_property": "id"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.4.2.7.2",  
+        "if_id": "C7",  
+        "if_name": "fpu-testee-can7-1-23-listen",  
+        "if_property": "rx"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.4.2.7.3",  
+        "if_id": "C7",  
+        "if_name": "fpu-testee-can7-1-23-listen",  
+        "if_property": "tx"  
+    },{  
+        "oid": ".1.3.6.1.4.1.37720.4.4.2.8.1",  
+        "if_id": "C8",  
+        "if_name": "fpu-testee-can8-1-25-listen",  
+        "if_property": "id"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.4.2.8.2",  
+        "if_id": "C8",  
+        "if_name": "fpu-testee-can8-1-25-listen",  
+        "if_property": "rx"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.4.2.8.3",  
+        "if_id": "C8",  
+        "if_name": "fpu-testee-can8-1-25-listen",  
+        "if_property": "tx"  
+    },
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.12.2.1.1",  
+        "if_id": "R1",  
+        "if_name": "fpu-testee-485-2-10-listen",  
+        "if_property": "id"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.12.2.1.2",  
+        "if_id": "R1",  
+        "if_name": "fpu-testee-485-2-10-listen",  
+        "if_property": "rx"  
+    },  
+    {  
+        "oid": ".1.3.6.1.4.1.37720.4.12.2.1.3",  
+        "if_id": "R1",  
+        "if_name": "fpu-testee-485-2-10-listen",  
+        "if_property": "tx"  
+    }  
+]
