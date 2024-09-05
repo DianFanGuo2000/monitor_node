@@ -104,7 +104,7 @@ int interface_cnt;
 time_t test_begin_time; 
 
 
-
+void reset_all_communication_infos(int rx,int tx);
 
 int check_single_send_base_func_legal(const struct interface_info *info);
 int check_all_send_base_func_legal(const struct interface_info *array,int size);

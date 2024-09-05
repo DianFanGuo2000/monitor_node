@@ -2401,6 +2401,25 @@ void start_info_manager_from_overall_json(const char* current_node_name, const c
 }
 
 
+void reset_all_communication_infos(int rx,int tx)
+{
+	pthread_mutex_lock(&communication_info_lock);
+	for(int i=0;i<communication_info_cnt;i++)
+	{
+		
+
+					communication_info_array[i].updated_time = time(NULL);
+					communication_info_array[i].tx = tx;
+					communication_info_array[i].rx = rx;
+					//communication_info_array[i].error_ratio_value = strdup(error_ratio_value);
+					communication_info_array[i].current_round = -1;
+
+					communication_info_array[i].if_newest_flag= 1;//表示是最新的，还没有经过同步	
+	}
+	pthread_mutex_unlock(&communication_info_lock);
+}
+
+
 void close_info_manager(const char *filename)
 {
 	if(filename!=NULL)/*看是否要存一下接口配置，存为一个针对当前节点的分分配置文件*/

@@ -91,10 +91,42 @@ int receive_data_udp(const char* ip_name,const char* ip_addr, int port_id, char 
     address.sin_addr.s_addr = inet_addr(ip_addr);  
     address.sin_port = htons(port_id);  
   
-    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {  
+    while (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {  
         perror("bind failed");  
-        close(server_fd);  
-        return _ERROR;  
+	int t=1;
+	printf("retry repair and bind again after %d s from repair\n",t);
+	char cmd_addr[256];  
+	snprintf(cmd_addr, sizeof(cmd_addr), "sudo ifconfig %s %s",ip_name,ip_addr);  
+	system(cmd_addr); 
+
+
+
+	char ip_t[16];
+	int cnt=0;
+	for(int i=0;i<strlen(ip_addr);i++)
+	{
+		if(ip_addr[i]!='.')
+		{
+			ip_t[i]=ip_addr[i];
+		}else
+		{
+			ip_t[i]=ip_addr[i];
+			cnt++;
+		}
+		if(cnt==3)
+		{
+			ip_t[i+1]='0';
+			ip_t[i+2]='\0';
+			break;
+		}
+	}
+	//printf("ip_t:%s\n",ip_t);
+	snprintf(cmd_addr, sizeof(cmd_addr), "sudo route add -net %s netmask 255.255.255.0 dev %s", ip_t, ip_name);   
+	system(cmd_addr);
+	sleep(1);
+	
+        //close(server_fd);  
+        //return _ERROR;  
     }  
   
     // 接收客户端发送的数据  
