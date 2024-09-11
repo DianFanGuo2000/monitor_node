@@ -4,141 +4,141 @@
     <link> 
         <send_if_id>1</send_if_id>
         <listened_if_id>107</listened_if_id>
-        <center_if_id>3</center_if_id>
+        <center_if_id>4</center_if_id>
     </link>
     <link> 
         <send_if_id>107</send_if_id>
         <listened_if_id>1</listened_if_id>
-        <center_if_id>3</center_if_id>
+        <center_if_id>4</center_if_id>
     </link>
 
     <link> 
         <send_if_id>3</send_if_id>
         <listened_if_id>106</listened_if_id>
-        <center_if_id>3</center_if_id>
+        <center_if_id>4</center_if_id>
     </link>
     <link> 
         <send_if_id>106</send_if_id>
         <listened_if_id>3</listened_if_id>
-        <center_if_id>3</center_if_id>
+        <center_if_id>4</center_if_id>
     </link>
 
 
     <link> 
         <send_if_id>4</send_if_id>
         <listened_if_id>104</listened_if_id>
-        <center_if_id>3</center_if_id>
+        <center_if_id>4</center_if_id>
     </link>
     <link> 
         <send_if_id>104</send_if_id>
         <listened_if_id>4</listened_if_id>
-        <center_if_id>3</center_if_id>
+        <center_if_id>4</center_if_id>
     </link>
 
     <link> 
         <send_if_id>5</send_if_id>
         <listened_if_id>108</listened_if_id>
-        <center_if_id>3</center_if_id>
+        <center_if_id>4</center_if_id>
     </link>
     <link> 
         <send_if_id>108</send_if_id>
         <listened_if_id>5</listened_if_id>
-        <center_if_id>3</center_if_id>
+        <center_if_id>4</center_if_id>
     </link>
 
 
     <link> 
         <send_if_id>6</send_if_id>
         <listened_if_id>103</listened_if_id>
-        <center_if_id>3</center_if_id>
+        <center_if_id>4</center_if_id>
     </link>
     <link> 
         <send_if_id>103</send_if_id>
         <listened_if_id>6</listened_if_id>
-        <center_if_id>3</center_if_id>
+        <center_if_id>4</center_if_id>
     </link>
 
 
     <link> 
         <send_if_id>7</send_if_id>
         <listened_if_id>101</listened_if_id>
-        <center_if_id>3</center_if_id>
+        <center_if_id>4</center_if_id>
     </link>
     <link> 
         <send_if_id>101</send_if_id>
         <listened_if_id>7</listened_if_id>
-        <center_if_id>3</center_if_id>
+        <center_if_id>4</center_if_id>
     </link>
 
     <link> 
         <send_if_id>8</send_if_id>
         <listened_if_id>105</listened_if_id>
-        <center_if_id>3</center_if_id>
+        <center_if_id>4</center_if_id>
     </link>
     <link> 
         <send_if_id>105</send_if_id>
         <listened_if_id>8</listened_if_id>
-        <center_if_id>3</center_if_id>
+        <center_if_id>4</center_if_id>
     </link>
 
     <!--rs485 link config-->
     <link> 
         <send_if_id>9</send_if_id>
         <listened_if_id>109</listened_if_id>
-        <center_if_id>3</center_if_id>
+        <center_if_id>4</center_if_id>
     </link>
     <link> 
         <send_if_id>110</send_if_id>
         <listened_if_id>10</listened_if_id>
-        <center_if_id>3</center_if_id>
+        <center_if_id>4</center_if_id>
     </link>
 
     <!--can link config-->
     <link> 
         <send_if_id>111</send_if_id>
         <listened_if_id>119</listened_if_id>
-        <center_if_id>3</center_if_id>
+        <center_if_id>4</center_if_id>
     </link>
     <link> 
         <send_if_id>120</send_if_id>
         <listened_if_id>112</listened_if_id>
-        <center_if_id>3</center_if_id>
+        <center_if_id>4</center_if_id>
     </link>
 
 
     <link> 
         <send_if_id>113</send_if_id>
         <listened_if_id>121</listened_if_id>
-        <center_if_id>3</center_if_id>
+        <center_if_id>4</center_if_id>
     </link>
     <link> 
         <send_if_id>122</send_if_id>
         <listened_if_id>114</listened_if_id>
-        <center_if_id>3</center_if_id>
+        <center_if_id>4</center_if_id>
     </link>
 
 
     <link> 
         <send_if_id>115</send_if_id>
         <listened_if_id>123</listened_if_id>
-        <center_if_id>3</center_if_id>
+        <center_if_id>4</center_if_id>
     </link>
     <link> 
         <send_if_id>124</send_if_id>
         <listened_if_id>116</listened_if_id>
-        <center_if_id>3</center_if_id>
+        <center_if_id>4</center_if_id>
     </link>
 
 
     <link> 
         <send_if_id>117</send_if_id>
         <listened_if_id>125</listened_if_id>
-        <center_if_id>3</center_if_id>
+        <center_if_id>4</center_if_id>
     </link>
     <link> 
         <send_if_id>126</send_if_id>
         <listened_if_id>118</listened_if_id>
-        <center_if_id>3</center_if_id>
+        <center_if_id>4</center_if_id>
     </link>
 
 </links>

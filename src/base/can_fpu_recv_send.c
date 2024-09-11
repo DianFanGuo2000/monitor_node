@@ -74,7 +74,7 @@ int send_packet_can_fpu(UINT32 can_channel_id, const char *msg, UINT32 length) /
 	else
 		len = length;
 	
-	int ret = appCanDataSend(can_channel_id,0x1ff,msg,len);// appCanDataSendFunc不能用，MCU会报错，帧序号找不到之类的 //此处len不允许超过8
+	int ret = appCanDataSend(can_channel_id,can_channel_id,msg,len);// appCanDataSendFunc不能用，MCU会报错，帧序号找不到之类的 //此处len不允许超过8
 	if(ret<0)
 		return _ERROR;
 	return _SUCCESS;

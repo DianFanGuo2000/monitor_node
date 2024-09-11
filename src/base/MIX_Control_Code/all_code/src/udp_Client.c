@@ -430,14 +430,14 @@ printf("\r\n");*/
 					{
 						
 						//g_udpSendCount.udpSendErrorNum++;
-                                                printf("send error \r\n");
+                                                printf("udp_ClientProcessSendMain send error \r\n");
 						
 						close ( SocketFD_I32 );
 						return ( ERROR );
 					}
 					else
 					{
-                                                printf("send ok \r\n");
+                                                printf("udp_ClientProcessSendMain send ok \r\n");
 						
 						//g_udpSendCount.udpSendRightNum++;
 
@@ -546,13 +546,13 @@ STATUS udp_ClientProcessCan2SendMain ( void )
 					{
 						
 						//g_udpSendCount.udpSendErrorNum++;
-						
+						printf("udp_ClientProcessCan2SendMain send error \r\n");
 						close ( SocketFD_I32 );
 						return ( ERROR );
 					}
 					else
 					{
-						
+						printf("udp_ClientProcessCan2SendMain send ok \r\n");
 						//g_udpSendCount.udpSendRightNum++;
 
 					}
@@ -661,13 +661,13 @@ STATUS udp_ClientProcessCan3SendMain ( void )
 					{
 						
 						//g_udpSendCount.udpSendErrorNum++;
-						
+						printf("udp_ClientProcessCan3SendMain send error \r\n");
 						close ( SocketFD_I32 );
 						return ( ERROR );
 					}
 					else
 					{
-						
+						printf("udp_ClientProcessCan3SendMain send ok \r\n");
 						//g_udpSendCount.udpSendRightNum++;
 
 					}
@@ -777,13 +777,13 @@ STATUS udp_ClientProcessCan4SendMain ( void )
 					{
 						
 						//g_udpSendCount.udpSendErrorNum++;
-						
+						printf("udp_ClientProcessCan4SendMain send error \r\n");
 						close ( SocketFD_I32 );
 						return ( ERROR );
 					}
 					else
 					{
-						
+						printf("udp_ClientProcessCan4SendMain send ok \r\n");
 						//g_udpSendCount.udpSendRightNum++;
 
 					}
@@ -892,13 +892,13 @@ STATUS udp_ClientProcessCan5SendMain ( void )
 					{
 						
 						//g_udpSendCount.udpSendErrorNum++;
-						
+						printf("udp_ClientProcessCan5SendMain send error \r\n");
 						close ( SocketFD_I32 );
 						return ( ERROR );
 					}
 					else
 					{
-						
+						printf("udp_ClientProcessCan5SendMain send ok \r\n");
 						//g_udpSendCount.udpSendRightNum++;
 
 					}
@@ -1006,13 +1006,13 @@ STATUS udp_ClientProcessCan6SendMain ( void )
 					{
 						
 						//g_udpSendCount.udpSendErrorNum++;
-						
+						printf("udp_ClientProcessCan6SendMain send error \r\n");
 						close ( SocketFD_I32 );
 						return ( ERROR );
 					}
 					else
 					{
-						
+						printf("udp_ClientProcessCan6SendMain send ok \r\n");
 						//g_udpSendCount.udpSendRightNum++;
 
 					}
@@ -1119,13 +1119,13 @@ STATUS udp_ClientProcessCan7SendMain ( void )
 					{
 						
 						//g_udpSendCount.udpSendErrorNum++;
-						
+						printf("udp_ClientProcessCan7SendMain send error \r\n");
 						close ( SocketFD_I32 );
 						return ( ERROR );
 					}
 					else
 					{
-						
+						printf("udp_ClientProcessCan7SendMain send ok \r\n");
 						//g_udpSendCount.udpSendRightNum++;
 
 					}
@@ -1232,7 +1232,7 @@ STATUS udp_ClientProcessCan8SendMain ( void )
 					if ( sendto ( SocketFD_I32,(char *)(Data_aC8+sizeof(long)),(recvDataLengthValue-sizeof(long)) , \
 					              0, ( struct sockaddr* ) &ClientAddr_ST, SockAddrSize_I32 ) == ERROR )
 					{
-						
+						printf("udp_ClientProcessCan8SendMain send error \r\n");
 						//g_udpSendCount.udpSendErrorNum++;
 						
 						close ( SocketFD_I32 );
@@ -1240,7 +1240,7 @@ STATUS udp_ClientProcessCan8SendMain ( void )
 					}
 					else
 					{
-						
+						printf("udp_ClientProcessCan8SendMain send ok \r\n");
 						//g_udpSendCount.udpSendRightNum++;
 
 					}

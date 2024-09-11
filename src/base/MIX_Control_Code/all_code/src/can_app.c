@@ -621,31 +621,31 @@ INT32 appCanDataRecv(UINT32 com,char *recvDataPointer,UINT32 recvDataLength,INT3
 	}
 	else if(com == 2)
 	{
-	    retValue = appCan3DataRecv(recvDataPointer,recvDataLength,Timeout_I32);
+	    retValue = appCan2DataRecv(recvDataPointer,recvDataLength,Timeout_I32);
 	}
 	else if(com == 3)
 	{
-	    retValue = appCan2DataRecv(recvDataPointer,recvDataLength,Timeout_I32);
+	    retValue = appCanFd3DataRecv(recvDataPointer,recvDataLength,Timeout_I32);
 	}	
         else if(com == 4)
 	{
-	    retValue = appCanFd2DataRecv(recvDataPointer,recvDataLength,Timeout_I32);
+	    retValue = appCan4DataRecv(recvDataPointer,recvDataLength,Timeout_I32);
 	}
 	else if(com == 5)
 	{
-	    retValue = appCanFd3DataRecv(recvDataPointer,recvDataLength,Timeout_I32);
+	    retValue = appCanFd2DataRecv(recvDataPointer,recvDataLength,Timeout_I32);
 	}
 	else if(com == 6)
 	{
-	    retValue = appCan5DataRecv(recvDataPointer,recvDataLength,Timeout_I32);
+	    retValue = appCan3DataRecv(recvDataPointer,recvDataLength,Timeout_I32);
 	}
 	else if(com == 7)
 	{
-	    retValue = appCan4DataRecv(recvDataPointer,recvDataLength,Timeout_I32);
+	    retValue = appCan1DataRecv(recvDataPointer,recvDataLength,Timeout_I32);
 	}
 	else if(com == 8)
 	{
-	    retValue = appCan1DataRecv(recvDataPointer,recvDataLength,Timeout_I32);
+	    retValue = appCan5DataRecv(recvDataPointer,recvDataLength,Timeout_I32);
 	}
 	else 
 	{
@@ -908,25 +908,25 @@ void initComUdpServer(UINT32 com)
 		case 1:
 			initCanFd1();
 			break;
-	    case 2:
+	    case 6:
 			initCan3();
 			break;
-		case 3:
+		case 2:
 			initCan2();
 			break;
-	    case 4:
+	    case 5:
 			initCanFd2();
 			break;
-		case 5:
+		case 3:
 			initCanFd3();
 			break;
-	    case 6:
+	    case 8:
 			initCan5();
 			break;
-		case 7:
+		case 4:
 			initCan4();
 			break;
-	    case 8:
+	    case 7:
 			initCan1();
 			break;
     	}

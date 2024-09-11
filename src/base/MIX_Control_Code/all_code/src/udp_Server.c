@@ -1107,6 +1107,8 @@ STATUS udp_ServerCan5ProcessRecvMain (void)
 		}
 
 		g_udpRecvStatistic.udpCan5RecvNum++;
+
+                //printf("1004 port come \r\n");
 		
 		/*this is the ip address.*/
 		/*get the ip address from the server . add by moyun 2018-01-23.

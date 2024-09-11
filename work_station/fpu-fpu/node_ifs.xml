@@ -210,7 +210,7 @@
 
 
 	<!--can interface config-->
-        <interface> 
+        <interface> <!--all error-->
             <id>111</id>  
             <label>can1-1</label>  
             <interface_type>can</interface_type>  
@@ -227,7 +227,7 @@
             <status>sending</status>  
             <duplex>half-duplex</duplex>  
         </interface>
-        <interface> 
+        <interface>  <!--all error-->
             <id>112</id>  
             <label>can1-2</label>  
             <interface_type>can</interface_type>  
@@ -244,7 +244,7 @@
             <status>sending</status>  
             <duplex>half-duplex</duplex>  
         </interface>
-        <interface> 
+        <interface>  <!--all error-->
             <id>113</id>  
             <label>can2-1</label>  
             <interface_type>can</interface_type>  
@@ -255,13 +255,13 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>3</can_id>  
+                <can_id>2</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
             <duplex>half-duplex</duplex>  
         </interface>
-        <interface> 
+        <interface>  <!--all error-->
             <id>114</id>  
             <label>can2-2</label>  
             <interface_type>can</interface_type>  
@@ -272,13 +272,13 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>3</can_id>  
+                <can_id>2</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
             <duplex>half-duplex</duplex>  
         </interface>
-        <interface> 
+        <interface>  <!--all ok-->
             <id>115</id>  
             <label>can3-1</label>  
             <interface_type>can</interface_type>  
@@ -289,13 +289,13 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>5</can_id>  
+                <can_id>3</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
             <duplex>half-duplex</duplex>  
         </interface>
-        <interface> 
+        <interface>  <!--all ok-->
             <id>116</id>  
             <label>can3-2</label>  
             <interface_type>can</interface_type>  
@@ -306,13 +306,13 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>5</can_id>  
+                <can_id>3</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
             <duplex>half-duplex</duplex>  
         </interface>
-        <interface> 
+        <interface>  <!--all ok-->
             <id>117</id>  
             <label>can4-1</label>  
             <interface_type>can</interface_type>  
@@ -323,13 +323,13 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>7</can_id>  
+                <can_id>4</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
             <duplex>half-duplex</duplex>  
         </interface>
-        <interface> 
+        <interface>  <!--all ok-->
             <id>118</id>  
             <label>can4-2</label>  
             <interface_type>can</interface_type>  
@@ -340,13 +340,13 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>7</can_id>  
+                <can_id>4</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
             <duplex>half-duplex</duplex>  
         </interface>
-        <interface> 
+        <interface>  <!--too little and all error-->
             <id>119</id>  
             <label>can5-1</label>  
             <interface_type>can</interface_type>  
@@ -357,13 +357,13 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>4</can_id>  
+                <can_id>5</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
             <duplex>half-duplex</duplex>  
         </interface>
-        <interface> 
+        <interface>  <!--too little and all error-->
             <id>120</id>  
             <label>can5-2</label>  
             <interface_type>can</interface_type>  
@@ -374,13 +374,13 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>4</can_id>  
+                <can_id>5</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
             <duplex>half-duplex</duplex>  
         </interface>
-        <interface> 
+        <interface> <!--too little and all ok-->
             <id>121</id>  
             <label>can6-1</label>  
             <interface_type>can</interface_type>  
@@ -391,13 +391,13 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>2</can_id>  
+                <can_id>6</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
             <duplex>half-duplex</duplex>  
         </interface>
-        <interface> 
+        <interface> <!--too little and all ok-->
             <id>122</id>  
             <label>can6-2</label>  
             <interface_type>can</interface_type>  
@@ -408,14 +408,14 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>2</can_id>  
+                <can_id>6</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
             <duplex>half-duplex</duplex>  
         </interface>
         <interface> 
-            <id>123</id>  
+            <id>123</id>  <!--too little and all ok-->
             <label>can7-1</label>  
             <interface_type>can</interface_type>  
             <status_chooser>only_work_at_even_round</status_chooser>  
@@ -425,13 +425,13 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>8</can_id>  
+                <can_id>7</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
             <duplex>half-duplex</duplex>  
         </interface>
-        <interface> 
+        <interface> <!--too little and all ok-->
             <id>124</id>  
             <label>can7-2</label>  
             <interface_type>can</interface_type>  
@@ -442,13 +442,13 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>8</can_id>  
+                <can_id>7</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
             <duplex>half-duplex</duplex>  
         </interface>
-        <interface> 
+        <interface> <!--too little and all ok-->
             <id>125</id>  
             <label>can8-1</label>  
             <interface_type>can</interface_type>  
@@ -459,13 +459,13 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>6</can_id>  
+                <can_id>8</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
             <duplex>half-duplex</duplex>  
         </interface>
-        <interface> 
+        <interface> <!--too little and all ok-->
             <id>126</id>  
             <label>can8-2</label>  
             <interface_type>can</interface_type>  
@@ -476,7 +476,7 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>6</can_id>  
+                <can_id>8</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
@@ -740,7 +740,7 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>3</can_id>  
+                <can_id>2</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
@@ -757,7 +757,7 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>3</can_id>  
+                <can_id>2</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
@@ -774,7 +774,7 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>5</can_id>  
+                <can_id>3</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
@@ -791,7 +791,7 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>5</can_id>  
+                <can_id>3</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
@@ -808,7 +808,7 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>7</can_id>  
+                <can_id>4</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
@@ -825,7 +825,7 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>7</can_id>  
+                <can_id>4</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
@@ -842,7 +842,7 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>4</can_id>  
+                <can_id>5</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
@@ -859,7 +859,7 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>4</can_id>  
+                <can_id>5</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
@@ -876,7 +876,7 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>2</can_id>  
+                <can_id>6</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
@@ -893,7 +893,7 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>2</can_id>  
+                <can_id>6</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
@@ -910,7 +910,7 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>8</can_id>  
+                <can_id>7</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
@@ -927,7 +927,7 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>8</can_id>  
+                <can_id>7</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
@@ -944,7 +944,7 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>6</can_id>  
+                <can_id>8</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
@@ -961,7 +961,7 @@
             <initializer_name>can_fpu_initializer_normal</initializer_name>  
             <closer_name>can_fpu_closer_normal</closer_name>  
             <can_info>  
-                <can_id>6</can_id>  
+                <can_id>8</can_id>  
                 <baud_rate>1000</baud_rate>  
             </can_info>  
             <status>sending</status>  
