@@ -4,10 +4,7 @@
 
 /*
 要做的:
-1，(OK) 把通道同步个数多时序上加几个
-2，加上对MCU通信的检查，一旦通信存在问题，就重启交换芯片，然后重启整个进程
-3，加上对通信情况的检查，一旦有50%以上的端口出现问题，就直接杀掉当前所有线程所位于的进程，直接重启一个新的进程
-4，(OK) 修改一下初始化的部分，把每个线程前初始化修改为启动线程前初始化
+1，加上对通信情况的检查，一旦有50%以上的端口出现问题，就直接杀掉当前所有线程所位于的进程，直接重启一个新的进程
 */
 
 
@@ -330,12 +327,17 @@ void test_or_listen_upon_interface_group() {
     int indexes[cnt];  
 	int initialized_flags[cnt]; 
     int i;  
+	struct timespec delay;
+	delay.tv_sec = 0;  // 秒      
+	delay.tv_nsec = INITIALIZE_TIME_SPEC;  // 100毫秒 = 100,000,000纳秒  
 
 	initialize_initializer_lock();
 	for (i = 0; i < cnt; i++) 
 	{  
 	    int ret = initializer_transfer(get_initializer_name_by_index(i),get_interface_name_by_index(i)); 
-
+		
+		nanosleep(&delay, NULL);
+		
 		if(ret == _ERROR)
 		{
 			printf("[ERROR] cannot initialize the interface \"%s\"\n",get_interface_name_by_index(i));
