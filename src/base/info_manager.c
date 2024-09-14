@@ -2420,6 +2420,9 @@ void reset_all_communication_infos(int rx,int tx)
 }
 
 
+
+
+
 void close_info_manager(const char *filename)
 {
 	if(filename!=NULL)/*看是否要存一下接口配置，存为一个针对当前节点的分分配置文件*/

@@ -2,6 +2,14 @@
 #include "interface_group_operator.h"
 
 
+/*
+要做的:
+1，(OK) 把通道同步个数多时序上加几个
+2，加上对MCU通信的检查，一旦通信存在问题，就重启交换芯片，然后重启整个进程
+3，加上对通信情况的检查，一旦有50%以上的端口出现问题，就直接杀掉当前所有线程所位于的进程，直接重启一个新的进程
+4，(OK) 修改一下初始化的部分，把每个线程前初始化修改为启动线程前初始化
+*/
+
 
 /*
 
@@ -301,14 +309,6 @@ void listen_upon_one_interface_in_test_case(char *linked_node, char *listened_in
 void* interface_thread(void* arg) {
 	pthread_detach(pthread_self());/*将当前线程与主线程分离，避免该线程结束后，线程栈和id并没有被释放*/
     int index = *(int*)arg;  
-    int ret = initializer_transfer(get_initializer_name_by_index(index),get_interface_name_by_index(index)); 
-
-	if(ret == _ERROR)
-	{
-		printf("[ERROR] cannot initialize the interface \"%s\"\n",get_interface_name_by_index(index));
-		printf("[ERROR] refuse to start %s thread at the interface \"%s\"\n",get_interface_mode_by_index(index),get_interface_name_by_index(index));
-		return;
-	}
 	
 	if(strcmp(get_interface_mode_by_index(index),"test")==0)
 	{
@@ -328,12 +328,30 @@ void test_or_listen_upon_interface_group() {
     int cnt = get_interface_cnt();  
     pthread_t threads[cnt];  
     int indexes[cnt];  
+	int initialized_flags[cnt]; 
     int i;  
 
 	initialize_initializer_lock();
+	for (i = 0; i < cnt; i++) 
+	{  
+	    int ret = initializer_transfer(get_initializer_name_by_index(i),get_interface_name_by_index(i)); 
+
+		if(ret == _ERROR)
+		{
+			printf("[ERROR] cannot initialize the interface \"%s\"\n",get_interface_name_by_index(i));
+			printf("[ERROR] refuse to start %s thread at the interface \"%s\"\n",get_interface_mode_by_index(i),get_interface_name_by_index(i));
+			initialized_flags[i]=0; 
+		}else
+		{
+			initialized_flags[i]=1; 
+		}
+	}
+
   
     // 为每个接口创建一个线程  
-    for (i = 0; i < cnt; i++) {  
+    for (i = 0; i < cnt; i++) { 
+		if(initialized_flags[i]==0)
+			continue;
         indexes[i] = i;  
         if (pthread_create(&threads[i], NULL, interface_thread, &indexes[i]) != 0) {  
             perror("pthread_create failed");  
@@ -622,6 +640,68 @@ int check_params_for_cmd_xml_to_json(char *xml_config_path_node_if, char *xml_co
 }
 
 
+typedef void (*Func)();   
+typedef int (*Restart_Check)();
+
+
+// Function to execute a given function in a subprocess  
+void execute_func_in_subproc(Func f,Restart_Check g) {  
+    pid_t pid; // Use pid_t for portability  
+	int reset_flag=0;
+  	while(1)
+	{
+	    pid = fork(); // Create a new process  
+	  
+	    if (pid == 0) {  
+	        // Child process  
+	        f(); // Call the function passed as an argument  
+	        exit(0); 
+	    } else if (pid < 0) {  
+	        // fork failed  
+	        perror("fork failed");  
+	        sleep(1); // Brief wait before retrying  
+	    }  
+
+	  	sleep(RESTART_CHECK_TIME_SPEC);
+	    // Parent process: Wait for all child processes to exit  
+	    // This loop will continue until there are no more child processes to wait for  
+	    while (wait(NULL) > 0) {  
+	        // wait(NULL) returns the PID of the child that exited, or -1 on error.  
+	        // It returns 0 if there are no more child processes.  
+	        // start the thread that is used to recurrently check the f execution status, if problem, then restart the f
+			
+			if(g()==0)
+			{
+				reset_flag=1;
+				printf("as the restart situation is found, restart the whole proc now\n");
+				break;
+			}
+			sleep(RESTART_CHECK_TIME_SPEC);
+	    }  
+
+		if(reset_flag==1)
+		{	
+			reset_flag=0;
+			continue;
+		}
+
+  	}
+}  
+  
+
+int restart_check() {  
+    // 使用 -c 1 选项让 ping 只发送一个数据包，以便更快得到结果  
+    int result = system("ping -c 1 192.168.1.199 > /dev/null 2>&1");  
+  
+    // 如果 system 调用失败（例如，命令不存在），则直接返回 0  
+    if (result == -1) {  
+        perror("ping 192.168.1.199 failed");  
+        return 0;  
+    }  
+
+	
+    return 1;  
+}  
 
 
 void TLAtOneNodeFromSplitJsonFile(char *split_config_file_name,char *res_file_name1)
@@ -634,8 +714,8 @@ void TLAtOneNodeFromSplitJsonFile(char *split_config_file_name,char *res_file_na
 		
 	init_test_or_listen_record_arrays();
 
-		// 下面开始循环测试各个配置好的物理通信接口
-	test_or_listen_upon_interface_group();
+	// 下面开始循环测试各个配置好的物理通信接口
+	execute_func_in_subproc(test_or_listen_upon_interface_group,restart_check);
 
 
 		

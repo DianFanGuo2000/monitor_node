@@ -346,22 +346,29 @@ void test_upon_one_interface_in_one_time(const char *test_interface,int packages
 		}
 		if(flag==SYNC_THE_COMMUNICATION_INFOS)
 		{
-			char* communication_info_array_json_str = parse_newest_communication_infos_to_json(MAX_SYNC_COMMUNICATION_INFO_NUM_FOR_ONE_TIME,1);
-			//printf("newest communication infos are below:\n %s \n",communication_info_array_json_str);
-			//printf("\n");
-			printf("now sync the listened result at current interface \"%s\", which is below:\n",test_interface);
-			printf("%s",communication_info_array_json_str);
-			printf("\n");
-			
-			char* the_interface_linked_with_center_interface = get_interface_name_by_linked_interface_name(get_center_interface_name(ind));
-			/*遵循一个原则，只发送自己所监听的部分，而不是所有部分*/
-			if(_ERROR == send_message(the_interface_linked_with_center_interface,communication_info_array_json_str))
+
+			for(int i=0;i<SYNC_PARTS_NUM;i++)
 			{
-				printf("sync failed at current interface \"%s\" because of sending failing!\n",test_interface);
+				char* communication_info_array_json_str = parse_newest_communication_infos_to_json(MAX_SYNC_COMMUNICATION_INFO_NUM_FOR_ONE_TIME,1);
+				//printf("newest communication infos are below:\n %s \n",communication_info_array_json_str);
+				//printf("\n");
+				for(int j=0;j<SYNC_TIMES;j++)
+				{
+					printf("now sync the listened result at current interface \"%s\", which is below:\n",test_interface);
+					printf("%s",communication_info_array_json_str);
+					printf("\n");
+					
+					char* the_interface_linked_with_center_interface = get_interface_name_by_linked_interface_name(get_center_interface_name(ind));
+					/*遵循一个原则，只发送自己所监听的部分，而不是所有部分*/
+					if(_ERROR == send_message(the_interface_linked_with_center_interface,communication_info_array_json_str))
+					{
+						printf("sync failed at current interface \"%s\" because of sending failing!\n",test_interface);
+						free(communication_info_array_json_str);
+						return _ERROR;
+					}
+				}
 				free(communication_info_array_json_str);
-				return _ERROR;
 			}
-			free(communication_info_array_json_str);
 		}
 	}
 }  
