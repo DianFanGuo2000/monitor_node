@@ -60,7 +60,7 @@
 #define SYNC_PARTS_NUM 2
 #define SYNC_TIMES 2
 
-#define RESTART_CHECK_TIME_SPEC 1800 //s
+#define RESTART_CHECK_TIME_SPEC 600//s
 
 
 

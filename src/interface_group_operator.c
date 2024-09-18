@@ -270,7 +270,7 @@ typedef struct {
 
 
 void *listen_thread_function(void *arg) {  
-	pthread_detach(pthread_self());/*将当前线程与主线程分离，避免该线程结束后，线程栈和id并没有被释放*/
+	//pthread_detach(pthread_self());/*将当前线程与主线程分离，避免该线程结束后，线程栈和id并没有被释放*/ cannot be used with pthread_join
     listen_thread_args *ta = (listen_thread_args *)arg;  
 	while(1)
 	{
@@ -289,13 +289,18 @@ void listen_upon_one_interface_in_test_case(char *linked_node, char *listened_in
 	for (int i = 0; i < LISTENING_THREAD_NUM; i++) {  
 	        args[i].linked_node = linked_node;  
 	        args[i].listened_interface = listened_interface;  
-			printf("Listen thread %d at listened interface \"%s\" for linked_node \"%s\" started!\n",i,listened_interface,linked_node);
-	        pthread_create(&threads[i], NULL, listen_thread_function, &args[i]);  
+		if (pthread_create(&threads[i], NULL, listen_thread_function, &args[i]) != 0) {  
+			    perror("listen pthread_create failed");  
+			    continue;  
+			}
+		printf("Listen thread %d at listened interface \"%s\" for linked_node \"%s\" started!\n",i,listened_interface,linked_node);
 	}  
-	  
+
+	sleep(1);
 	for (int i = 0; i < LISTENING_THREAD_NUM; i++) {  
 	    pthread_join(threads[i], NULL);  
-	}  
+	} 
+
 }
 
 
@@ -304,7 +309,7 @@ void listen_upon_one_interface_in_test_case(char *linked_node, char *listened_in
 
 // 线程函数  
 void* interface_thread(void* arg) {
-	pthread_detach(pthread_self());/*将当前线程与主线程分离，避免该线程结束后，线程栈和id并没有被释放*/
+	//pthread_detach(pthread_self());/*将当前线程与主线程分离，避免该线程结束后，线程栈和id并没有被释放*/ cannot be used with pthread_join
     int index = *(int*)arg;  
 	
 	if(strcmp(get_interface_mode_by_index(index),"test")==0)
@@ -320,6 +325,8 @@ void* interface_thread(void* arg) {
     // 注意：实际使用中，你可能需要一个机制来优雅地退出这个循环  
     return NULL;  
 }  
+
+
 
 void test_or_listen_upon_interface_group() {  
     int cnt = get_interface_cnt();  
@@ -361,12 +368,12 @@ void test_or_listen_upon_interface_group() {
         }  
     }  
   
-    // 等待所有线程完成  
-    // 注意：由于我们的线程是无限循环的，这里实际上不会执行到这一行  
-    // 除非你有其他机制来停止线程（如信号、条件变量等）  
+	sleep(3);
+    // 等待所有线程完成   
     for (i = 0; i < cnt; i++) {  
         pthread_join(threads[i], NULL);  
     }  
+	//printf("xasxsa\n");
 
   	destroy_initializer_lock();
     // 注意：在实际应用中，你可能不会这样等待无限循环的线程  
@@ -646,10 +653,12 @@ typedef void (*Func)();
 typedef int (*Restart_Check)();
 
 
+
 // Function to execute a given function in a subprocess  
-void execute_func_in_subproc(Func f,Restart_Check g) {  
+void execute_func_in_subproc(Func f,Restart_Check g,Func restart_op) {  
     pid_t pid; // Use pid_t for portability  
 	int reset_flag=0;
+	
   	while(1)
 	{
 	    pid = fork(); // Create a new process  
@@ -658,50 +667,130 @@ void execute_func_in_subproc(Func f,Restart_Check g) {
 	        // Child process  
 	        f(); // Call the function passed as an argument  
 	        exit(0); 
-	    } else if (pid < 0) {  
-	        // fork failed  
-	        perror("fork failed");  
-	        sleep(1); // Brief wait before retrying  
-	    }  
+	    } else if (pid > 0) {  
+	        // Parent process
+		int status;
+		sleep(RESTART_CHECK_TIME_SPEC);
+	        while (1) {  
+			pid_t wp = waitpid(pid,&status,WNOHANG);
+			//printf("wp = %d\n",wp);
+			if(wp==0)
+			{ // when running
+				//printf("g() = %d\n",g());
+				if(g()==0)
+				{
+					reset_flag=1;
+					printf("as the restart situation is found, restart the whole proc now\n");
 
-	  	sleep(RESTART_CHECK_TIME_SPEC);
-	    // Parent process: Wait for all child processes to exit  
-	    // This loop will continue until there are no more child processes to wait for  
-	    while (wait(NULL) > 0) {  
-	        // wait(NULL) returns the PID of the child that exited, or -1 on error.  
-	        // It returns 0 if there are no more child processes.  
-	        // start the thread that is used to recurrently check the f execution status, if problem, then restart the f
-			
-			if(g()==0)
-			{
+					char cmd_addr[256];  
+					snprintf(cmd_addr, sizeof(cmd_addr), "sudo kill %d",pid);  
+					system(cmd_addr); 
+					
+					restart_op();
+					break;
+				}
+			}else if(wp  == pid){ // when exited correctly
+				reset_flag=0;
+				printf("sub proc finished correctly\n");
+				break;
+			} else { // when exited abnormally
 				reset_flag=1;
-				printf("as the restart situation is found, restart the whole proc now\n");
+				restart_op();
+				printf("sub proc finished abnormally\n");
 				break;
 			}
 			sleep(RESTART_CHECK_TIME_SPEC);
-	    }  
-
+			
+	    	}  
 		if(reset_flag==1)
 		{	
 			reset_flag=0;
 			continue;
 		}
+	        
+	    }  else if (pid < 0) {  
+	        // fork failed  
+	        perror("fork failed");  
+	        sleep(1); // Brief wait before retrying  
+	    }  
 
   	}
 }  
   
 
+
+void restart_op()
+{
+		printf("now reset the switch chip\n");
+		system("sudo bash -c 'echo 167 > /sys/class/gpio/export'");
+		system("sudo bash -c 'echo out > /sys/class/gpio/gpio167/direction'");
+		system("sudo bash -c 'echo 0 > /sys/class/gpio/gpio167/value'");
+
+		struct timespec delay;
+		delay.tv_sec = 5; 
+		delay.tv_nsec = 0;	
+		nanosleep(&delay, NULL);
+		system("sudo bash -c 'echo 1 > /sys/class/gpio/gpio167/value'");
+
+
+		char cmd_addr[256];  
+		snprintf(cmd_addr, sizeof(cmd_addr), "sudo ifconfig enp3s0 192.168.1.10");  
+		system(cmd_addr); 
+		snprintf(cmd_addr, sizeof(cmd_addr), "sudo route add -net 192.168.1.0 netmask 255.255.255.0 dev enp3s0");  
+		system(cmd_addr);
+		
+
+		sleep(5); // sleep 5 s
+		system("sudo /home/work/monitor_nodeV8.9/work_station/ksz9896_init");
+		sleep(5); // sleep 5 s
+
+		printf("reset successfully.\n");
+
+
+}
+
+
 int restart_check() {  
     // 使用 -c 1 选项让 ping 只发送一个数据包，以便更快得到结果  
     int result = system("ping -c 1 192.168.1.199 > /dev/null 2>&1");  
+	//printf("%d\n",result);
   
     // 如果 system 调用失败（例如，命令不存在），则直接返回 0  
-    if (result == -1) {  
+    if (result == 256) {    // fpu-testee enp3s0:192.168.1.10 MCU:192.168.1.199
         perror("ping 192.168.1.199 failed");  
         return 0;  
     }  
 
+	result = system("ping -c 1 192.168.5.10 > /dev/null 2>&1");  // fpu-testee enp3s0:0:192.168.5.110 fpu-cotestee:192.168.5.10
+	//printf("%d\n",result);
+  
+    // 如果 system 调用失败（例如，命令不存在），则直接返回 0  
+    if (result == 256) {  
+        perror("ping 192.168.5.10 failed");  
+        return 0;  
+    }  
 	
+
+	result = system("ping -c 1 192.168.2.10 > /dev/null 2>&1");  // fpu-testee enp3s0:1:192.168.2.110 fpu-cotestee:192.168.2.10
+	//printf("%d\n",result);
+  
+    // 如果 system 调用失败（例如，命令不存在），则直接返回 0  
+    if (result == 256) {  
+        perror("ping 192.168.2.10 failed");  
+        return 0;  
+    }  
+	
+	result = system("ping -c 1 192.168.11.10 > /dev/null 2>&1");  // fpu-testee enp3s0:2:192.168.11.110 fpu-cotestee:192.168.11.10
+	//printf("%d\n",result);
+  
+    // 如果 system 调用失败（例如，命令不存在），则直接返回 0  
+    if (result == 256) {  
+        perror("ping 192.168.11.10 failed");  
+        return 0;  
+    }  
+
+
+
     return 1;  
 }  
 
@@ -717,7 +806,7 @@ void TLAtOneNodeFromSplitJsonFile(char *split_config_file_name,char *res_file_na
 	init_test_or_listen_record_arrays();
 
 	// 下面开始循环测试各个配置好的物理通信接口
-	execute_func_in_subproc(test_or_listen_upon_interface_group,restart_check);
+	execute_func_in_subproc(test_or_listen_upon_interface_group,restart_check,restart_op);
 
 
 		
@@ -743,7 +832,7 @@ void TLAtOneNodeFromOverallJsonFile(char *current_node_name,char *overall_config
 
 		
 	// 下面开始循环测试各个配置好的物理通信接口
-	test_or_listen_upon_interface_group();
+	execute_func_in_subproc(test_or_listen_upon_interface_group,restart_check,restart_op);
 
 		
 	free_test_or_listen_record_arrays();	

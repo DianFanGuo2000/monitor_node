@@ -366,6 +366,7 @@ void test_upon_one_interface_in_one_time(const char *test_interface,int packages
 						free(communication_info_array_json_str);
 						return _ERROR;
 					}
+					nanosleep(&delay, NULL);
 				}
 				free(communication_info_array_json_str);
 			}
