@@ -17,6 +17,10 @@
 #include <sys/socket.h>  
 #include <linux/if_packet.h>
 
+#include <unistd.h>
+#include <fcntl.h>  
+
+
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 

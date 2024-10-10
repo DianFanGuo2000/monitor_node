@@ -797,31 +797,64 @@ void convert_xml_config_to_overall_json_config(char *xml_config_path_node_if, ch
 
 
 
-void write_communication_info_array_to_json(const char* filename)
-{
-	pthread_mutex_lock(&communication_info_lock);
-
-	FILE *file = fopen(filename, "w");  
-    if (!file) {  
-        fprintf(stderr, "Failed to open file %s\n", filename);   
-		pthread_mutex_unlock(&communication_info_lock);
+void write_communication_info_array_to_json(const char* filename)  
+{  
+    // Lock the communication info mutex to protect shared resources  
+    pthread_mutex_lock(&communication_info_lock);  
+  
+    // Open the file for writing  
+    int fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);  
+    if (fd == -1) {  
+        perror("Failed to open file");  
+        pthread_mutex_unlock(&communication_info_lock);  
         return;  
-    } 
-	pthread_mutex_unlock(&communication_info_lock);
-
-	char* communication_info_array_json_str = parse_communication_info_array_to_json();//这个子函数里面也有加锁解锁操作，记得在调用它之前先把锁给解掉
-
-	pthread_mutex_lock(&communication_info_lock);
-	for(int i = 0; i < communication_info_cnt; i++) {
-		communication_info_array[i].if_newest_flag = -1;//代表已写入，不是最新的了
-	}
-    fprintf(file, "%s", communication_info_array_json_str);  
-	free(communication_info_array_json_str);
-    fclose(file);  
-	
-	pthread_mutex_unlock(&communication_info_lock);
+    }  
+  
+    pthread_mutex_unlock(&communication_info_lock);  
+  
+    // Parse the communication info array to JSON  
+    char* communication_info_array_json_str = parse_communication_info_array_to_json();  //这个子函数里面也有加锁解锁操作，记得在调用它之前先把锁给解掉
+  
+    // Lock the file to prevent concurrent writes  
+    struct flock lock;  
+    lock.l_type = F_WRLCK;  
+    lock.l_whence = SEEK_SET;  
+    lock.l_start = 0;  
+    lock.l_len = 0; // Lock the entire file  
+  
+    if (flock(fd, F_SETLK, &lock) == -1) {  
+        perror("Failed to lock file");  
+        close(fd);  
+        free(communication_info_array_json_str);  
+        return;  
+    }  
+  
+    // Re-lock the communication info mutex to update shared resources  
+    pthread_mutex_lock(&communication_info_lock);  
+  
+    // Mark all communication info entries as not newest  
+    for (int i = 0; i < communication_info_cnt; i++) {  
+        communication_info_array[i].if_newest_flag = -1; // Representing it has been written and is not the newest  
+    }  
+  
+    // Write the JSON string to the file  
+    if (write(fd, communication_info_array_json_str, strlen(communication_info_array_json_str)) == -1) {  
+        perror("Failed to write to file");  
+    }  
+  
+    // Unlock the communication info mutex  
+    pthread_mutex_unlock(&communication_info_lock);  
+  
+    // Unlock the file  
+    lock.l_type = F_UNLCK;  
+    if (flock(fd, F_SETLK, &lock) == -1) {  
+        perror("Failed to unlock file");  
+    }  
+  
+    // Free the JSON string and close the file  
+    free(communication_info_array_json_str);  
+    close(fd);  
 }
-
 
 
 
